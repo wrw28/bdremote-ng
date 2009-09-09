@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <syslog.h>
 #include <signal.h>
 #include <getopt.h>
@@ -98,15 +97,17 @@ int main(int argc, char *argv[])
       exit(0);
     }
 
-#if BDREMOTE_DEBUG
-  printConfig(&config);
-#endif // BDREMOTE_DEBUG
+  if (config.debug)
+    {
+      printConfig(&config);
+    }
 
   lirc_data ldata;
-  initLircData(&ldata);
+  initLircData(&ldata, &config);
   
   captureData cdata;
   InitCaptureData(&cdata,
+		  &config,
 		  &ldata,
 		  config.remote_addr,
 		  config.disconnect_timeout);
@@ -145,22 +146,30 @@ int main(int argc, char *argv[])
   // Start handling LIRC clients and forwarding data.
   lirc_server(&config, &ldata);
 
+  BDREMOTE_DBG(config.debug, "Terminating.");
+
   pthread_kill (bt_thread, SIGTERM);
-  BDREMOTE_DBG("Waiting for threads to finish.");
+  BDREMOTE_DBG(config.debug, "Waiting for threads to finish.");
   pthread_join(bt_thread, NULL);
+
+  DestroyCaptureData(&cdata);
+  destroyLircData(&ldata);
+
+  destroyConfig(&config);
 
   return EXIT_SUCCESS;
 }
 
 void* listener(void* _p)
 {
-  BDREMOTE_DBG("Started listener thread.");
-
   captureData* cd = (captureData*)_p;
+
+  BDREMOTE_DBG(cd->config->debug, "Started listener thread.");
+
   int ret = captureLoop(cd);
   if (ret < 0)
     {
-      BDREMOTE_DBG("captureLoop failed.");
+      BDREMOTE_DBG(cd->config->debug, "captureLoop failed.");
     }
 
   return 0;
@@ -188,12 +197,11 @@ void usage(void)
 
 void sig_hup(int sig)
 {
-  BDREMOTE_DBG("Not handling HUP.");
+  // BDREMOTE_DBG("Not handling HUP.");
 }
 
 void sig_term(int sig)
 {
   extern volatile sig_atomic_t __io_canceled;
-  BDREMOTE_DBG("Terminating.");
   __io_canceled = 1;
 }

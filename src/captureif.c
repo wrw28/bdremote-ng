@@ -27,24 +27,41 @@
 #include <string.h>
 #include <assert.h>
 
-void InitCaptureData(captureData* cd,
+void InitCaptureData(captureData* _cd,
+		     const configuration* _config,
 		     void* _p,
 		     const char* _dest_address,
 		     const int _timeout )
 {
 #if BDREMOTE_DEBUG
-  cd->magic0 = 127;
+  _cd->magic0 = 127;
 #endif // BDREMOTE_DEBUG
-  assert(cd != NULL);
+  assert(_config != NULL);
+  assert(_cd != NULL);
   assert(_p != NULL);
   assert(_dest_address != NULL);
   assert(_timeout > 0);
 
-  cd->p = _p;
-  cd->bt_dev_address = NULL;
+  _cd->config = _config;
+  _cd->p = _p;
+  _cd->bt_dev_address = NULL;
 
-  cd->dest_address   = malloc(strlen(_dest_address)+1);
-  strcpy(cd->dest_address, _dest_address);
+  const int addrLen = strlen(_dest_address)+1;
+  _cd->dest_address   = (char*)malloc(addrLen);
+  memset(&_cd->dest_address[0], 0, addrLen);
 
-  cd->timeout = _timeout;
+  strcpy(_cd->dest_address, _dest_address);
+
+  _cd->timeout = _timeout;
+}
+
+void DestroyCaptureData(captureData* _cd)
+{
+  _cd->p = NULL;
+
+  free(_cd->bt_dev_address);
+  _cd->bt_dev_address = NULL;
+
+  free(_cd->dest_address);
+  _cd->dest_address = NULL;
 }

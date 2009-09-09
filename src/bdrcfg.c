@@ -45,8 +45,17 @@ void setRemoteAddress(configuration* _config, const char* _address)
       _config->remote_addr = NULL;
     }
 
-  _config->remote_addr =(char *)malloc(strlen(_address));
+  _config->remote_addr =(char *)malloc(strlen(_address)+1);
   strcpy(_config->remote_addr, _address);
+}
+
+void destroyConfig(configuration* _config)
+{
+  if (_config->remote_addr != NULL)
+    {
+      free(_config->remote_addr);
+      _config->remote_addr = NULL;
+    }
 }
 
 void printConfig(configuration* _config)

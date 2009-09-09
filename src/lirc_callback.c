@@ -31,9 +31,11 @@
 
 void broadcast(lirc_data* _lc);
 
-void RemoteConnected()
+void RemoteConnected(void* _p)
 {
-  BDREMOTE_DBG("Remote connected.");
+  lirc_data* lc = (lirc_data*)_p;
+
+  BDREMOTE_DBG(lc->config->debug, "Remote connected.");
 }
 
 // Received some data from the ps3 remote. 
@@ -70,7 +72,7 @@ void DataInd(void* _p, const char* _data, const int _size)
 		switch (lc->laststate)
 		  {
 		  case 0:
-		    BDREMOTE_DBG("single.");			
+		    BDREMOTE_DBG(lc->config->debug, "single.");			
 		    for (i=0;i<ps3remote_num_keys;++i)
 		      {
 			if (*code==ps3remote_keys[i].code)
@@ -89,7 +91,7 @@ void DataInd(void* _p, const char* _data, const int _size)
 	      if (mask!=0x0 && lc->laststate==1 && mask!=lc->lastmask)
 		{
 		  mask1=mask - lc->lastmask;
-		  BDREMOTE_DBG("multiple");
+		  BDREMOTE_DBG(lc->config->debug, "multiple");
 		  //printf("multiple, %08X, %08X, %08X\n",lc->lastmask, mask, mask1);
 		  for (i=0;i<ps3remote_num_masked;++i)
 		    {
@@ -144,9 +146,11 @@ void broadcast(lirc_data* _lc)
   broadcast_message(_lc, msg);
 }
 
-void RemoteDisconnected()
+void RemoteDisconnected(void* _p)
 {
-  BDREMOTE_DBG("Remote disconnected.");
+  lirc_data* lc = (lirc_data*)_p;
+
+  BDREMOTE_DBG(lc->config->debug, "Remote disconnected.");
 }
 
 	

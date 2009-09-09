@@ -25,6 +25,7 @@
 #define _CAPTUREIF_H
 
 #include <globaldefs.h>
+#include <bdrcfg.h>
 
 // Struct given to the function which is supposed to capture data from
 // a BT interface.
@@ -34,6 +35,8 @@ typedef struct
   int magic0;
 #endif // BDREMOTE_DEBUG
 
+  // Configuration.
+  const configuration* config;
   // Context pointer.
   void* p;
   // Device address.
@@ -46,24 +49,28 @@ typedef struct
 
 // Function used to init the data used by this interface.
 // p - context pointer.
-void InitCaptureData(captureData* cd,
+void InitCaptureData(captureData* _cd,
+		     const configuration* _config,
 		     void* _p,
 		     const char* _dest_address,
 		     const int _timeout);
+
+// Release any data used by this interface.
+void DestroyCaptureData(captureData* _cd);
 
 //
 // Callbacks.
 //
 
 // A remote was connected.
-void RemoteConnected();
+void RemoteConnected(void* _p);
 
 // Remote sent some data.
 // p - context pointer.
 void DataInd(void* p, const char* _data, const int _size);
 
 // Remote disconnected.
-void RemoteDisconnected();
+void RemoteDisconnected(void* _p);
 
 // Main capture loop.
 // 

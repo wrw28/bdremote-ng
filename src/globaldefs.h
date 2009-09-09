@@ -15,10 +15,10 @@
 
 #if BDREMOTE_DEBUG
 #  include <stdio.h>
-#  define BDREMOTE_DBG(x) printf("%s:%d -> %s\n", __FILE__, __LINE__, x)
+#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { printf("%s:%d -> %s\n", __FILE__, __LINE__, _x); }
 #  define BDREMOTE_ERR(x) printf("%s:%d -> ERROR: %s\n", __FILE__, __LINE__, x)
 #else
-#  define BDREMOTE_DBG(x)
+#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { printf("%s\n", _x); }
 #  define BDREMOTE_ERR(x) printf("Error: %s\n", x)
 #endif
 

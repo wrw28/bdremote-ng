@@ -54,6 +54,11 @@
 
 extern volatile sig_atomic_t __io_canceled;
 
+int readFromSocket(captureData* _capturedata, int _socket);
+
+// Returns:
+// 0 - unknown device.
+// 1 - known device.
 int l2cap_checkSource(int sock, bdaddr_t* address)
 {
   struct sockaddr_l2 addr;
@@ -80,11 +85,9 @@ int l2cap_checkSource(int sock, bdaddr_t* address)
 
   if (memcmp(&addr.l2_bdaddr, address, sizeof(*address)) == 0)
     {
-      BDREMOTE_DBG("Known device.");
       return 1;
     }
 
-  BDREMOTE_DBG("Unknown device.");
   return 0;
 }
 
@@ -135,7 +138,7 @@ int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog
 
 	if ((sk = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP)) < 0)
 	  {
-	    BDREMOTE_DBG("Unable to create socket.\n");
+	    perror("socket");
 	    return -1;
 	  }
 
@@ -162,7 +165,7 @@ int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog
 
 	if (listen(sk, backlog) < 0) 
 	  {
-	    BDREMOTE_DBG("Listen failed.\n");
+	    perror("listen");
 	    close(sk);
 	    return -1;
 	  }
@@ -191,6 +194,71 @@ int l2cap_accept(int sk, bdaddr_t *bdaddr)
 	return nsk;
 }
 
+// Read from a socket, until timeout or error.
+// Returns:
+// 0 - daemon shutting down becase of signal from outside world.
+// 1 - client disconnected.
+// 2 - timeout.
+int readFromSocket(captureData* _capturedata, int _socket)
+{
+  struct pollfd p;
+  p.fd = _socket;
+  p.events = POLLIN | POLLERR | POLLHUP;
+
+  sigset_t sigs;
+  sigfillset(&sigs);
+  sigdelset(&sigs, SIGCHLD);
+  sigdelset(&sigs, SIGPIPE);
+  sigdelset(&sigs, SIGTERM);
+  sigdelset(&sigs, SIGINT);
+  sigdelset(&sigs, SIGHUP);
+
+  // Number of seconds since last read which returned data.
+  int numberOfSeconds  = 0;
+  int recv_len         = 0;
+  const int bufferSize = 1024;
+  char buffer[bufferSize];
+  
+  while (!__io_canceled) 
+    {
+      if (numberOfSeconds > _capturedata->timeout)
+	{
+	  return 2;
+	}
+
+      p.revents = 0;
+
+      struct timespec timeout;
+      timeout.tv_sec  = 1;
+      timeout.tv_nsec = 0;
+	    
+      if (ppoll(&p, 1, &timeout, &sigs) < 1)
+	      {
+		BDREMOTE_DBG(_capturedata->config->debug, "No BT data captured ..");
+		numberOfSeconds++;
+		continue;
+	      }
+      numberOfSeconds = 0;
+      
+      recv_len=recv(_socket, &buffer[0], bufferSize, 0);
+		      
+      if (recv_len <= 0)
+	{
+	  return 1;
+	}
+      else
+	{
+	  BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
+#if BDREMOTE_DEBUG
+	  assert(_capturedata->magic0 == 127);
+#endif // BDREMOTE_DEBUG
+	  DataInd(_capturedata->p, &buffer[0], recv_len);
+	}
+    }
+
+  return 0;
+}
+
 void run_server(captureData* _capturedata,
 		int ctl, int csk, int isk)
 {
@@ -208,8 +276,8 @@ void run_server(captureData* _capturedata,
 	    return;
 	  }
 
-	BDREMOTE_DBG("Using destination address:");
-	BDREMOTE_DBG(_capturedata->dest_address);
+	BDREMOTE_DBG(_capturedata->config->debug, "Using destination address:");
+	BDREMOTE_DBG(_capturedata->config->debug, _capturedata->dest_address);
 
 	sigfillset(&sigs);
 	sigdelset(&sigs, SIGCHLD);
@@ -235,50 +303,44 @@ void run_server(captureData* _capturedata,
 	    
 	    if (ppoll(p, 2, &timeout, &sigs) < 1)
 	      {
-		BDREMOTE_DBG("No data captured ..");
+		BDREMOTE_DBG(_capturedata->config->debug, "No data captured ..");
 		continue;
 	      }
 	    
 	    events = p[0].revents | p[1].revents;
 	    
-	    if (events & POLLIN) {
-	      ncsk = l2cap_accept(csk, NULL);
-	      nisk = l2cap_accept(isk, NULL);
-	      
-	      BDREMOTE_DBG("Accepted client.");
-	      
-	      if (l2cap_checkSource(ncsk, &destinationAddress))
+	    if (events & POLLIN) 
+	      {
+		ncsk = l2cap_accept(csk, NULL);
+		nisk = l2cap_accept(isk, NULL);
+		
+		BDREMOTE_DBG(_capturedata->config->debug, "Accepted BT client.");
+		
+		if (l2cap_checkSource(ncsk, &destinationAddress))
 		{
-		  RemoteConnected();
+		  BDREMOTE_DBG(_capturedata->config->debug, "Known device.");
+		  RemoteConnected(_capturedata->p);
 		  
-		  int cont = 1;
-		  int recv_len = 0;
-		  int bufferSize = 1024;
-		  char* buffer = malloc(bufferSize);
+		  int stat = readFromSocket(_capturedata, nisk);
 		  
-		  while (cont && (!__io_canceled))
+		  switch (stat)
 		    {
-		      recv_len=recv(nisk, &buffer[0], bufferSize, 0);
-		      
-		      if (recv_len<=0)
-			{
-			  cont = 0;
-			  BDREMOTE_DBG("Client disconnected.");
-			}
-		      else
-			{
-			  BDREMOTE_DBG("Calling DataInd.");
-#if BDREMOTE_DEBUG
-			  assert(_capturedata->magic0 == 127);
-#endif // BDREMOTE_DEBUG
-			  DataInd(_capturedata->p, &buffer[0], recv_len);
-			}
-		      
+		    case 0:
+		      break;
+		    case 1:
+		      BDREMOTE_DBG(_capturedata->config->debug, "BT client disconnect..");
+		      break;
+		    case 2:
+		      BDREMOTE_DBG(_capturedata->config->debug, "BT timeout..");
+		      break;
 		    }
-		  RemoteDisconnected();
+
+		  RemoteDisconnected(_capturedata->p);
 		}
-	      
-	      
+		else
+		  {
+		    BDREMOTE_DBG(_capturedata->config->debug, "Unknown device.");
+		  }
 	      
 	      close(nisk);
 	      sleep(1);
@@ -303,6 +365,7 @@ int captureLoop(captureData* _capturedata)
       return BDREMOTE_FAIL;
     }
 
+  assert(_capturedata->bt_dev_address == NULL);
   _capturedata->bt_dev_address = (char*)malloc(127);
   memset(_capturedata->bt_dev_address, 0, 127);
   ret = ba2str(&devinfo.bdaddr, _capturedata->bt_dev_address);
