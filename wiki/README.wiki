@@ -3,11 +3,15 @@
 This is helper application for Sony BD Bluetooth Remote Control, which
 allows to use this remote with LIRC.
 
+This is a partial rewrite of bdremote 0.2, so it is easier to understand and maintain. Also, I could not get bdremote 0.2 to work on ubuntu. And it was not the most verbose application, so this one was created instead. Also, porting to a non-bluez bluetooth stack should be possible now. Bluetooth and LIRC/network handing has been seperated and one thread has been removed.
+
+Why use this? Because using a PS3 remote as a HID device makes little sense to me (You have to instruct bluez to connect to it before you can use it. So it means that you need to have a script which continuously tries to connect to the remote. And you have to make the ps3 remote discoverable before the script will succeed.)  
+
+= Compillation and installation =
+
 For next instructions I assume that you already have installed 
 and properly configured linux bluetooth stack
 (at least bluez-libs and bluex-utils).
-
-= Compillation and installation =
 
 Type "make" in this directory and you'll get executable named "bdremoteng".
 Copy this binary somewhere, for example to /usr/local/sbin.
