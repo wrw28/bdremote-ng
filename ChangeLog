@@ -1,0 +1,13 @@
+bdremote-ng 0.1
+---------------
+
+Initial release, for public consumption.
+
+The following bugs were fixed:
+
+001 Add cmake build files.
+003 Add support for timeout.
+004 Create release.
+005 Check for memory leaks.
+
+
