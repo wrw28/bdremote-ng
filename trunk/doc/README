@@ -7,6 +7,10 @@ and properly configured linux bluetooth stack
 
 1) Compillation and installation
 
+Make sure that you have CMake installed.
+
+Execute gen.sh in the build directory. This will run cmake, which will generate a build in build/linux.
+
 Type "make" in this directory and you'll get executable named "bdremoteng".
 Copy this binary somewhere, for example to /usr/local/sbin.
 
