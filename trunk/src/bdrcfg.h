@@ -36,6 +36,7 @@ typedef struct
 
 void setDefaults(configuration* _config);
 void setRemoteAddress(configuration* _config, const char* _address);
+void destroyConfig(configuration* _config);
 void printConfig(configuration* _config);
 
 #endif // _CFG_H

@@ -37,6 +37,9 @@ typedef struct
 #if BDREMOTE_DEBUG
   int magic0;
 #endif // BDREMOTE_DEBUG
+  // Configuration.
+  const configuration* config;
+  // Socked used to accept new LIRC clients.
   int sockinet;
 
   // Client sockets.
@@ -44,6 +47,7 @@ typedef struct
   // Number of client sockets.
   int clin;
 
+  // State information.
   int laststate;
   unsigned char lastcode;
   uint32_t lastmask;
@@ -52,9 +56,10 @@ typedef struct
 
 } lirc_data;
 
-void initLircData(lirc_data* _ld);
+void initLircData(lirc_data* _ld, const configuration* _config);
 int lirc_server(configuration* _config, lirc_data* _lircdata);
 void broadcast_message(lirc_data* _lircdata, const char* _message);
+void destroyLircData(lirc_data* _ld);
 
 #endif // _LIRC_SRV_H
 

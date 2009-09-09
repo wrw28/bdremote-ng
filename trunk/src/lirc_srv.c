@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <syslog.h>
 #include <signal.h>
 #include <getopt.h>
@@ -51,11 +50,13 @@ void nolinger(int sock);
 int create_listener(configuration* _config, lirc_data* _lircdata);
 int write_socket(int fd, const char* buf, int len);
 
-void initLircData(lirc_data* _ld)
+void initLircData(lirc_data* _ld, const configuration* _config)
 {
+  assert(_config != NULL);
 #if BDREMOTE_DEBUG
   _ld->magic0 = 0x15;
 #endif // BDREMOTE_DEBUG
+  _ld->config   = _config;
   _ld->sockinet = -1;
   memset(&_ld->clis[0], 0, MAX_CLIENTS); 
   _ld->clin = 0;
@@ -65,6 +66,14 @@ void initLircData(lirc_data* _ld)
   _ld->lastmask  =  0;
   _ld->lastkey   = -1;
   _ld->lastsend  = -2;
+}
+
+void destroyLircData(lirc_data* _ld)
+{
+  _ld->config = NULL;
+
+  assert(_ld->clin == 0);
+  assert(_ld->sockinet == BDREMOTE_FAIL);
 }
 
 int lirc_server(configuration* _config, lirc_data* _lircdata)
@@ -96,10 +105,25 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
 	}
       if (p.events & POLLIN) 
 	{
-	  BDREMOTE_DBG("new client accepted.");
+	  BDREMOTE_DBG(_config->debug, "new client accepted.");
 	  add_client(_lircdata);
 	}
     }
+
+  // Close all client sockets.
+  int i = 0;
+  for(i=0;i<_lircdata->clin;i++)
+    {
+      shutdown(_lircdata->clis[i],2);
+      close(_lircdata->clis[i]);
+    }
+  
+  _lircdata->clin = 0;
+
+  shutdown(_lircdata->sockinet,2);
+  close(_lircdata->sockinet);
+
+  _lircdata->sockinet = BDREMOTE_FAIL;
 
   return BDREMOTE_OK;
 }
@@ -114,7 +138,7 @@ int create_listener(configuration* _config, lirc_data* _lircdata)
   if (_lircdata->sockinet==-1)
     {
       perror("socket");
-      BDREMOTE_DBG("Could not create TCP/IP socket.");
+      BDREMOTE_DBG(_config->debug, "Could not create TCP/IP socket.");
       return BDREMOTE_FAIL;
     }
   (void) setsockopt(_lircdata->sockinet,SOL_SOCKET,SO_REUSEADDR,&enable,sizeof(enable));                      
@@ -125,7 +149,7 @@ int create_listener(configuration* _config, lirc_data* _lircdata)
   if (bind(_lircdata->sockinet,(struct sockaddr *) &serv_addr_in,
 	   sizeof(serv_addr_in))==-1)
     {
-      BDREMOTE_DBG("Could not assign address to socket\n");
+      BDREMOTE_DBG(_config->debug, "Could not assign address to socket\n");
       perror("bind");
       close(_lircdata->sockinet);
       return BDREMOTE_FAIL;
@@ -146,13 +170,15 @@ void add_client(lirc_data* _lircdata)
 
   if (fd==-1)
     {
-      BDREMOTE_DBG("accept() failed for new client.");
+      BDREMOTE_DBG(_lircdata->config->debug, 
+		   "accept() failed for new client.");
       perror("accept");
     };
   
   if(fd>=FD_SETSIZE || _lircdata->clin>=MAX_CLIENTS)
     {
-      BDREMOTE_DBG("Connection rejected.");
+      BDREMOTE_DBG(_lircdata->config->debug,
+		   "Connection rejected.");
       shutdown(fd,2);
       close(fd);
       return;
