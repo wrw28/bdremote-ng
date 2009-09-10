@@ -15,6 +15,10 @@ For next instructions I assume that you already have installed
 and properly configured linux bluetooth stack
 (at least bluez-libs and bluex-utils).
 
+Make sure that you have CMake installed.
+
+Execute gen.sh in the build directory. This will run cmake, which will generate a build in build/linux.
+
 Type "make" in this directory and you'll get executable named "bdremoteng".
 Copy this binary somewhere, for example to /usr/local/sbin.
 
