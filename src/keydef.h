@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _KEYDEF_H
-#define _KEYDEF_H
+#ifndef BD_KEYDEF_H
+#define BD_KEYDEF_H
 
 struct key_info
 {
@@ -89,5 +89,5 @@ struct key_info ps3remote_keys[] =
     {"yellow\0"	 ,0x83, 0x000000},
   };                               
 
-#endif // _KEYDEF_H
+#endif // BD_KEYDEF_H
 

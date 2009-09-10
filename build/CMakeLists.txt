@@ -3,6 +3,8 @@ project (bdremote-ng)
 
 SET(CMAKE_INSTALL_PREFIX "")
 
+OPTION(USE_SPLINT "Run splint after compiling" OFF)
+
 #
 # Header file checks:
 #
@@ -41,13 +43,13 @@ IF(NOT HAVE_PTHREAD_LIB)
   message(FATAL_ERROR "Required pthread library not found.")
 ENDIF(NOT HAVE_PTHREAD_LIB)
 
+include(splint.cmake)
 
 # Prefix used for all files.
 SET(PREFIX "../src/")
 
 SET(GENERIC_HEADERS
 ${PREFIX}/bdrcfg.h  
-
 ${PREFIX}/captureif.h
 ${PREFIX}/globaldefs.h
 ${PREFIX}/keydef.h
@@ -63,7 +65,20 @@ ${PREFIX}/lirc_srv.c
 
 include_directories (${PREFIX})
 
-add_library (bdremoteng_generic ${GENERIC_SOURCES} ${GENERIC_HEADERS})
+add_library (bdremoteng_generic ${GENERIC_HEADERS} ${GENERIC_SOURCES} )
+
+IF(USE_SPLINT)
+
+  FOREACH(F ${GENERIC_HEADERS})
+    add_splint ("bdremoteng_generic" ${F})  
+  ENDFOREACH(F)
+  
+  FOREACH(F ${GENERIC_SOURCES})
+    add_splint ("bdremoteng_generic" ${F})  
+  ENDFOREACH(F)
+
+ENDIF(USE_SPLINT)
+
 
 install(FILES ${GENERIC_SOURCES} ${GENERIC_HEADERS} DESTINATION src)
 
@@ -75,7 +90,19 @@ SET(BLUEZCAP_SOURCES
 ${PREFIX}/capture/capture_bluez.c
 )
 
-add_library (bdremoteng_bluezcap ${BLUEZCAP_SOURCES} ${BLUEZCAP_HEADERS})
+add_library (bdremoteng_bluezcap ${BLUEZCAP_HEADERS} ${BLUEZCAP_SOURCES})
+
+IF(USE_SPLINT)
+
+  FOREACH(F ${BLUEZCAP_HEADERS})
+    add_splint ("bdremoteng_bluezcap" ${F})  
+  ENDFOREACH(F)
+  
+  FOREACH(F ${BLUEZCAP_SOURCES})
+    add_splint ("bdremoteng_bluezcap" ${F})  
+  ENDFOREACH(F)
+
+ENDIF(USE_SPLINT)
 
 install(FILES ${BLUEZCAP_SOURCES} ${BLUEZCAP_HEADERS} DESTINATION src/capture)
 
@@ -92,6 +119,18 @@ ${PREFIX}/bdremoteng.c
 )
 
 add_executable (bdremoteng ${APP_HEADERS} ${APP_SOURCES})
+
+IF(USE_SPLINT)
+
+  FOREACH(F ${APP_HEADERS})
+    add_splint ("bdremoteng" ${F})  
+  ENDFOREACH(F)
+  
+  FOREACH(F ${APP_SOURCES})
+    add_splint ("bdremoteng" ${F})  
+  ENDFOREACH(F)
+
+ENDIF(USE_SPLINT)
 
 install(FILES ${APP_HEADERS} ${APP_SOURCES} DESTINATION src)
 
@@ -170,3 +209,5 @@ set(CPACK_SOURCE_IGNORE_FILES
 SET(CPACK_PACKAGE_EXECUTABLES "bdremoteng;bdremoteng")
 
 include(CPack)
+
+

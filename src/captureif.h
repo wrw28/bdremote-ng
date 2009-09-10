@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _CAPTUREIF_H
-#define _CAPTUREIF_H
+#ifndef BD_CAPTUREIF_H
+#define BD_CAPTUREIF_H
 
 #include <globaldefs.h>
 #include <bdrcfg.h>
@@ -80,5 +80,5 @@ void RemoteDisconnected(void* _p);
 // returns: -1 on error.
 int captureLoop(captureData* _capturedata);
 
-#endif // _CAPTUREIF_H
+#endif // BD_CAPTUREIF_H
 

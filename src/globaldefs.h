@@ -1,5 +1,5 @@
-#ifndef _GLOBALDEFS_H
-#define _GLOBALDEFS_H
+#ifndef BD_GLOBALDEFS_H
+#define BD_GLOBALDEFS_H
 
 #ifndef BDREMOTE_FAIL
 #  define BDREMOTE_FAIL (-1)
@@ -23,5 +23,5 @@
 #endif
 
 
-#endif // _GLOBALDEFS_H
+#endif // BD_GLOBALDEFS_H
 
