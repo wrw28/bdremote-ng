@@ -2,7 +2,7 @@
 
 D=`pwd`
 
-VER="0.1"
+VER="0.2"
 
 rm -fr linux-install
 mkdir -p linux-install
