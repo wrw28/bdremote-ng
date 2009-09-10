@@ -3,6 +3,45 @@ project (bdremote-ng)
 
 SET(CMAKE_INSTALL_PREFIX "")
 
+#
+# Header file checks:
+#
+
+INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckLibraryExists)
+
+CHECK_INCLUDE_FILES ("malloc.h" HAVE_MALLOC_H)
+IF(NOT HAVE_MALLOC_H)
+  message(FATAL_ERROR "Required malloc header not found.")
+ENDIF(NOT HAVE_MALLOC_H)
+
+CHECK_INCLUDE_FILES ("bluetooth/bluetooth.h;bluetooth/hci.h;bluetooth/hci_lib.h;bluetooth/l2cap.h" HAVE_BLUETOOTH_H)
+IF(NOT HAVE_BLUETOOTH_H)
+  message(FATAL_ERROR "Required bluetooth headers not found.")
+ENDIF(NOT HAVE_BLUETOOTH_H)
+
+CHECK_INCLUDE_FILES ("pthread.h" HAVE_PTHREAD_H)
+IF(NOT HAVE_PTHREAD_H)
+  message(FATAL_ERROR "Required pthread header not found.")
+ENDIF(NOT HAVE_PTHREAD_H)
+
+#
+# Link checks:
+# 
+
+CHECK_LIBRARY_EXISTS (bluetooth str2ba "" HAVE_BLUETOOTH_LIB)
+
+IF(NOT HAVE_BLUETOOTH_LIB)
+  message(FATAL_ERROR "Required bluetooth library not found.")
+ENDIF(NOT HAVE_BLUETOOTH_LIB)
+
+CHECK_LIBRARY_EXISTS (pthread pthread_create "" HAVE_PTHREAD_LIB)
+
+IF(NOT HAVE_PTHREAD_LIB)
+  message(FATAL_ERROR "Required pthread library not found.")
+ENDIF(NOT HAVE_PTHREAD_LIB)
+
+
 # Prefix used for all files.
 SET(PREFIX "../src/")
 
