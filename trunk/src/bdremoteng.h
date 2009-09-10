@@ -21,12 +21,12 @@
  *
  */
 
-#ifndef _BDREMOTENG_H
-#define _BDREMOTENG_H
+#ifndef BD_BDREMOTENG_H
+#define BD_BDREMOTENG_H
 
 #define progname "bdremoted"
 #define VERSION "0.1"
 
 void usage(void);
 
-#endif // _BDREMOTENG_H
+#endif // BD_BDREMOTENG_H

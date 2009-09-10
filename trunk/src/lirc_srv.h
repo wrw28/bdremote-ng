@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _LIRC_SRV_H
-#define _LIRC_SRV_H
+#ifndef BD_LIRC_SRV_H
+#define BD_LIRC_SRV_H
 
 #include <globaldefs.h>
 
@@ -61,6 +61,6 @@ int lirc_server(configuration* _config, lirc_data* _lircdata);
 void broadcast_message(lirc_data* _lircdata, const char* _message);
 void destroyLircData(lirc_data* _ld);
 
-#endif // _LIRC_SRV_H
+#endif // BD_LIRC_SRV_H
 
 

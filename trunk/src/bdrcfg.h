@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _CFG_H
-#define _CFG_H
+#ifndef BD_CFG_H
+#define BD_CFG_H
 
 typedef struct
 {
@@ -39,5 +39,5 @@ void setRemoteAddress(configuration* _config, const char* _address);
 void destroyConfig(configuration* _config);
 void printConfig(configuration* _config);
 
-#endif // _CFG_H
+#endif // BD_CFG_H
 
