@@ -141,6 +141,16 @@ ${PREFIX}/TODO
 
 install(FILES ${DOCS_FILES} DESTINATION doc)
 
+SET(PREFIX "../")
+
+SET(MISC_FILES
+${PREFIX}/ChangeLog
+${PREFIX}/COPYING
+${PREFIX}/AUTHORS
+)
+
+install(FILES ${MISC_FILES} DESTINATION .)
+
 # 
 # Stuff needed to create a source installation.
 #
