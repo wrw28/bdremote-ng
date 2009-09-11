@@ -25,7 +25,7 @@
 #define BD_BDREMOTENG_H
 
 #define progname "bdremoted"
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 void usage(void);
 

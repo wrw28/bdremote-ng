@@ -112,10 +112,12 @@ install(FILES ${BLUEZCAP_SOURCES} ${BLUEZCAP_HEADERS} DESTINATION src/capture)
 
 SET(APP_HEADERS
 ${PREFIX}/bdremoteng.h
+${PREFIX}/ug.h
 )
 
 SET(APP_SOURCES
 ${PREFIX}/bdremoteng.c
+${PREFIX}/ug.c
 )
 
 add_executable (bdremoteng ${APP_HEADERS} ${APP_SOURCES})

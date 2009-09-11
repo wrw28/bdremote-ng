@@ -27,6 +27,26 @@
 #include <string.h>
 #include <stdio.h>
 
+// Macro used to copy a string to the config.
+#define SETVAL(C, K, S) {                       \
+      if (C->K != NULL)                         \
+         {                                      \
+            free(C->K);                         \
+            C->K = NULL;                        \
+         }                                      \
+      C->K =(char *)malloc(strlen(S)+1);        \
+      strcpy(C->K, S);                          \
+   }
+
+// Macro used to destroy string members of the config.
+#define FREEVAL(C, K) { \
+   if (C->K != NULL)    \
+      {                 \
+         free(C->K);    \
+         C->K = NULL;   \
+      }                 \
+   }
+
 void setDefaults(configuration* _config)
 {
   _config->listen_port = 8888;
@@ -35,27 +55,30 @@ void setDefaults(configuration* _config)
   _config->debug       = 0;
   _config->remote_addr = NULL;
   _config->detach      = 1;
+  _config->user        = NULL;
+  _config->group       = NULL;
 }
 
 void setRemoteAddress(configuration* _config, const char* _address)
 {
-  if (_config->remote_addr != NULL)
-    {
-      free(_config->remote_addr);
-      _config->remote_addr = NULL;
-    }
+   SETVAL(_config, remote_addr, _address);
+}
 
-  _config->remote_addr =(char *)malloc(strlen(_address)+1);
-  strcpy(_config->remote_addr, _address);
+void setUser(configuration* _config, const char* _user)
+{
+   SETVAL(_config, user, _user);
+}
+
+void setGroup(configuration* _config, const char* _group)
+{
+   SETVAL(_config, group, _group);
 }
 
 void destroyConfig(configuration* _config)
 {
-  if (_config->remote_addr != NULL)
-    {
-      free(_config->remote_addr);
-      _config->remote_addr = NULL;
-    }
+   FREEVAL(_config, remote_addr);
+   FREEVAL(_config, user);
+   FREEVAL(_config, group);
 }
 
 void printConfig(configuration* _config)
@@ -67,4 +90,36 @@ void printConfig(configuration* _config)
   printf(" - debug      : %d.\n", _config->debug);
   printf(" - remote addr: %s.\n", _config->remote_addr);
   printf(" - detach     : %d.\n", _config->detach);
+  if (_config->user == NULL)
+     {
+        printf(" - user       : not set.\n");
+     }
+  else
+     {
+        printf(" - user       : %s.\n", _config->user);
+     }
+  if (_config->group == NULL)
+     {
+        printf(" - group      : not set.\n");
+     }
+  else
+     {
+        printf(" - group      : %s.\n", _config->group);
+     }
+}
+
+int userAndGroupSet(configuration* _config)
+{
+   int status = 1;
+
+   if (_config->user == NULL)
+     {
+        status = 0;
+     }
+  if (_config->group == NULL)
+     {
+        status = 0;
+     }
+
+  return status;
 }

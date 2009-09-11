@@ -39,10 +39,14 @@
 
 #include <pthread.h>
 
+#include <sys/types.h>
+
+
 #include <globaldefs.h>
 #include <bdrcfg.h>
 #include <captureif.h>
 #include <lirc_srv.h>
+#include <ug.h>
 
 static void sig_hup(int sig);
 static void sig_term(int sig);
@@ -58,50 +62,56 @@ int main(int argc, char *argv[])
   configuration config;
   setDefaults(&config);
   
-  while ((opt=getopt(argc,argv,"+p:t:a:r:d:nh"))!=-1)
-    {
-      switch(opt)
-	{
-	case 'p':
-	  config.listen_port=atoi(optarg);
-	  break;
-	case 't':
-	  config.disconnect_timeout=atoi(optarg);
-	  break;
-	case 'a':
-	  setRemoteAddress(&config, optarg);
-	  break;
-	case 'r':
-	  config.repeat_rate=atoi(optarg);
-	  break;
-	case 'd':
-	  config.debug = atoi(optarg);
-	  break;
-	case 'n':
-	  config.detach=0;
-	  break;
-	case 'h':
-	  usage();
-	  exit(0);
-	  break;
-	default:
-	  exit(0);
-	}
-    }
+  while ((opt=getopt(argc,argv,"+p:t:a:r:d:u:g:nh"))!=-1)
+     {
+        switch(opt)
+           {
+           case 'p':
+              config.listen_port=atoi(optarg);
+              break;
+           case 't':
+              config.disconnect_timeout=atoi(optarg);
+              break;
+           case 'a':
+              setRemoteAddress(&config, optarg);
+              break;
+           case 'r':
+              config.repeat_rate=atoi(optarg);
+              break;
+           case 'd':
+              config.debug = atoi(optarg);
+              break;
+           case 'n':
+              config.detach=0;
+              break;
+           case 'u':
+              setUser(&config, optarg);
+              break;
+           case 'g':
+              setGroup(&config, optarg);
+              break;
+           case 'h':
+              usage();
+              exit(0);
+              break;
+           default:
+              exit(0);
+           }
+     }
   
   if (config.remote_addr == NULL)
-    {
-      usage();
-      printf("\nPlease specify a remote BD address using the -a switch.\n");
-
-      exit(0);
-    }
+     {
+        usage();
+        printf("\nPlease specify a remote BD address using the -a switch.\n");
+        
+        exit(0);
+     }
 
   if (config.debug)
-    {
-      printConfig(&config);
-    }
-
+     {
+        printConfig(&config);
+     }
+  
   lirc_data ldata;
   initLircData(&ldata, &config);
   
@@ -122,6 +132,34 @@ int main(int argc, char *argv[])
     };
 
   nice(-4);
+
+  int ret = InitcaptureLoop(&cdata);
+  if (ret == BDREMOTE_FAIL)
+     {
+        BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
+        return BDREMOTE_FAIL;
+     }
+
+  if (userAndGroupSet(&config) == 1)
+     {
+        BDREMOTE_DBG(config.debug, "Changing UID:GID.");
+
+        if ((getuid() == 0) && (geteuid() == 0))
+           {
+              BDREMOTE_DBG(config.debug, "Can change UID:GID.");
+           }
+        else
+           {
+              BDREMOTE_DBG(config.debug, "Unable to change UID:GID..");
+              return BDREMOTE_FAIL;
+           }
+
+        if (changeUIDAndGID(config.user, config.group) == BDREMOTE_FAIL)
+           {
+              BDREMOTE_DBG(config.debug, "changeUIDAndGID() failed.");
+              return BDREMOTE_FAIL;
+           }
+     }
 
   // Start listening for BT clients.
   if (pthread_create(&bt_thread, NULL, listener, &cdata) != 0)
@@ -187,6 +225,8 @@ void usage(void)
 		"\t-a <address>         BT addres of remote.\n"
 		"\t                     For example: -a 00:19:C1:5A:F1:3F \n"
 		"\t-r <rate>            Key repeat rate. Generate <rate> repeats per\n"
+		"\t-u <username>        Change UID to the UID of this user\n"
+		"\t-g <group>           Change GID to the GID of this group\n"
 		"\t                     second, when key is pressed\n"    
 		"\t-d                   Enable debug.\n"     				
 		"\t-n                   Don't fork daemon to background\n"      

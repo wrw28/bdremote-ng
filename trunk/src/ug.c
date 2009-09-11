@@ -21,30 +21,56 @@
  *
  */
 
-#ifndef BD_CFG_H
-#define BD_CFG_H
+#include "ug.h"
 
-typedef struct
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+
+#include <globaldefs.h>
+
+// The following function was taken from BTG (btg.berlios.de), also
+// written by me.
+int changeUIDAndGID(const char* _user,
+                    const char* _group)
 {
-   int listen_port;
-   int disconnect_timeout;
-   int repeat_rate;
-   int debug;
-   char* remote_addr;
-   int detach;
-   char* user;
-   char* group;
-} configuration;
+   int result = BDREMOTE_OK;
+   
+   // Resolve the user and group into uid/gid.
+   
+   /* User. */
+   struct passwd* s_passwd = getpwnam(_user);
 
-void setDefaults(configuration* _config);
-void setRemoteAddress(configuration* _config, const char* _address);
-void setUser(configuration* _config, const char* _user);
-void setGroup(configuration* _config, const char* _group);
+   if (s_passwd == 0)
+      {
+         result = BDREMOTE_FAIL;
+         return result;
+      }
 
-int userAndGroupSet(configuration* _config);
+   uid_t uid = s_passwd->pw_uid;
 
-void destroyConfig(configuration* _config);
-void printConfig(configuration* _config);
+   /* Group. */
+   struct group* s_group = getgrnam(_group);
+   
+   if (s_group == 0)
+      {
+         result = BDREMOTE_FAIL;
+         return result;
+      }
 
-#endif // BD_CFG_H
+   gid_t gid = s_group->gr_gid;
+   
+   /* Do the change. */
+   
+   if (setgid(gid) != 0)
+      {
+         result = BDREMOTE_FAIL;
+      }
 
+   if (setuid(uid) != 0)
+      {
+         result = BDREMOTE_FAIL;
+      }
+
+   return result;
+}

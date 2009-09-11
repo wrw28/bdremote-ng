@@ -53,6 +53,7 @@ void InitCaptureData(captureData* _cd,
   strcpy(_cd->dest_address, _dest_address);
 
   _cd->timeout = _timeout;
+  memset(&_cd->sockets[0], 0, 2);
 }
 
 void DestroyCaptureData(captureData* _cd)

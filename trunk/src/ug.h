@@ -21,30 +21,11 @@
  *
  */
 
-#ifndef BD_CFG_H
-#define BD_CFG_H
+#ifndef BD_UG_H
+#define BD_UG_H
 
-typedef struct
-{
-   int listen_port;
-   int disconnect_timeout;
-   int repeat_rate;
-   int debug;
-   char* remote_addr;
-   int detach;
-   char* user;
-   char* group;
-} configuration;
+int changeUIDAndGID(const char* _user,
+                    const char* _group);
 
-void setDefaults(configuration* _config);
-void setRemoteAddress(configuration* _config, const char* _address);
-void setUser(configuration* _config, const char* _user);
-void setGroup(configuration* _config, const char* _group);
-
-int userAndGroupSet(configuration* _config);
-
-void destroyConfig(configuration* _config);
-void printConfig(configuration* _config);
-
-#endif // BD_CFG_H
+#endif // BD_UG_H
 
