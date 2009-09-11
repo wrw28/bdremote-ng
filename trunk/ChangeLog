@@ -10,4 +10,12 @@ The following bugs were fixed:
 004 Create release.
 005 Check for memory leaks.
 
+bdremote-ng 0.2
+---------------
+
+Fixes a couple of minor bugs.
+
+The following bugs were fixed:
+	
+006 Drop privileges after opening sockets.
 
