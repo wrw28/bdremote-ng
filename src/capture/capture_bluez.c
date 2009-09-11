@@ -259,7 +259,7 @@ int readFromSocket(captureData* _capturedata, int _socket)
 }
 
 void run_server(captureData* _capturedata,
-		int ctl, int csk, int isk)
+                int ctl, int csk, int isk)
 {
 	struct pollfd p[2];
 	sigset_t sigs;
@@ -348,68 +348,81 @@ void run_server(captureData* _capturedata,
 	  }
 }
 
+int InitcaptureLoop(captureData* _capturedata)
+{
+   bdaddr_t bdaddr;
+   int ctl, csk, isk;
+   int lm = 0;
+   
+   // Find the first interface, using BT primitives.
+   struct hci_dev_info devinfo;
+   int ret = hci_devinfo(0, &devinfo);
+   
+   if (ret < 0)
+      {
+         perror("hci_devinfo");
+         return BDREMOTE_FAIL;
+      }
+   
+   assert(_capturedata->bt_dev_address == NULL);
+   _capturedata->bt_dev_address = (char*)malloc(127);
+   memset(_capturedata->bt_dev_address, 0, 127);
+   ret = ba2str(&devinfo.bdaddr, _capturedata->bt_dev_address);
+   
+   if (ret < 0)
+      {
+         perror("ba2str");
+         return BDREMOTE_FAIL;
+      }
+   
+   assert(_capturedata->bt_dev_address != NULL);
+   str2ba(_capturedata->bt_dev_address, &bdaddr);
+#if BDREMOTE_DEBUG
+   printf("Using BT address: %s.\n", _capturedata->bt_dev_address);
+#endif
+   
+   ctl = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HIDP);
+   if (ctl < 0) 
+      {
+         perror("Can't open HIDP control socket");
+         return BDREMOTE_FAIL;
+      }
+   
+   csk = l2cap_listen(&bdaddr, L2CAP_PSM_HIDP_CTRL, lm, 10);
+   if (csk < 0) 
+      {
+         perror("Can't listen on HID control channel");
+         close(ctl);
+         return BDREMOTE_FAIL;
+      }
+   
+   isk = l2cap_listen(&bdaddr, L2CAP_PSM_HIDP_INTR, lm, 10);
+   if (isk < 0) 
+      {
+         perror("Can't listen on HID interrupt channel");
+         close(ctl);
+         close(csk);
+         return BDREMOTE_FAIL;
+      }
+
+   _capturedata->sockets[0] = ctl;
+   _capturedata->sockets[1] = csk;
+   _capturedata->sockets[2] = isk;
+
+   return BDREMOTE_OK;
+}
+
 int captureLoop(captureData* _capturedata)
 {
-  bdaddr_t bdaddr;
-  int ctl, csk, isk;
-  int lm = 0;
+   int ctl = _capturedata->sockets[0];
+   int csk = _capturedata->sockets[1];
+   int isk = _capturedata->sockets[2];
+   
+   run_server(_capturedata, ctl, csk, isk);
 
-  // Find the first interface, using BT primitives.
-  struct hci_dev_info devinfo;
-  int ret = hci_devinfo(0, &devinfo);
-
-  if (ret < 0)
-    {
-      perror("hci_devinfo");
-      return BDREMOTE_FAIL;
-    }
-
-  assert(_capturedata->bt_dev_address == NULL);
-  _capturedata->bt_dev_address = (char*)malloc(127);
-  memset(_capturedata->bt_dev_address, 0, 127);
-  ret = ba2str(&devinfo.bdaddr, _capturedata->bt_dev_address);
-
-  if (ret < 0)
-    {
-      perror("ba2str");
-      return BDREMOTE_FAIL;
-    }
-
-  assert(_capturedata->bt_dev_address != NULL);
-  str2ba(_capturedata->bt_dev_address, &bdaddr);
-#if BDREMOTE_DEBUG
-  printf("Using BT address: %s.\n", _capturedata->bt_dev_address);
-#endif
-
-  ctl = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HIDP);
-  if (ctl < 0) 
-    {
-      perror("Can't open HIDP control socket");
-      return BDREMOTE_FAIL;
-    }
-
-  csk = l2cap_listen(&bdaddr, L2CAP_PSM_HIDP_CTRL, lm, 10);
-  if (csk < 0) 
-    {
-      perror("Can't listen on HID control channel");
-      close(ctl);
-      return BDREMOTE_FAIL;
-    }
-  
-  isk = l2cap_listen(&bdaddr, L2CAP_PSM_HIDP_INTR, lm, 10);
-  if (isk < 0) 
-    {
-      perror("Can't listen on HID interrupt channel");
-      close(ctl);
-      close(csk);
-      return BDREMOTE_FAIL;
-    }
-
-  run_server(_capturedata, ctl, csk, isk);
-
-  close(csk);
-  close(isk);
-  close(ctl);
-
-  return BDREMOTE_OK;
+   close(csk);
+   close(isk);
+   close(ctl);
+   
+   return BDREMOTE_OK;
 }

@@ -32,19 +32,21 @@
 typedef struct
 {
 #if BDREMOTE_DEBUG
-  int magic0;
+   int magic0;
 #endif // BDREMOTE_DEBUG
 
-  // Configuration.
-  const configuration* config;
-  // Context pointer.
-  void* p;
-  // Device address.
-  char* bt_dev_address;
-  /// BT Address of the remote sending keypresses.
-  char* dest_address;
-  // Timeout in seconds.
-  int timeout;
+   // Configuration.
+   const configuration* config;
+   // Context pointer.
+   void* p;
+   // Device address.
+   char* bt_dev_address;
+   /// BT Address of the remote sending keypresses.
+   char* dest_address;
+   // Timeout in seconds.
+   int timeout;
+   // Sockets.
+   int sockets[3];
 } captureData;
 
 // Function used to init the data used by this interface.
@@ -71,6 +73,11 @@ void DataInd(void* p, const char* _data, const int _size);
 
 // Remote disconnected.
 void RemoteDisconnected(void* _p);
+
+// Setup the data needed to start capturing.
+// Called before captureLoop(..), after which the daemon
+// will change UID:GID.
+int InitcaptureLoop(captureData* _capturedata);
 
 // Main capture loop.
 // 
