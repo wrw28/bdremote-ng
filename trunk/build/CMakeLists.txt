@@ -27,6 +27,13 @@ IF(NOT HAVE_PTHREAD_H)
   message(FATAL_ERROR "Required pthread header not found.")
 ENDIF(NOT HAVE_PTHREAD_H)
 
+CHECK_INCLUDE_FILES ("getopt.h" HAVE_GETOPT_H)
+IF(NOT HAVE_GETOPT_H)
+  message(FATAL_ERROR "Required getopt(..) header not found.")
+ENDIF(NOT HAVE_GETOPT_H)
+
+
+
 #
 # Link checks:
 # 
