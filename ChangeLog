@@ -18,4 +18,4 @@ Fixes a couple of minor bugs.
 The following bugs were fixed:
 	
 006 Drop privileges after opening sockets.
-
+007 Fix gcc warnings.
