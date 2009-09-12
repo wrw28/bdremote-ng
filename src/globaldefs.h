@@ -22,6 +22,25 @@
 #  define BDREMOTE_ERR(x) printf("Error: %s\n", x)
 #endif
 
+/* Macro used to copy a string to the config. */
+#define SETVAL(CK, S) {                         \
+      if (CK != NULL)                           \
+         {                                      \
+            free(CK);                           \
+            CK = NULL;                          \
+         }                                      \
+      CK =(char *)malloc(strlen(S)+1);          \
+      strcpy(CK, S);                            \
+   }
 
-#endif // BD_GLOBALDEFS_H
+/* Macro used to destroy string members of the config. */
+#define FREEVAL(CK) {   \
+      if (CK != NULL)   \
+         {              \
+            free(CK);   \
+            CK = NULL;  \
+         }              \
+   }
+
+#endif /* BD_GLOBALDEFS_H */
 

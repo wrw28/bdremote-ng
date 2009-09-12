@@ -50,23 +50,25 @@
 
 #define L2CAP_PSM_HIDP_CTRL 0x11
 #define L2CAP_PSM_HIDP_INTR 0x13
+#define MAXBUFFERSIZE 1024
 
 extern volatile sig_atomic_t __io_canceled;
 
 int readFromSocket(captureData* _capturedata, int _socket);
 
-// Returns:
-// 0 - unknown device.
-// 1 - known device.
+/* Returns:
+ * 0 - unknown device.
+ * 1 - known device.
+ */
 int l2cap_checkSource(int sock, bdaddr_t* address)
 {
   struct sockaddr_l2 addr;
-  socklen_t addrlen = sizeof(addr);
+  socklen_t addrlen = (socklen_t)sizeof(addr);
 
   if (getpeername(sock, (struct sockaddr *) &addr, &addrlen) < 0)
     {
       perror("getpeername");
-      return -1;
+      return BDREMOTE_FAIL;
     }
 
   assert(sizeof(addr.l2_bdaddr) == sizeof(*address));
@@ -93,80 +95,88 @@ int l2cap_checkSource(int sock, bdaddr_t* address)
 int l2cap_connect(bdaddr_t *src, bdaddr_t *dst, unsigned short psm)
 {
 	struct sockaddr_l2 addr;
+   socklen_t addrlen = (socklen_t)sizeof(addr);
 	struct l2cap_options opts;
 	int sk;
 
 	if ((sk = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP)) < 0)
-		return -1;
+      {
+         return BDREMOTE_FAIL;
+      }
 
-	memset(&addr, 0, sizeof(addr));
+	memset(&addr, 0, (size_t)addrlen);
 	addr.l2_family  = AF_BLUETOOTH;
 	bacpy(&addr.l2_bdaddr, src);
 
-	if (bind(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) 
-	  {
-	    close(sk);
-	    return -1;
-	  }
+	if (bind(sk, (struct sockaddr *) &addr, addrlen) < 0) 
+      {
+         (void)close(sk);
+         return BDREMOTE_FAIL;
+      }
 
 	memset(&opts, 0, sizeof(opts));
 	opts.imtu = HIDP_DEFAULT_MTU;
 	opts.omtu = HIDP_DEFAULT_MTU;
 	opts.flush_to = 0xffff;
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+	(void)setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, 
+                    &opts, (socklen_t)sizeof(opts));
 
-	memset(&addr, 0, sizeof(addr));
+	memset(&addr, 0, (size_t)addrlen);
 	addr.l2_family  = AF_BLUETOOTH;
 	bacpy(&addr.l2_bdaddr, dst);
 	addr.l2_psm = htobs(psm);
 
-	if (connect(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-		close(sk);
-		return -1;
-	}
-
+	if (connect(sk, (struct sockaddr *) &addr, addrlen) < 0) 
+      {
+         (void)close(sk);
+         return BDREMOTE_FAIL;
+      }
+   
 	return sk;
 }
 
 int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog)
 {
 	struct sockaddr_l2 addr;
+   socklen_t addrlen = (socklen_t)sizeof(addr);
 	struct l2cap_options opts;
 	int sk;
 
 	if ((sk = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP)) < 0)
 	  {
 	    perror("socket");
-	    return -1;
+	    return BDREMOTE_FAIL;
 	  }
 
-	memset(&addr, 0, sizeof(addr));
+	memset(&addr, 0, (size_t)addrlen);
 	addr.l2_family = AF_BLUETOOTH;
 	bacpy(&addr.l2_bdaddr, bdaddr);
 	addr.l2_psm = htobs(psm);
 
-	if (bind(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) 
+	if (bind(sk, (struct sockaddr *) &addr, addrlen) < 0) 
 	  {
 	    perror("bind");
-	    close(sk);
-	    return -1;
+	    (void)close(sk);
+	    return BDREMOTE_FAIL;
 	}
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_LM, &lm, sizeof(lm));
+	(void)setsockopt(sk, SOL_L2CAP, L2CAP_LM, &lm, 
+                    (socklen_t)sizeof(lm));
 
 	memset(&opts, 0, sizeof(opts));
 	opts.imtu = HIDP_DEFAULT_MTU;
 	opts.omtu = HIDP_DEFAULT_MTU;
 	opts.flush_to = 0xffff;
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+	(void)setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, 
+                    (socklen_t)sizeof(opts));
 
 	if (listen(sk, backlog) < 0) 
 	  {
 	    perror("listen");
-	    close(sk);
-	    return -1;
+	    (int)close(sk);
+	    return BDREMOTE_FAIL;
 	  }
 
 	return sk;
@@ -175,15 +185,15 @@ int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog
 int l2cap_accept(int sk, bdaddr_t *bdaddr)
 {
 	struct sockaddr_l2 addr;
-	socklen_t addrlen;
+	socklen_t addrlen = (socklen_t)sizeof(addr);
 	int nsk;
 
-	memset(&addr, 0, sizeof(addr));
-	addrlen = sizeof(addr);
+	memset(&addr, 0, (size_t)addrlen);
+	
 
 	if ((nsk = accept(sk, (struct sockaddr *) &addr, &addrlen)) < 0)
 	  {
-	    return -1;
+	    return BDREMOTE_FAIL;
 	  }
 
 	if (bdaddr)
@@ -193,30 +203,32 @@ int l2cap_accept(int sk, bdaddr_t *bdaddr)
 	return nsk;
 }
 
-// Read from a socket, until timeout or error.
-// Returns:
-// 0 - daemon shutting down becase of signal from outside world.
-// 1 - client disconnected.
-// 2 - timeout.
+/* Read from a socket, until timeout or error.
+ * Returns:
+ * 0 - daemon shutting down becase of signal from outside world.
+ * 1 - client disconnected.
+ * 2 - timeout.
+ */
 int readFromSocket(captureData* _capturedata, int _socket)
 {
   struct pollfd p;
+  sigset_t sigs;
+  /* Number of seconds since last read which returned data. */
+  int numberOfSeconds  = 0;
+  int recv_len         = 0;
+
+  char buffer[MAXBUFFERSIZE];
+  struct timespec timeout;
+
   p.fd = _socket;
   p.events = POLLIN | POLLERR | POLLHUP;
 
-  sigset_t sigs;
   sigfillset(&sigs);
   sigdelset(&sigs, SIGCHLD);
   sigdelset(&sigs, SIGPIPE);
   sigdelset(&sigs, SIGTERM);
   sigdelset(&sigs, SIGINT);
   sigdelset(&sigs, SIGHUP);
-
-  // Number of seconds since last read which returned data.
-  int numberOfSeconds  = 0;
-  int recv_len         = 0;
-  const int bufferSize = 1024;
-  char buffer[bufferSize];
   
   while (!__io_canceled) 
     {
@@ -227,7 +239,6 @@ int readFromSocket(captureData* _capturedata, int _socket)
 
       p.revents = 0;
 
-      struct timespec timeout;
       timeout.tv_sec  = 1;
       timeout.tv_nsec = 0;
 	    
@@ -239,36 +250,36 @@ int readFromSocket(captureData* _capturedata, int _socket)
 	      }
       numberOfSeconds = 0;
       
-      recv_len=recv(_socket, &buffer[0], bufferSize, 0);
+      recv_len=recv(_socket, &buffer[0], MAXBUFFERSIZE, 0);
 		      
       if (recv_len <= 0)
-	{
-	  return 1;
-	}
+         {
+            return 1;
+         }
       else
-	{
-	  BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
+         {
+            BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
 #if BDREMOTE_DEBUG
-	  assert(_capturedata->magic0 == 127);
-#endif // BDREMOTE_DEBUG
-	  DataInd(_capturedata->p, &buffer[0], recv_len);
-	}
+            assert(_capturedata->magic0 == 127);
+#endif /* BDREMOTE_DEBUG */
+            DataInd(_capturedata->p, &buffer[0], recv_len);
+         }
     }
-
   return 0;
 }
 
 void run_server(captureData* _capturedata,
-                int ctl, int csk, int isk)
+                int csk, int isk)
 {
 	struct pollfd p[2];
 	sigset_t sigs;
 	short events;
-	//int err  = -1;
 	int ncsk = -1;
 	int nisk = -1;
-
 	bdaddr_t destinationAddress;
+   struct timespec timeout;
+   int stat = -1;
+
 	if (str2ba(_capturedata->dest_address, &destinationAddress) < 0)
 	  {
 	    printf("str2ba call failed. Input was '%s'.", _capturedata->bt_dev_address);
@@ -296,7 +307,6 @@ void run_server(captureData* _capturedata,
 	    p[0].revents = 0;
 	    p[1].revents = 0;
 	    
-	    struct timespec timeout;
 	    timeout.tv_sec = 1;
 	    timeout.tv_nsec = 0;
 	    
@@ -320,7 +330,7 @@ void run_server(captureData* _capturedata,
 		  BDREMOTE_DBG(_capturedata->config->debug, "Known device.");
 		  RemoteConnected(_capturedata->p);
 		  
-		  int stat = readFromSocket(_capturedata, nisk);
+		  stat = readFromSocket(_capturedata, nisk);
 		  
 		  switch (stat)
 		    {
@@ -354,7 +364,7 @@ int InitcaptureLoop(captureData* _capturedata)
    int ctl, csk, isk;
    int lm = 0;
    
-   // Find the first interface, using BT primitives.
+   /* Find the first interface, using BT primitives. */
    struct hci_dev_info devinfo;
    int ret = hci_devinfo(0, &devinfo);
    
@@ -418,7 +428,7 @@ int captureLoop(captureData* _capturedata)
    int csk = _capturedata->sockets[1];
    int isk = _capturedata->sockets[2];
    
-   run_server(_capturedata, ctl, csk, isk);
+   run_server(_capturedata, csk, isk);
 
    close(csk);
    close(isk);

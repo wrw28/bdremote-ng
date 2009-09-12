@@ -55,7 +55,7 @@ void initLircData(lirc_data* _ld, const configuration* _config)
   assert(_config != NULL);
 #if BDREMOTE_DEBUG
   _ld->magic0 = 0x15;
-#endif // BDREMOTE_DEBUG
+#endif /* BDREMOTE_DEBUG */
   _ld->config   = _config;
   _ld->sockinet = -1;
   memset(&_ld->clis[0], 0, MAX_CLIENTS); 
@@ -80,7 +80,8 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
 {
   struct pollfd p;
   sigset_t sigs;
-  
+  int i = 0;
+
   if (create_listener(_config, _lircdata) == BDREMOTE_FAIL)
     {
       return BDREMOTE_FAIL;
@@ -110,8 +111,7 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
 	}
     }
 
-  // Close all client sockets.
-  int i = 0;
+  /* Close all client sockets. */
   for(i=0;i<_lircdata->clin;i++)
     {
       shutdown(_lircdata->clis[i],2);
@@ -217,14 +217,15 @@ void remove_client(lirc_data* _lircdata, int fd)
 
 void broadcast_message(lirc_data* _lircdata, const char* _message)
 {
+  int len = strlen(_message);
+  int i = 0;
+
 #if BDREMOTE_DEBUG
   printf("_lircdata->magic0=%d.\n", _lircdata->magic0);
   assert(_lircdata->magic0 == 0x15);
-#endif // BDREMOTE_DEBUG
+#endif /* BDREMOTE_DEBUG */
   assert(_lircdata->clin < MAX_CLIENTS);
 
-  int len = strlen(_message);
-  int i = 0;
   for (i=0; i<_lircdata->clin; i++)
     {
       if (write_socket(_lircdata->clis[i], _message, len)<len)
@@ -237,7 +238,7 @@ void broadcast_message(lirc_data* _lircdata, const char* _message)
 	{
 	  printf("Broadcast %d bytes to socket id %d.\n", len, _lircdata->clis[i]);
 	}
-#endif // BDREMOTE_DEBUG
+#endif /* BDREMOTE_DEBUG */
     }
 }
 

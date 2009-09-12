@@ -26,20 +26,26 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <unistd.h>
 
 #include <globaldefs.h>
 
-// The following function was taken from BTG (btg.berlios.de), also
-// written by me.
+/* The following function was taken from BTG (btg.berlios.de), also
+ * written by me.
+ */
+
 int changeUIDAndGID(const char* _user,
                     const char* _group)
 {
-   int result = BDREMOTE_OK;
-   
-   // Resolve the user and group into uid/gid.
+   int result              = BDREMOTE_OK;
+   struct passwd* s_passwd = NULL;
+   uid_t uid               = -1;
+   struct group* s_group   = NULL;
+   gid_t gid               = -1;
+   /* Resolve the user and group into uid/gid. */
    
    /* User. */
-   struct passwd* s_passwd = getpwnam(_user);
+   s_passwd = getpwnam(_user);
 
    if (s_passwd == 0)
       {
@@ -47,10 +53,10 @@ int changeUIDAndGID(const char* _user,
          return result;
       }
 
-   uid_t uid = s_passwd->pw_uid;
+   uid = s_passwd->pw_uid;
 
    /* Group. */
-   struct group* s_group = getgrnam(_group);
+   s_group = getgrnam(_group);
    
    if (s_group == 0)
       {
@@ -58,7 +64,7 @@ int changeUIDAndGID(const char* _user,
          return result;
       }
 
-   gid_t gid = s_group->gr_gid;
+   gid = s_group->gr_gid;
    
    /* Do the change. */
    
