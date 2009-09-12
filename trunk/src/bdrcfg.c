@@ -26,100 +26,101 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-// Macro used to copy a string to the config.
-#define SETVAL(C, K, S) {                       \
-      if (C->K != NULL)                         \
-         {                                      \
-            free(C->K);                         \
-            C->K = NULL;                        \
-         }                                      \
-      C->K =(char *)malloc(strlen(S)+1);        \
-      strcpy(C->K, S);                          \
-   }
-
-// Macro used to destroy string members of the config.
-#define FREEVAL(C, K) { \
-   if (C->K != NULL)    \
-      {                 \
-         free(C->K);    \
-         C->K = NULL;   \
-      }                 \
-   }
+#include <assert.h>
+#include <globaldefs.h>
 
 void setDefaults(configuration* _config)
 {
-  _config->listen_port = 8888;
-  _config->disconnect_timeout = 60;
-  _config->repeat_rate = 10;
-  _config->debug       = 0;
-  _config->remote_addr = NULL;
-  _config->detach      = 1;
-  _config->user        = NULL;
-  _config->group       = NULL;
+   assert(_config != NULL);
+
+   _config->listen_port = 8888;
+   _config->disconnect_timeout = 60;
+   _config->repeat_rate = 10;
+   _config->debug       = 0;
+   FREEVAL(_config->remote_addr);
+   _config->remote_addr = NULL;
+   _config->detach      = 1;
+   FREEVAL(_config->user);
+   _config->user        = NULL;
+   FREEVAL(_config->group);
+   _config->group       = NULL;
 }
 
 void setRemoteAddress(configuration* _config, const char* _address)
 {
-   SETVAL(_config, remote_addr, _address);
+   assert(_config != NULL);
+   assert(_address != NULL);
+
+   SETVAL(_config->remote_addr, _address);
 }
 
 void setUser(configuration* _config, const char* _user)
 {
-   SETVAL(_config, user, _user);
+   assert(_config != NULL);
+   assert(_user != NULL);
+
+   SETVAL(_config->user, _user);
 }
 
 void setGroup(configuration* _config, const char* _group)
 {
-   SETVAL(_config, group, _group);
+   assert(_config != NULL);
+   assert(_group != NULL);
+
+   SETVAL(_config->group, _group);
 }
 
 void destroyConfig(configuration* _config)
 {
-   FREEVAL(_config, remote_addr);
-   FREEVAL(_config, user);
-   FREEVAL(_config, group);
+   assert(_config != NULL);
+
+   FREEVAL(_config->remote_addr);
+   FREEVAL(_config->user);
+   FREEVAL(_config->group);
 }
 
-void printConfig(configuration* _config)
+void printConfig(const configuration* _config)
 {
-  printf("Configuration:\n");
-  printf(" - listen port: %d.\n", _config->listen_port);
-  printf(" - timeout    : %d.\n", _config->disconnect_timeout);
-  printf(" - repeat rate: %d per secound.\n", _config->repeat_rate);
-  printf(" - debug      : %d.\n", _config->debug);
-  printf(" - remote addr: %s.\n", _config->remote_addr);
-  printf(" - detach     : %d.\n", _config->detach);
-  if (_config->user == NULL)
-     {
-        printf(" - user       : not set.\n");
-     }
-  else
-     {
-        printf(" - user       : %s.\n", _config->user);
-     }
-  if (_config->group == NULL)
-     {
-        printf(" - group      : not set.\n");
-     }
-  else
-     {
-        printf(" - group      : %s.\n", _config->group);
-     }
+   assert(_config != NULL);
+
+   printf("Configuration:\n");
+   printf(" - listen port: %d.\n", _config->listen_port);
+   printf(" - timeout    : %d.\n", _config->disconnect_timeout);
+   printf(" - repeat rate: %d per secound.\n", _config->repeat_rate);
+   printf(" - debug      : %d.\n", _config->debug);
+   printf(" - remote addr: %s.\n", _config->remote_addr);
+   printf(" - detach     : %d.\n", _config->detach);
+   if (_config->user == NULL)
+      {
+         printf(" - user       : not set.\n");
+      }
+   else
+      {
+         printf(" - user       : %s.\n", _config->user);
+      }
+   if (_config->group == NULL)
+      {
+         printf(" - group      : not set.\n");
+      }
+   else
+      {
+         printf(" - group      : %s.\n", _config->group);
+      }
 }
 
-int userAndGroupSet(configuration* _config)
+int userAndGroupSet(const configuration* _config)
 {
    int status = 1;
+   assert(_config != NULL);
 
    if (_config->user == NULL)
-     {
-        status = 0;
-     }
-  if (_config->group == NULL)
-     {
-        status = 0;
-     }
-
-  return status;
+      {
+         status = 0;
+      }
+   if (_config->group == NULL)
+      {
+         status = 0;
+      }
+   
+   return status;
 }

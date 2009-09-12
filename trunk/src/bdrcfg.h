@@ -41,10 +41,10 @@ void setRemoteAddress(configuration* _config, const char* _address);
 void setUser(configuration* _config, const char* _user);
 void setGroup(configuration* _config, const char* _group);
 
-int userAndGroupSet(configuration* _config);
+int userAndGroupSet(const configuration* _config);
 
 void destroyConfig(configuration* _config);
-void printConfig(configuration* _config);
+void printConfig(const configuration* _config);
 
-#endif // BD_CFG_H
+#endif /* BD_CFG_H */
 

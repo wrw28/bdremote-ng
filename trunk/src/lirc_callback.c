@@ -38,15 +38,16 @@ void RemoteConnected(void* _p)
   BDREMOTE_DBG(lc->config->debug, "Remote connected.");
 }
 
-// Received some data from the ps3 remote. 
-// Forward it to LIRC clients.
-// Note: no threads are used, so no need locking.
+/* Received some data from the ps3 remote. 
+ * Forward it to LIRC clients.
+ * Note: no threads are used, so no need locking.
+ */
 void DataInd(void* _p, const char* _data, const int _size)
 {
   lirc_data* lc = (lirc_data*)_p;
 #if BDREMOTE_DEBUG
   assert(lc->magic0 == 0x15);
-#endif // BDREMOTE_DEBUG
+#endif /* BDREMOTE_DEBUG */
   int i;
   int num;
   const uint32_t* mask_in = (uint32_t *)(_data+2);
@@ -62,7 +63,7 @@ void DataInd(void* _p, const char* _data, const int _size)
 
       num=-1;
 
-      // printf("%02X , %02X , %08X\n", *code, *state, mask);
+      /* printf("%02X , %02X , %08X\n", *code, *state, mask); */
       switch (*state)
 	{
 	case 1:
@@ -92,7 +93,7 @@ void DataInd(void* _p, const char* _data, const int _size)
 		{
 		  mask1=mask - lc->lastmask;
 		  BDREMOTE_DBG(lc->config->debug, "multiple");
-		  //printf("multiple, %08X, %08X, %08X\n",lc->lastmask, mask, mask1);
+		  /* printf("multiple, %08X, %08X, %08X\n",lc->lastmask, mask, mask1); */
 		  for (i=0;i<ps3remote_num_masked;++i)
 		    {
 		      if (mask1==ps3remote_keys[i].mask)
@@ -127,11 +128,11 @@ void DataInd(void* _p, const char* _data, const int _size)
 	    break;
 	  }
 	}
-      // printf("E:%02X , %02X , %08X\n", lc->lastcode, lc->laststate, lc->lastmask);	
+      /* printf("E:%02X , %02X , %08X\n", lc->lastcode, lc->laststate, lc->lastmask); */
     }
 }
 
-// Broadcast the last received key to all connected LIRC clients.
+/* Broadcast the last received key to all connected LIRC clients. */
 void broadcast(lirc_data* _lc)
 { 
   int rep=-1;

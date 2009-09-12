@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export CFLAGS="-Wall -Wextra -pedantic"
+
 mkdir -p linux && \
 cd linux && \
 cmake \

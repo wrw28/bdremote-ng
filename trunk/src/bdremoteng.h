@@ -29,4 +29,4 @@
 
 void usage(void);
 
-#endif // BD_BDREMOTENG_H
+#endif /* BD_BDREMOTENG_H */

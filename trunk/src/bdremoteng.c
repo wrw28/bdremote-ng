@@ -58,8 +58,12 @@ int main(int argc, char *argv[])
   pthread_t bt_thread;
   struct sigaction sa;
   int opt;
-  
-  configuration config;
+    configuration config;
+  lirc_data ldata;
+  captureData cdata;
+  int ret = -1;
+
+  memset(&config, 0, sizeof(config));
   setDefaults(&config);
   
   while ((opt=getopt(argc,argv,"+p:t:a:r:d:u:g:nh"))!=-1)
@@ -107,15 +111,13 @@ int main(int argc, char *argv[])
         exit(0);
      }
 
-  if (config.debug)
+  if (config.debug == 1)
      {
         printConfig(&config);
      }
   
-  lirc_data ldata;
   initLircData(&ldata, &config);
-  
-  captureData cdata;
+
   InitCaptureData(&cdata,
 		  &config,
 		  &ldata,
@@ -133,7 +135,7 @@ int main(int argc, char *argv[])
 
   nice(-4);
 
-  int ret = InitcaptureLoop(&cdata);
+  ret = InitcaptureLoop(&cdata);
   if (ret == BDREMOTE_FAIL)
      {
         BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
            }
      }
 
-  // Start listening for BT clients.
+  /* Start listening for BT clients. */
   if (pthread_create(&bt_thread, NULL, listener, &cdata) != 0)
     {
       perror("Could not create BT client thread");
@@ -181,7 +183,7 @@ int main(int argc, char *argv[])
   sigaction(SIGPIPE, &sa, NULL);
 
   
-  // Start handling LIRC clients and forwarding data.
+  /* Start handling LIRC clients and forwarding data. */
   lirc_server(&config, &ldata);
 
   BDREMOTE_DBG(config.debug, "Terminating.");
@@ -201,10 +203,10 @@ int main(int argc, char *argv[])
 void* listener(void* _p)
 {
   captureData* cd = (captureData*)_p;
+  int ret         = -1;
 
   BDREMOTE_DBG(cd->config->debug, "Started listener thread.");
-
-  int ret = captureLoop(cd);
+  ret = captureLoop(cd);
   if (ret < 0)
     {
       BDREMOTE_DBG(cd->config->debug, "captureLoop failed.");
@@ -223,25 +225,27 @@ void usage(void)
 		"\t-p <port>            Set port number for incoming LIRCD connections\n"       
 		"\t-t <timeout>         Set disconnect timeout for BD remote (in minutes)\n"        
 		"\t-a <address>         BT addres of remote.\n"
-		"\t                     For example: -a 00:19:C1:5A:F1:3F \n"
-		"\t-r <rate>            Key repeat rate. Generate <rate> repeats per\n"
-		"\t-u <username>        Change UID to the UID of this user\n"
-		"\t-g <group>           Change GID to the GID of this group\n"
-		"\t                     second, when key is pressed\n"    
-		"\t-d                   Enable debug.\n"     				
-		"\t-n                   Don't fork daemon to background\n"      
-		"\t-h, --help           Display help\n"                         
-		"\n");                                                          
+          "\t                     For example: -a 00:19:C1:5A:F1:3F \n");
+   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per\n"
+          "\t-u <username>        Change UID to the UID of this user\n"
+          "\t-g <group>           Change GID to the GID of this group\n"
+          "\t                     second, when key is pressed\n"    
+          "\t-d                   Enable debug.\n"     				
+          "\t-n                   Don't fork daemon to background\n"      
+          "\t-h, --help           Display help\n"                         
+          "\n");                                                          
 
 }
 
-void sig_hup(int sig)
+void sig_hup(int _sig)
 {
-  // BDREMOTE_DBG("Not handling HUP.");
+   (void)_sig;
+   /* BDREMOTE_DBG("Not handling HUP."); */
 }
 
-void sig_term(int sig)
+void sig_term(int _sig)
 {
   extern volatile sig_atomic_t __io_canceled;
   __io_canceled = 1;
+  (void)_sig;
 }

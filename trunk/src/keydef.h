@@ -26,8 +26,8 @@
 
 struct key_info
 {
-  char *name;
-  unsigned char code;
+  char* name;
+  unsigned int code;
   uint32_t mask;	
 };
 
@@ -89,5 +89,5 @@ struct key_info ps3remote_keys[] =
     {"yellow\0"	 ,0x83, 0x000000},
   };                               
 
-#endif // BD_KEYDEF_H
+#endif /* BD_KEYDEF_H */
 

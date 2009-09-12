@@ -27,5 +27,5 @@
 int changeUIDAndGID(const char* _user,
                     const char* _group);
 
-#endif // BD_UG_H
+#endif /* BD_UG_H */
 

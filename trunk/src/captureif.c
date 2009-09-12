@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <globaldefs.h>
 
 void InitCaptureData(captureData* _cd,
 		     const configuration* _config,
@@ -35,22 +36,23 @@ void InitCaptureData(captureData* _cd,
 {
 #if BDREMOTE_DEBUG
   _cd->magic0 = 127;
-#endif // BDREMOTE_DEBUG
+#endif /* BDREMOTE_DEBUG */
   assert(_config != NULL);
   assert(_cd != NULL);
   assert(_p != NULL);
   assert(_dest_address != NULL);
   assert(_timeout > 0);
-
+  
+  assert(_cd->config == NULL);
   _cd->config = _config;
+
   _cd->p = _p;
+
+  FREEVAL(_cd->bt_dev_address);
   _cd->bt_dev_address = NULL;
 
-  const int addrLen = strlen(_dest_address)+1;
-  _cd->dest_address   = (char*)malloc(addrLen);
-  memset(&_cd->dest_address[0], 0, addrLen);
-
-  strcpy(_cd->dest_address, _dest_address);
+  FREEVAL(_cd->dest_address);
+  SETVAL(_cd->dest_address, _dest_address)
 
   _cd->timeout = _timeout;
   memset(&_cd->sockets[0], 0, 2);
