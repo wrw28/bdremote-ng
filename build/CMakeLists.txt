@@ -174,10 +174,21 @@ SET(PREFIX ".")
 
 SET(BUILD_FILES
 ${PREFIX}/CMakeLists.txt
-${PREFIX}/gen.sh
+${PREFIX}/splint.cmake
 )
 
 install(FILES ${BUILD_FILES} DESTINATION build)
+
+# Make the script used to run cmake executable.
+SET(BUILD_FILES
+${PREFIX}/gen.sh
+)
+
+install(FILES ${BUILD_FILES} 
+        DESTINATION build
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
+)
+
 
 SET(PREFIX "../doc")
 
