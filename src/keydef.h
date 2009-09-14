@@ -24,16 +24,22 @@
 #ifndef BD_KEYDEF_H
 #define BD_KEYDEF_H
 
+/** Key information. */
 struct key_info
 {
-  char* name;
-  unsigned int code;
-  uint32_t mask;	
+   /** The name. */
+   char* name;
+   /** The code. */
+   unsigned int code;
+   /** The mask. */
+   uint32_t mask;	
 };
 
+/** The max number of keys. */
 #define ps3remote_num_keys   51
 #define ps3remote_num_masked 18
 
+/** Array of keys. */
 struct key_info ps3remote_keys[] =
   {
     {"enter\0"	 ,0x0b, 0x080000},

@@ -27,6 +27,7 @@
 #define progname "bdremoted"
 #define VERSION "0.2"
 
+/** Print usage information to stdout. */
 void usage(void);
 
 #endif /* BD_BDREMOTENG_H */

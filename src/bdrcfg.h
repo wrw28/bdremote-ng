@@ -24,26 +24,46 @@
 #ifndef BD_CFG_H
 #define BD_CFG_H
 
+/** Common configuration. */
 typedef struct
 {
+   /** Listen to this port for LIRC connections. */
    int listen_port;
+   /** Disconnect BT peers after this number of seconds. */
    int disconnect_timeout;
+   /** Unused parameter. */
    int repeat_rate;
+   /** Enable/disable printing of debug messages. */
    int debug;
+   /** BT address of the PS3 remote. */
    char* remote_addr;
+   /** Enable/disable detach from TTY.*/
    int detach;
+   /** Change to the UID of this user. */
    char* user;
+   /** Change to the GID of this group. */
    char* group;
 } configuration;
 
+/** Set default configuration. */
 void setDefaults(configuration* _config);
+
+/** Set the remote BD address to use. */
 void setRemoteAddress(configuration* _config, const char* _address);
+
+/** Set user to change to after opening sockets. */
 void setUser(configuration* _config, const char* _user);
+
+/** Set group to change to after opening sockets. */
 void setGroup(configuration* _config, const char* _group);
 
+/** Return 1 if both user and group were set. 0 otherwise. */
 int userAndGroupSet(const configuration* _config);
 
+/** Destroy the config. */
 void destroyConfig(configuration* _config);
+
+/** Print each config item on a line of its own. */
 void printConfig(const configuration* _config);
 
 #endif /* BD_CFG_H */
