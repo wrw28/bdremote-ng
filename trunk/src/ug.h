@@ -24,6 +24,7 @@
 #ifndef BD_UG_H
 #define BD_UG_H
 
+/** Change to the UID:GID corresponding to the provided user:group. */
 int changeUIDAndGID(const char* _user,
                     const char* _group);
 

@@ -29,36 +29,55 @@
 #include <bdrcfg.h>
 #include <stdint.h>
 
-/* The number of LIRC clients that can connect at the same time. */
+/** The number of LIRC clients that can connect at the same time. */
 #define MAX_CLIENTS 16
 
+/** Information used by the LIRC server. */
 typedef struct
 {
 #if BDREMOTE_DEBUG
-  int magic0;
+   /** Magic value, used for asserting. */
+   int magic0;
 #endif /* BDREMOTE_DEBUG */
-   /* Configuration. */
+   /** Configuration. */
    const configuration* config;
-   /* Socked used to accept new LIRC clients. */
-  int sockinet;
-
-   /* Client sockets. */
-  int clis[MAX_CLIENTS]; 
-   /* Number of client sockets. */
-  int clin;
-
+   /** Socked used to accept new LIRC clients. */
+   int sockinet;
+   
+   /** Client sockets. */
+   int clis[MAX_CLIENTS]; 
+   /** Number of client sockets. */
+   int clin;
+   
    /* State information. */
-  int laststate;
-  unsigned char lastcode;
-  uint32_t lastmask;
-  int lastkey;
-  int lastsend;
 
+   /** Last state. */
+   int laststate;
+
+   /** Last code. */
+   unsigned char lastcode;
+
+   /** Last mask. */
+   uint32_t lastmask;
+
+   /** Last received key from the remote. */
+   int lastkey;
+
+   /** Last sent key. */
+   int lastsend;
+   
 } lirc_data;
 
+/** Init data used by the LIRC server part of this application. */
 void initLircData(lirc_data* _ld, const configuration* _config);
+
+/** Run a LIRC server. */
 int lirc_server(configuration* _config, lirc_data* _lircdata);
+
+/** Broadcast a message to all connected LIRC sockets. */
 void broadcast_message(lirc_data* _lircdata, const char* _message);
+
+/** Destroy LIRC data used by the LIRC server part of this application. */
 void destroyLircData(lirc_data* _ld);
 
 #endif /* BD_LIRC_SRV_H */
