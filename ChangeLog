@@ -1,3 +1,14 @@
+bdremote-ng 0.2
+---------------
+
+Fixes a couple of minor bugs.
+
+The following bugs were fixed:
+	
+006 Drop privileges after opening sockets.
+007 Fix GCC warnings.
+008 Add doxygen comments for all interfaces.
+
 bdremote-ng 0.1
 ---------------
 
@@ -10,12 +21,3 @@ The following bugs were fixed:
 004 Create release.
 005 Check for memory leaks.
 
-bdremote-ng 0.2
----------------
-
-Fixes a couple of minor bugs.
-
-The following bugs were fixed:
-	
-006 Drop privileges after opening sockets.
-007 Fix gcc warnings.
