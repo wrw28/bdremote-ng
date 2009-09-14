@@ -1,0 +1,56 @@
+remote name: SonyBDRemote
+
+
+defined key names:
+          enter 
+             ps 
+         select 
+             l3 
+             r3 
+          start 
+             up 
+          right 
+           down 
+           left 
+             l2 
+             r2 
+             l1 
+             r1 
+       triangle 
+         circle 
+          cross 
+         square 
+           num1 
+           num2 
+           num3 
+           num4 
+           num5 
+           num6 
+           num7 
+           num8 
+           num9 
+           num0 
+         return 
+          clear 
+          eject 
+        topmenu 
+           time 
+           prev 
+           next 
+           play 
+        scanrev 
+        scanfwd 
+           stop 
+          pause 
+          popup 
+        steprev 
+        stepfwd 
+       subtitle 
+          audio 
+          angle 
+        display 
+           blue 
+            red 
+          green 
+         yellow 
+                
