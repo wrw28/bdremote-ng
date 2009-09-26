@@ -58,11 +58,12 @@ int main(int argc, char *argv[])
   pthread_t bt_thread;
   struct sigaction sa;
   int opt;
-    configuration config;
+  configuration config;
   lirc_data ldata;
   captureData cdata;
   int ret = -1;
 
+  memset(&cdata, 0, sizeof(cdata));
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
   
