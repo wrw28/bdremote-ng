@@ -1,6 +1,9 @@
 #summary List of releases.
 
 == List of Releases == 
+
+ * bdremote-ng-0.3 (bugfix release), [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.3.tar.bz2]
+
  * bdremote-ng-0.2 (bugfix release), [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.2.tar.bz2]
 
  * bdremote-ng-0.1 (initial release), [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.1.tar.bz2]
