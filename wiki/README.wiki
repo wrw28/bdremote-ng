@@ -1,5 +1,7 @@
 #summary Wikified README.
 
+http://bdremote-ng.googlecode.com/svn/trunk/doc/remote-small.jpg
+
 = Introduction =
 
 This is helper application for Sony BD Bluetooth Remote Control, which
