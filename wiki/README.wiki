@@ -46,8 +46,8 @@ you can give extra command-line parameters to "bdremoteng"
 {{{
 -p <port>            Set port number for incoming LIRCD connections.
                      Default is 8888.
--t <timeout>         Set disconnect timeout for BD remote (in minutes)
-                     Default is 60. I guess that this should save batteries.
+-t <timeout>         Set disconnect timeout for BD remote (in seconds)
+                     Default is 60. This option is meant to save batteries.
 -a <address>         BT addres of remote.
                      For example: -a 00:19:C1:5A:F1:3F
 -r <rate>            Key repeat rate. Generate <rate> repeats per
@@ -78,7 +78,8 @@ take some time, so result of first key press will be slightly delayed.
 
 = Notes =
 
-- Disable bluetooth auth and encryption. This application will not work
-with those enabled.
+ * Disable bluetooth auth and encryption. This application will not work with those enabled.
 
-- Start this application before you start bluez daemons.
+ * Start this application before you start bluez daemons.
+
+ * The amount of time, before the connection to the remote is closed is per default set to {{{60 seconds}}}. This is far too low, according to Atso Peter. One should use {{{1800 seconds}}} instead. The original driver times out after {{{60 minutes}}}.
