@@ -1,8 +1,8 @@
 #!/bin/sh
 
-D=`pwd`
+VER="0.4"
 
-VER="0.3"
+D=`pwd`
 
 rm -fr linux-install
 mkdir -p linux-install
