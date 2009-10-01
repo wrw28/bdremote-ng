@@ -234,6 +234,7 @@ int readFromSocket(captureData* _capturedata, int _socket)
     {
       if (numberOfSeconds > _capturedata->timeout)
 	{
+	  BDREMOTE_DBG(_capturedata->config->debug, "Timeout.");
 	  return 2;
 	}
 

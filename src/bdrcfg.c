@@ -85,7 +85,7 @@ void printConfig(const configuration* _config)
 
    printf("Configuration:\n");
    printf(" - listen port: %d.\n", _config->listen_port);
-   printf(" - timeout    : %d.\n", _config->disconnect_timeout);
+   printf(" - timeout    : %d second(s).\n", _config->disconnect_timeout);
    printf(" - repeat rate: %d per secound.\n", _config->repeat_rate);
    printf(" - debug      : %d.\n", _config->debug);
    printf(" - remote addr: %s.\n", _config->remote_addr);
