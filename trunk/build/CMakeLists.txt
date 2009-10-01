@@ -90,6 +90,7 @@ ${PREFIX}/lirc_srv.h
 SET(GENERIC_SOURCES
 ${PREFIX}/bdrcfg.c
 ${PREFIX}/captureif.c
+${PREFIX}/globaldefs.c
 ${PREFIX}/lirc_callback.c
 ${PREFIX}/lirc_srv.c
 )
