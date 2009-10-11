@@ -31,7 +31,7 @@ typedef struct
    int listen_port;
    /** Disconnect BT peers after this number of seconds. */
    int disconnect_timeout;
-   /** Unused parameter. */
+   /** Repeat rate, number of messages per second. */
    int repeat_rate;
    /** Enable/disable printing of debug messages. */
    int debug;

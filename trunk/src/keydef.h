@@ -35,6 +35,10 @@ struct key_info
    uint32_t mask;	
 };
 
+/** The code for a key release. */
+#define ps3remote_keyup 0xFF
+#define ps3remote_undef -1
+
 /** The max number of keys. */
 #define ps3remote_num_keys   51
 #define ps3remote_num_masked 18
