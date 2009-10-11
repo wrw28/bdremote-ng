@@ -35,10 +35,15 @@ hostname # hcitool scan
 Scanning ...
         00:19:C1:5A:F1:3F       BD Remote Control
 hostname #
-
-"00:19:C1:5A:F1:3F" is HW address of your remote.
 }}}
-then start "bdremoteng" as:
+"00:19:C1:5A:F1:3F" is HW address of your remote.
+
+You need to pair your remote with your PC first. This could be done using the bluez tools, like this:
+{{{
+hidd --connect 00:19:C1:5A:F1:3F
+}}}
+
+Then start "bdremoteng" as:
 {{{
 bdremoteng -a 00:19:C1:5A:F1:3F -n -d 1
 }}}
@@ -67,7 +72,6 @@ Keep in mind, if you manually compile lircd, you don't
 need to compile extra drivers, if you are going to use 
 lircd only with this remote.
 
-
 lircd will report remote name as "SonyBDRemote" 
 ( you need this only if you are going to use additional remote 
 devices and write sophisticated .lircrc files. )
@@ -80,7 +84,7 @@ take some time, so result of first key press will be slightly delayed.
 
 = Notes =
 
- * Disable bluetooth auth and encryption. This application will not work with those enabled.
+ * Disable bluetooth auth and encryption. This application will not work with those enabled. Adding "{{{ auth disable; encrypt disable; }}}" to {{{/etc/bluetooth/hcid.conf}}} might do the trick.
 
  * Start this application before you start bluez daemons.
 
