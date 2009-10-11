@@ -29,6 +29,9 @@
 #include <bdrcfg.h>
 #include <stdint.h>
 
+#include <pthread.h>
+#include <q.h>
+
 /** The number of LIRC clients that can connect at the same time. */
 #define MAX_CLIENTS 16
 
@@ -65,11 +68,25 @@ typedef struct
 
    /** Last sent key. */
    int lastsend;
-   
+  
+  /** Mutex used. */
+  pthread_mutexattr_t mutex;
+
+  /** Queue used to communicate BT events to lirc clients.
+   * Thread safe.
+   */
+  queue qu;
+
+  pthread_t thread;
+
 } lirc_data;
 
 /** Init data used by the LIRC server part of this application. */
 void initLircData(lirc_data* _ld, const configuration* _config);
+
+void startLircThread(lirc_data* _ld, const configuration* _config);
+
+void waitForLircThread(lirc_data* _ld);
 
 /** Run a LIRC server. */
 int lirc_server(configuration* _config, lirc_data* _lircdata);

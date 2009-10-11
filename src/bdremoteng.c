@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
      }
   
   initLircData(&ldata, &config);
+  startLircThread(&ldata, &config);
 
   InitCaptureData(&cdata,
 		  &config,
@@ -192,6 +193,8 @@ int main(int argc, char *argv[])
   pthread_kill (bt_thread, SIGTERM);
   BDREMOTE_DBG(config.debug, "Waiting for threads to finish.");
   pthread_join(bt_thread, NULL);
+  waitForLircThread(&ldata);
+  BDREMOTE_DBG(config.debug, "Done.");
 
   DestroyCaptureData(&cdata);
   destroyLircData(&ldata);
@@ -227,7 +230,7 @@ void usage(void)
 		"\t-t <timeout>         Set disconnect timeout for BD remote (in seconds)\n"        
 		"\t-a <address>         BT addres of remote.\n"
           "\t                     For example: -a 00:19:C1:5A:F1:3F \n");
-   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per\n"
+   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
           "\t-u <username>        Change UID to the UID of this user\n"
           "\t-g <group>           Change GID to the GID of this group\n"
           "\t                     second, when key is pressed\n"    

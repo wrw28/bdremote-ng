@@ -85,6 +85,7 @@ ${PREFIX}/captureif.h
 ${PREFIX}/globaldefs.h
 ${PREFIX}/keydef.h
 ${PREFIX}/lirc_srv.h
+${PREFIX}/q.h
 )
 
 SET(GENERIC_SOURCES
@@ -93,6 +94,8 @@ ${PREFIX}/captureif.c
 ${PREFIX}/globaldefs.c
 ${PREFIX}/lirc_callback.c
 ${PREFIX}/lirc_srv.c
+${PREFIX}/lirc_thr.c
+${PREFIX}/q.c
 )
 
 include_directories (${PREFIX})
@@ -192,6 +195,27 @@ install(FILES ${TEST_HEADERS} ${TEST_SOURCES} DESTINATION test)
 target_link_libraries(capturetest bdremoteng_bluezcap bdremoteng_generic) 
 target_link_libraries(capturetest -lbluetooth)
 target_link_libraries(capturetest -lpthread)
+
+# 
+# Queue test.
+# 
+
+SET(PREFIX "../test")
+
+SET(Q_TEST_HEADERS
+)
+
+SET(Q_TEST_SOURCES
+${PREFIX}/qtest.c
+)
+
+add_executable (qtest ${Q_TEST_HEADERS} ${Q_TEST_SOURCES})
+
+install(FILES ${Q_TEST_HEADERS} ${Q_TEST_SOURCES} DESTINATION test)
+
+target_link_libraries(qtest bdremoteng_generic) 
+#target_link_libraries(capturetest -lbluetooth)
+target_link_libraries(qtest -lpthread)
 
 # Extra build files.
 

@@ -40,7 +40,6 @@
 #include <sys/socket.h>
 #include <poll.h>
 #include <netinet/in.h>
-#include <pthread.h>
 #include <assert.h>
 
 volatile sig_atomic_t __io_canceled = 0;
@@ -66,14 +65,24 @@ void initLircData(lirc_data* _ld, const configuration* _config)
   _ld->lastmask  =  0;
   _ld->lastkey   = -1;
   _ld->lastsend  = -2;
+
+  //_ld->mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  assert(pthread_mutexattr_init(&_ld->mutex) == 0);
+
+  assert(queueInit(&_ld->qu) == Q_OK);
 }
 
 void destroyLircData(lirc_data* _ld)
 {
+  queueDeinit(&_ld->qu);
+
   _ld->config = NULL;
 
   assert(_ld->clin == 0);
   assert(_ld->sockinet == BDREMOTE_FAIL);
+
+  assert(pthread_mutexattr_destroy(&_ld->mutex) == 0);
 }
 
 int lirc_server(configuration* _config, lirc_data* _lircdata)

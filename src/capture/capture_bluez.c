@@ -242,29 +242,29 @@ int readFromSocket(captureData* _capturedata, int _socket)
 
       timeout.tv_sec  = 1;
       timeout.tv_nsec = 0;
-	    
+      
       if (ppoll(&p, 1, &timeout, &sigs) < 1)
-	      {
-		BDREMOTE_DBG(_capturedata->config->debug, "No BT data captured ..");
-		numberOfSeconds++;
-		continue;
-	      }
+	{
+	  BDREMOTE_DBG(_capturedata->config->debug, "No BT data captured ..");
+	  numberOfSeconds++;
+	  continue;
+	}
       numberOfSeconds = 0;
       
       recv_len=recv(_socket, &buffer[0], MAXBUFFERSIZE, 0);
-		      
+      
       if (recv_len <= 0)
-         {
-            return 1;
-         }
+	{
+	  return 1;
+	}
       else
-         {
-            BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
+	{
+	  BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
 #if BDREMOTE_DEBUG
-            assert(_capturedata->magic0 == 127);
+	  assert(_capturedata->magic0 == 127);
 #endif /* BDREMOTE_DEBUG */
-            DataInd(_capturedata->p, &buffer[0], recv_len);
-         }
+	  DataInd(_capturedata->p, &buffer[0], recv_len);
+	}
     }
   return 0;
 }
