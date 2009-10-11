@@ -95,6 +95,7 @@ ${PREFIX}/globaldefs.c
 ${PREFIX}/lirc_callback.c
 ${PREFIX}/lirc_srv.c
 ${PREFIX}/lirc_thr.c
+${PREFIX}/lirc_util.c
 ${PREFIX}/q.c
 )
 

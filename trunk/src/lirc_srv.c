@@ -45,30 +45,27 @@
 volatile sig_atomic_t __io_canceled = 0;
 
 void add_client(lirc_data* _lircdata);
-void nolinger(int sock);
 int create_listener(configuration* _config, lirc_data* _lircdata);
-int write_socket(int fd, const char* buf, int len);
 
 void initLircData(lirc_data* _ld, const configuration* _config)
 {
   assert(_config != NULL);
+  assert(
+	 pthread_mutex_init (&_ld->dataMutex, NULL) == 0
+	 );
+
 #if BDREMOTE_DEBUG
   _ld->magic0 = 0x15;
 #endif /* BDREMOTE_DEBUG */
   _ld->config   = _config;
   _ld->sockinet = -1;
+
+  pthread_mutex_lock (&_ld->dataMutex);
+
   memset(&_ld->clis[0], 0, MAX_CLIENTS); 
   _ld->clin = 0;
 
-  _ld->laststate =  0;
-  _ld->lastcode  = -1;
-  _ld->lastmask  =  0;
-  _ld->lastkey   = -1;
-  _ld->lastsend  = -2;
-
-  //_ld->mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  assert(pthread_mutexattr_init(&_ld->mutex) == 0);
+  pthread_mutex_unlock (&_ld->dataMutex);
 
   assert(queueInit(&_ld->qu) == Q_OK);
 }
@@ -82,7 +79,7 @@ void destroyLircData(lirc_data* _ld)
   assert(_ld->clin == 0);
   assert(_ld->sockinet == BDREMOTE_FAIL);
 
-  assert(pthread_mutexattr_destroy(&_ld->mutex) == 0);
+  pthread_mutex_destroy (&_ld->dataMutex);
 }
 
 int lirc_server(configuration* _config, lirc_data* _lircdata)
@@ -120,6 +117,8 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
 	}
     }
 
+  pthread_mutex_lock (&_lircdata->dataMutex);
+
   /* Close all client sockets. */
   for(i=0;i<_lircdata->clin;i++)
     {
@@ -128,6 +127,8 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
     }
   
   _lircdata->clin = 0;
+
+  pthread_mutex_unlock (&_lircdata->dataMutex);
 
   shutdown(_lircdata->sockinet,2);
   close(_lircdata->sockinet);
@@ -199,16 +200,18 @@ void add_client(lirc_data* _lircdata)
     {
       fcntl(fd,F_SETFL,flags|O_NONBLOCK);
     }
-
+  pthread_mutex_lock (&_lircdata->dataMutex);
   _lircdata->clis[_lircdata->clin++]=fd;
+  pthread_mutex_unlock (&_lircdata->dataMutex);
 }
 
+/* Only called from LIRC thread, mutex already locked. */
 void remove_client(lirc_data* _lircdata, int fd)
 {
   int i;
   for(i=0;i<_lircdata->clin;i++)
     {
-      if(_lircdata->clis[i]==fd)
+      if(_lircdata->clis[i] == fd)
 	{
 	  shutdown(_lircdata->clis[i],2);
 	  close(_lircdata->clis[i]);
@@ -222,58 +225,5 @@ void remove_client(lirc_data* _lircdata, int fd)
 	  return;			
 	}
     }
-}
-
-void broadcast_message(lirc_data* _lircdata, const char* _message)
-{
-  int len = strlen(_message);
-  int i = 0;
-
-#if BDREMOTE_DEBUG
-  printf("_lircdata->magic0=%d.\n", _lircdata->magic0);
-  assert(_lircdata->magic0 == 0x15);
-#endif /* BDREMOTE_DEBUG */
-  assert(_lircdata->clin < MAX_CLIENTS);
-
-  for (i=0; i<_lircdata->clin; i++)
-    {
-      if (write_socket(_lircdata->clis[i], _message, len)<len)
-	{
-	  remove_client(_lircdata, _lircdata->clis[i]);
-	  i--;
-	}
-#if BDREMOTE_DEBUG
-      else
-	{
-	  printf("Broadcast %d bytes to socket id %d.\n", len, _lircdata->clis[i]);
-	}
-#endif /* BDREMOTE_DEBUG */
-    }
-}
-
-int write_socket(int fd, const char* buf, int len)
-{
-  int done = 0;
-  int todo = len;
-  
-  while (todo)
-    {
-      done=write(fd,buf,todo);
-      if (done<=0)
-	{
-	  return(done);
-	}
-      buf  += done;
-      todo -= done;
-    }
-
-  return len;
-}
-
-void nolinger(int sock)
-{
-  static struct linger  linger = {0, 0};
-  int lsize  = sizeof(struct linger);
-  setsockopt(sock, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
 }
 

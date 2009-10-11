@@ -42,11 +42,12 @@ void RemoteConnected(void* _p)
 void DataInd(void* _p, const char* _data, const int _size)
 {
   lirc_data* lc = (lirc_data*)_p;
+  queueData* qd = 0;
 #if BDREMOTE_DEBUG
   assert(lc->magic0 == 0x15);
 #endif /* BDREMOTE_DEBUG */
 
-  queueData* qd = queueDataInit(_data, _size);
+  qd = queueDataInit(_data, _size);
   queueAdd(&lc->qu, qd);
 }
 

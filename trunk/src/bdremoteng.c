@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
      }
   
   initLircData(&ldata, &config);
-  startLircThread(&ldata, &config);
+  startLircThread(&ldata);
 
   InitCaptureData(&cdata,
 		  &config,

@@ -36,8 +36,8 @@
 
 #define LOOP 20
 
-void *producer (void *args);
-void *consumer (void *args);
+void* producer (void *args);
+void* consumer (void *args);
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
   if (res ==  Q_ERR) 
     {
       fprintf (stderr, "main: Queue Init failed.\n");
-      exit (1);
+      exit(1);
     }
 
   pthread_create (&pro, NULL, producer, &fifo);
@@ -60,17 +60,17 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void *producer (void *q)
+void* producer (void* q)
 {
   queue *fifo = (queue *)q;
   int i;
   char msg[100];
-  //queueData* qd = NULL;
+  queueData* qd = NULL;
 
   for (i = 0; i < LOOP; i++) 
     {
       sprintf(msg, "Test 1: %d", i);
-      queueData* qd = queueDataInit(msg, strlen(msg));
+      qd = queueDataInit(msg, strlen(msg)+1);
       queueAdd (fifo, qd);
       printf ("producer: added %s.\n", msg);
       usleep (100000);
@@ -78,7 +78,7 @@ void *producer (void *q)
   for (i = 0; i < LOOP; i++)
     {
       sprintf(msg, "Test 2: %d", i);
-      queueData* qd = queueDataInit(msg, strlen(msg));
+      qd = queueDataInit(msg, strlen(msg)+1);
       queueAdd (fifo, qd);
       printf ("producer: added %s.\n", msg);
       usleep (200000);
@@ -86,7 +86,7 @@ void *producer (void *q)
   return (NULL);
 }
 
-void *consumer (void *q)
+void* consumer (void* q)
 {
   queue* fifo = (queue *)q;
   int i;
