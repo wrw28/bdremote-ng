@@ -43,24 +43,37 @@
 /** Data stored in this queue. */
 typedef struct
 {
+  /** Data. */
   char* buffer;
+  /** Data size. */
   int   size;
 } queueData;
 
 /** Queue. */
 typedef struct 
 {
+  /** Array of pointers to the data stored. */
   queueData* buf[QUEUESIZE];
+  /** Head of the queue. */
   long             head;
+  /** Tail of the queue. */
   long             tail;
+  /** Indicates if the queue is full. */
   int              full;
+  /** Indicates if the queue is empty. */
   int              empty;
+  /** Mutex. */
   pthread_mutex_t* mut;
+  /** Condition. */
   pthread_cond_t*  notFull;
+  /** Condition. */
   pthread_cond_t*  notEmpty;
 } queue;
 
+/** Allocate a struct used for keeping data in this queue. */
 queueData* queueDataInit(const char* _s, int _size);
+
+/** Deallocate the struct used for keeping data in this queue. */
 void queueDataDeInit(queueData* _qd);
 
 /** Init queue. */

@@ -39,44 +39,29 @@
 typedef struct
 {
 #if BDREMOTE_DEBUG
-   /** Magic value, used for asserting. */
-   int magic0;
+  /** Magic value, used for asserting. */
+  int magic0;
 #endif /* BDREMOTE_DEBUG */
-   /** Configuration. */
-   const configuration* config;
-   /** Socked used to accept new LIRC clients. */
-   int sockinet;
-   
-   /** Client sockets. */
-   int clis[MAX_CLIENTS]; 
-   /** Number of client sockets. */
-   int clin;
-   
-   /* State information. */
-
-   /** Last state. */
-   int laststate;
-
-   /** Last code. */
-   unsigned char lastcode;
-
-   /** Last mask. */
-   uint32_t lastmask;
-
-   /** Last received key from the remote. */
-   int lastkey;
-
-   /** Last sent key. */
-   int lastsend;
+  /** Configuration. */
+  const configuration* config;
+  /** Socked used to accept new LIRC clients. */
+  int sockinet;
+  
+  /** Client sockets. */
+  int clis[MAX_CLIENTS]; 
+  /** Number of client sockets. */
+  int clin;
+  
+  /* State information. */
   
   /** Mutex used. */
-  pthread_mutexattr_t mutex;
-
+  pthread_mutex_t dataMutex;
+  
   /** Queue used to communicate BT events to lirc clients.
    * Thread safe.
    */
   queue qu;
-
+  
   pthread_t thread;
 
 } lirc_data;
@@ -84,7 +69,7 @@ typedef struct
 /** Init data used by the LIRC server part of this application. */
 void initLircData(lirc_data* _ld, const configuration* _config);
 
-void startLircThread(lirc_data* _ld, const configuration* _config);
+void startLircThread(lirc_data* _ld);
 
 void waitForLircThread(lirc_data* _ld);
 
@@ -96,6 +81,48 @@ void broadcast_message(lirc_data* _lircdata, const char* _message);
 
 /** Destroy LIRC data used by the LIRC server part of this application. */
 void destroyLircData(lirc_data* _ld);
+
+/** Write a message to a socket. */
+int write_socket(int fd, const char* buf, int len);
+
+/** Close sockets gracefully. */
+void nolinger(int sock);
+
+/** Remote a LIRC client from the list of clients receiving our messages. */
+void remove_client(lirc_data* _lircdata, int fd);
+
+/** Struct used to keep track of pressed key and repeat state. */
+typedef struct
+{
+  /** Indicates if a key is down. */
+  int keyDown;
+  /** Last sent key. */
+  int lastKey;
+  /** Clock used to keep time. */
+  clock_t cl0;
+  /** Clock used to keep time. */
+  clock_t cl1;
+
+  /** Number of elapsed miliseconds. */
+  unsigned long elapsed;
+
+  /** Last number of elapsed miliseconds. */
+  unsigned long elapsed_last;
+
+  /** Number of repeat keys already sent.*/
+  int repeat_sent;
+
+  /** Repeat counter. */
+  int repeat_count;
+
+} keyState;
+
+/** Start keeping track of time. */
+void initTime(keyState* _ks);
+
+/** Update time counter. To avoid overflows, reset the counter
+    often. */
+void updateTime(keyState* _ks);
 
 #endif /* BD_LIRC_SRV_H */
 
