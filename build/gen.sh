@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CFLAGS="-Wall -Wextra -pedantic"
+export CFLAGS="-g -Wall -Wextra -pedantic"
 
 mkdir -p linux && \
 cd linux && \

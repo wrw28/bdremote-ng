@@ -36,6 +36,7 @@
 #include <captureif.h>
 #include <stdio.h>
 #include <assert.h>
+#include <l.h>
 
 /** Capture interface implementation. */
 void RemoteConnected(void* _p)
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
    captureData cd;
    void* p = (void*)0x1; /* Unused here. */
    int res = BDREMOTE_FAIL;
+   setDefaultLog();
    InitCaptureData(&cd, 
                    &config, 
                    p, 

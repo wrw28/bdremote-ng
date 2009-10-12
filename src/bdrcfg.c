@@ -44,6 +44,9 @@ void setDefaults(configuration* _config)
    _config->user        = NULL;
    FREEVAL(_config->group);
    _config->group       = NULL;
+   _config->log_filename_set = 0;
+   FREEVAL(_config->log_filename);
+   _config->log_filename = NULL;
 }
 
 void setRemoteAddress(configuration* _config, const char* _address)
@@ -77,6 +80,7 @@ void destroyConfig(configuration* _config)
    FREEVAL(_config->remote_addr);
    FREEVAL(_config->user);
    FREEVAL(_config->group);
+   FREEVAL(_config->log_filename);
 }
 
 void printConfig(const configuration* _config)
@@ -106,6 +110,14 @@ void printConfig(const configuration* _config)
       {
          printf(" - group      : %s.\n", _config->group);
       }
+   if (_config->log_filename_set)
+      {
+	 printf(" - log:       : '%s'.\n", _config->log_filename);
+      }
+   else
+      {
+	 printf(" - log:       : stdout.\n");       
+      }
 }
 
 int userAndGroupSet(const configuration* _config)
@@ -123,4 +135,13 @@ int userAndGroupSet(const configuration* _config)
       }
    
    return status;
+}
+
+void setLogFilename(configuration* _config, const char* _filename)
+{
+  assert(_config != NULL);
+  assert(_filename != NULL);
+
+  SETVAL(_config->log_filename, _filename);
+  _config->log_filename_set = 1;
 }

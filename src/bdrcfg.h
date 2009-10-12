@@ -55,6 +55,10 @@ typedef struct
    char* user;
    /** Change to the GID of this group. */
    char* group;
+   /** Indicates if the log filename was set.*/
+   int log_filename_set;
+   /** Write log to this file name. */
+   char* log_filename;
 } configuration;
 
 /** Set default configuration. */
@@ -71,6 +75,9 @@ void setGroup(configuration* _config, const char* _group);
 
 /** Return 1 if both user and group were set. 0 otherwise. */
 int userAndGroupSet(const configuration* _config);
+
+/** Set filename used for logging. */
+void setLogFilename(configuration* _config, const char* _filename);
 
 /** Destroy the config. */
 void destroyConfig(configuration* _config);
