@@ -252,19 +252,19 @@ void usage(void)
          "\tbdremoteng [options]\n"
          "\n");
   printf("Options:\n"
-         "\t-p <port>            Set port number for incoming LIRCD connections\n"
-         "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds)\n"
+         "\t-p <port>            Set port number for incoming LIRCD connections.\n"
+         "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds).\n"
          "\t-a <address>         BT addres of remote.\n"
-         "\t                     For example: -a 00:19:C1:5A:F1:3F \n");
+         "\t                     For example: -a 00:19:C1:5A:F1:3F. \n");
   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
          "\t-e <num>             Wait <num> ms before repeating a key.\n"
-         "\t-u <username>        Change UID to the UID of this user\n"
-         "\t-g <group>           Change GID to the GID of this group\n"
-         "\t                     second, when key is pressed\n"
+         "\t-u <username>        Change UID to the UID of this user.\n"
+         "\t-g <group>           Change GID to the GID of this group.\n"
+         "\t                     second, when key is pressed.\n"
          "\t-f <filename>        Write log to <filename>.\n"
          "\t-d                   Enable debug.\n"
-         "\t-n                   Don't fork daemon to background\n"
-         "\t-h, --help           Display help\n"
+         "\t-n                   Don't fork daemon to background.\n"
+         "\t-h, --help           Display help.\n"
          "\n");
 
 }
