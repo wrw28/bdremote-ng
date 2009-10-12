@@ -33,6 +33,15 @@
 
 */
 
+/*! \mainpage bdremote-ng
+ *
+ * 
+ * This projects attempts to write a working daemon that takes input
+ * from a PS3 bluetooth remote and converts it into something that can
+ * be given to LIRC.
+ * 
+ */
+
 #ifndef BD_BDREMOTENG_H
 #define BD_BDREMOTENG_H
 
