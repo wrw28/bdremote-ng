@@ -45,7 +45,9 @@
 #ifndef BD_BDREMOTENG_H
 #define BD_BDREMOTENG_H
 
+/** Application name. */
 #define progname "bdremoted"
+/** Application version. */
 #define VERSION "0.4"
 
 /** Print usage information to stdout. */
