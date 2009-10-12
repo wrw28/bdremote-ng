@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -29,10 +29,10 @@
 /*\@{*/
 
 /*! \file q.h
-    \brief Thread safe queue.
+  \brief Thread safe queue.
 
-    Thread safe queue used for communication between bluetooth thread
-    and LIRC thread.
+  Thread safe queue used for communication between bluetooth thread
+  and LIRC thread.
 
 */
 
@@ -61,7 +61,7 @@ typedef struct
 } queueData;
 
 /** Queue. */
-typedef struct 
+typedef struct
 {
   /** Array of pointers to the data stored. */
   queueData* buf[QUEUESIZE];
@@ -93,14 +93,14 @@ int queueInit (queue* _q);
 /** Deinit queue. */
 void queueDeinit (queue* _q);
 
-/** Add an element to the queue. Blocks if the queue is full. 
+/** Add an element to the queue. Blocks if the queue is full.
  * Notice that the pointer belongs to the function.
  */
 void queueAdd (queue* _q, queueData* _in);
 
-/** Remove an element from the queue. Returns Q_ERR if the queue is empty. 
+/** Remove an element from the queue. Returns Q_ERR if the queue is empty.
  * Notice that the pointer should be disposed of by the caller.
-*/
+ */
 int queueRem (queue* _q, int _blockOnEmpty, queueData** _out);
 
 #endif /* BD_Q_H */

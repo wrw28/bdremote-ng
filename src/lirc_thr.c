@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -49,21 +49,21 @@ void* lircThread (void* q);
 void broadcastToLirc(lirc_data* _lc, const char* _name, int _rep, unsigned int _code);
 
 /** Handle a key press. */
-void handleKey(lirc_data* _ld, 
-	       const char* _data, const int _size, 
-	       keyState* _ks);
+void handleKey(lirc_data* _ld,
+               const char* _data, const int _size,
+               keyState* _ks);
 
 /** Handle key down. */
 void DataInd_keyDown(lirc_data* _lc,
-		     unsigned int _code, 
-		     uint32_t _mask,
-		     keyState* _ks);
+                     unsigned int _code,
+                     uint32_t _mask,
+                     keyState* _ks);
 
 /** Handle key up. */
 void DataInd_keyUp(lirc_data* _lc,
-		   unsigned int _code, 
-		   uint32_t _mask,
-		   keyState* _ks);
+                   unsigned int _code,
+                   uint32_t _mask,
+                   keyState* _ks);
 
 void startLircThread(lirc_data* _ld)
 {
@@ -81,22 +81,32 @@ void* lircThread (void* q)
   queueData* qd = NULL;
   int res       = Q_ERR;
   keyState ks;
-  int rate_mod  = 1000;
+  int rate_mod  = 0;
+  unsigned long rate_delay = 100;
+  if (ld->config->repeat_delay > 0)
+    {
+      rate_delay = (unsigned long)ld->config->repeat_delay;
+    }
 
   if (ld->config->repeat_rate > 0)
     {
       rate_mod = (int) (1000 / ld->config->repeat_rate);
     }
+  else
+    {
+      rate_mod = 100;
+    }
 
 #if BDREMOTE_DEBUG
-  BDREMOTE_DBG_HDR(ld->config->debug);
-  fprintf(printStream, "using repeat rate: %d.\n", rate_mod);
+  BDREMOTE_LOG(ld->config->debug,
+               fprintf(printStream, "Started LIRC thread:\n");
+               fprintf(printStream, " - using repeat rate : %d.\n", ld->config->repeat_rate);
+               fprintf(printStream, " - using repeat delay: %d.\n", ld->config->repeat_delay);
+               );
 #endif
 
   ks.keyDown = 0;
   ks.lastKey = ps3remote_undef;
-
-  BDREMOTE_DBG(ld->config->debug, "Started LIRC thread.");
 
   initTime(&ks);
   ks.elapsed_last = 0;
@@ -109,49 +119,48 @@ void* lircThread (void* q)
       res = queueRem (&ld->qu, 0 /* No blocking. */, &qd);
 
       if (res == Q_OK)
-	{
-	  assert(qd->buffer != NULL);
-	  handleKey(ld, qd->buffer, qd->size, &ks);
-	  
-	  queueDataDeInit(qd);
+        {
+          assert(qd->buffer != NULL);
+          handleKey(ld, qd->buffer, qd->size, &ks);
 
-	  initTime(&ks);
-	  ks.elapsed_last = 0;
-	  ks.repeat_sent  = 0;
-	  ks.repeat_count = 0;
-	}
+          queueDataDeInit(qd);
+
+          initTime(&ks);
+          ks.elapsed_last = 0;
+          ks.repeat_sent  = 0;
+          ks.repeat_count = 0;
+        }
 
       if (ks.keyDown == 1)
-	{
-	  updateTime(&ks);
+        {
+          updateTime(&ks);
 
-	  if (ks.elapsed % rate_mod == 0)
-	    {
-	      if (ks.elapsed_last == ks.elapsed)
-		{
-		  usleep(10);
-		  continue;
-		}
+          if (ks.elapsed % rate_mod == 0)
+            {
+              if (ks.elapsed_last == ks.elapsed)
+                {
+                  usleep(10);
+                  continue;
+                }
 
-	      ks.elapsed_last = ks.elapsed;
+              ks.elapsed_last = ks.elapsed;
 
-	      if (ks.repeat_count > REPEATS_BEFORE_TRANSMIT)
-		{
-#if BDREMOTE_DEBUG
-		  BDREMOTE_DBG_HDR(ld->config->debug);
-		  fprintf(printStream, "Key is down: %lu\n", ks.elapsed);
-#endif
-		  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
-		  /* broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0, 0xFF); */
-		  ks.repeat_sent++;
-		}
-	      ks.repeat_count++;
-	    }
-	}
+	      if (ks.elapsed >= rate_delay)
+                {
+                  BDREMOTE_LOG(ld->config->debug,
+                               fprintf(printStream, "Key is down (repeat): %lu\n", ks.elapsed);
+                               );
+                  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
+                  /* broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0, 0xFF); */
+                  ks.repeat_sent++;
+                }
+              ks.repeat_count++;
+            }
+        }
       else
-	{
-	  usleep(100);
-	}
+        {
+          usleep(100);
+        }
     }
 
   BDREMOTE_DBG(ld->config->debug, "Thread terminating ..");
@@ -159,20 +168,20 @@ void* lircThread (void* q)
   return (NULL);
 }
 
-/* Received some data from the ps3 remote. 
+/* Received some data from the ps3 remote.
  * Forward it to LIRC clients.
  * Note: no threads are used, so no need for locking.
  */
 
-void handleKey(lirc_data* _ld, 
-	       const char* _data, const int _size, 
-	       keyState* _ks)
+void handleKey(lirc_data* _ld,
+               const char* _data, const int _size,
+               keyState* _ks)
 {
   int num                 = 0;
   const uint32_t* mask_in = (uint32_t *)(_data+2);
   uint32_t mask           = 0;
   const unsigned char* magic = (const unsigned char*)_data;
-  const unsigned char* code  = (const unsigned char*)_data+5;	
+  const unsigned char* code  = (const unsigned char*)_data+5;
   const unsigned char* state = (const unsigned char*)_data+11;
 
 #if BDREMOTE_DEBUG
@@ -186,18 +195,18 @@ void handleKey(lirc_data* _ld,
       num=-1;
 
       switch (*state)
-	{
-	case 1:
-	  {
-	    DataInd_keyDown(_ld, *code, mask, _ks);
-	    break;
-	  }
-	case 0:
-	  {
-	    DataInd_keyUp(_ld, *code, mask, _ks);
-	    break;
-	  }
-	}
+        {
+        case 1:
+          {
+            DataInd_keyDown(_ld, *code, mask, _ks);
+            break;
+          }
+        case 0:
+          {
+            DataInd_keyUp(_ld, *code, mask, _ks);
+            break;
+          }
+        }
     }
 }
 
@@ -208,28 +217,26 @@ int codeToIndex(unsigned int _code)
   for (i=0;i<ps3remote_num_keys;++i)
     {
       if (_code==ps3remote_keys[i].code)
-	{
-	  num=i;
-	  break;
-	}
+        {
+          num=i;
+          break;
+        }
     }
   return num;
 }
 
-void DataInd_keyDown(lirc_data* _lc,
-		     unsigned int _code, 
-		     uint32_t _mask,
-		     keyState* _ks)
+void DataInd_keyDown(lirc_data* _ld,
+                     unsigned int _code,
+                     uint32_t _mask,
+                     keyState* _ks)
 {
   int num = ps3remote_undef;
   if (_code != ps3remote_keyup)
     {
       /* Key pressed. */
-#if BDREMOTE_DEBUG
-      BDREMOTE_DBG_HDR(_lc->config->debug);
-      fprintf(printStream, "key down: %02X, %08X\n", _code, _mask);
-      BDREMOTE_DBG(_lc->config->debug, "single.");
-#endif
+      BDREMOTE_LOG(_ld->config->debug,
+                   fprintf(printStream, "key down (single): %02X, %08X\n", _code, _mask);
+                   );
       num               = codeToIndex(_code);
       _ks->keyDown      = 1;
       _ks->lastKey      = num;
@@ -239,46 +246,47 @@ void DataInd_keyDown(lirc_data* _lc,
     }
   if (num != ps3remote_undef)
     {
-      broadcastToLirc(_lc, ps3remote_keys[num].name, 0, ps3remote_keys[num].code);
+      broadcastToLirc(_ld, ps3remote_keys[num].name, 0, ps3remote_keys[num].code);
     }
 }
 
-void DataInd_keyUp(lirc_data* _lc,
-		   unsigned int _code, 
-		   uint32_t _mask,
-		   keyState* _ks)
+void DataInd_keyUp(lirc_data* _ld,
+                   unsigned int _code,
+                   uint32_t _mask,
+                   keyState* _ks)
 {
   if (_code == ps3remote_keyup)
     {
       /* Key up. */
-#if BDREMOTE_DEBUG
-      BDREMOTE_DBG_HDR(_lc->config->debug);
-      fprintf(printStream, "key up: %02X, %08X\n", _code, _mask);
-#endif
+      BDREMOTE_LOG(_ld->config->debug,
+                   fprintf(printStream, "key up (single): %02X, %08X\n", _code, _mask);
+                   );
       if (_ks->lastKey != ps3remote_undef)
-	{
-	  /* broadcastToLirc(_lc, ps3remote_keys[_ks->lastKey].name, 0, _code); */
+        {
+          /* broadcastToLirc(_ld, ps3remote_keys[_ks->lastKey].name, 0, _code); */
 
-	  _ks->keyDown      = 0;
-	  _ks->lastKey      = ps3remote_undef;
-	  _ks->repeat_count = 0;
-	  _ks->repeat_sent  = 0;
-	}
+          _ks->keyDown      = 0;
+          _ks->lastKey      = ps3remote_undef;
+          _ks->repeat_count = 0;
+          _ks->repeat_sent  = 0;
+        }
     }
 }
 
 /* Broadcast the last received key to all connected LIRC clients. */
 void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _code)
-{ 
+{
   int i = 0;
   char msg[100];
   int len = sprintf(msg,"%04X %02d %s %s\n", _code, _rep, _name, "SonyBDRemote");
 
   BDREMOTE_DBG(_ld->config->debug, msg);
 
+  BDREMOTE_LOG(_ld->config->debug,
+               fprintf(printStream, "message=%s.\n", msg);
+               fprintf(printStream, "_ld->magic0=%d.\n", _ld->magic0);
+               );
 #if BDREMOTE_DEBUG
-  BDREMOTE_DBG_HDR(_ld->config->debug);
-  fprintf(printStream, "_ld->magic0=%d.\n", _ld->magic0);
   assert(_ld->magic0 == 0x15);
 #endif /* BDREMOTE_DEBUG */
   assert(_ld->clin < MAX_CLIENTS);
@@ -288,16 +296,17 @@ void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _
   for (i=0; i<_ld->clin; i++)
     {
       if (write_socket(_ld->clis[i], msg, len)<len)
-	{
-	  remove_client(_ld, _ld->clis[i]);
-	  i--;
-	}
+        {
+          remove_client(_ld, _ld->clis[i]);
+          i--;
+        }
 #if BDREMOTE_DEBUG
       else
-	{
-	  BDREMOTE_DBG_HDR(_ld->config->debug);
-	  fprintf(printStream, "broadcast %d bytes to socket id %d.\n", len, _ld->clis[i]);
-	}
+        {
+          BDREMOTE_LOG(_ld->config->debug,
+                       fprintf(printStream, "broadcast %d bytes to socket id %d.\n", len, _ld->clis[i]);
+                       );
+        }
 #endif /* BDREMOTE_DEBUG */
     }
 

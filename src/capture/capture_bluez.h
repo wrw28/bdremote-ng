@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -22,14 +22,14 @@
  */
 
 /** @defgroup bluezif Bluez capture interface implemenation
- 
+
  *  This group contains the Bluez capture interface implementation.
- 
+
  *  @{
  */
 
 /*! \file capture_bluez.h
-    \brief Bluez capture interface.
+  \brief Bluez capture interface.
 */
 
 #ifndef BD_CAPTURE_BLUEZ_H

@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -69,116 +69,121 @@ int main(int argc, char *argv[])
   memset(&cdata, 0, sizeof(cdata));
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
-  
-  while ((opt=getopt(argc,argv,"+p:t:a:r:d:u:g:f:nh"))!=-1)
-     {
-        switch(opt)
-           {
-           case 'p':
-              config.listen_port=atoi(optarg);
-              break;
-           case 't':
-              config.disconnect_timeout=atoi(optarg);
-              break;
-           case 'a':
-              setRemoteAddress(&config, optarg);
-              break;
-           case 'r':
-              config.repeat_rate=atoi(optarg);
-              break;
-           case 'd':
-              config.debug = atoi(optarg);
-              break;
-           case 'n':
-              config.detach=0;
-              break;
-           case 'u':
-              setUser(&config, optarg);
-              break;
-           case 'g':
-              setGroup(&config, optarg);
-              break;
-	   case 'f':
-	      setLogFilename(&config, optarg); 
-	      break;
-           case 'h':
-              usage();
-              exit(0);
-              break;
-           default:
-              exit(0);
-           }
-     }
-  
+
+  while ((opt=getopt(argc,argv,"+p:t:a:r:e:d:u:g:f:nh"))!=-1)
+    {
+      switch(opt)
+        {
+        case 'p':
+          config.listen_port=atoi(optarg);
+          break;
+        case 't':
+          config.disconnect_timeout=atoi(optarg);
+          break;
+        case 'a':
+          setRemoteAddress(&config, optarg);
+          break;
+        case 'r':
+          config.repeat_rate=atoi(optarg);
+          break;
+        case 'e':
+          config.repeat_delay=atoi(optarg);
+          break;
+        case 'd':
+          config.debug = atoi(optarg);
+          break;
+        case 'n':
+          config.detach=0;
+          break;
+        case 'u':
+          setUser(&config, optarg);
+          break;
+        case 'g':
+          setGroup(&config, optarg);
+          break;
+        case 'f':
+          setLogFilename(&config, optarg);
+          break;
+        case 'h':
+          usage();
+          exit(0);
+          break;
+        default:
+          exit(0);
+        }
+    }
+
   if (config.remote_addr == NULL)
-     {
-        usage();
-        printf("\nPlease specify a remote BD address using the -a switch.\n");
-        
-        exit(0);
-     }
+    {
+      usage();
+      printf("\nPlease specify a remote BD address using the -a switch.\n");
+
+      exit(0);
+    }
 
   if (config.debug == 1)
-     {
-        printConfig(&config);
-     }
-  
+    {
+      printConfig(&config);
+    }
+
   initLircData(&ldata, &config);
 
   InitCaptureData(&cdata,
-		  &config,
-		  &ldata,
-		  config.remote_addr,
-		  config.disconnect_timeout);
+                  &config,
+                  &ldata,
+                  config.remote_addr,
+                  config.disconnect_timeout);
 
   if (config.detach==1)
     {
       if (daemon(0, 0))
-	{
-	  perror("Can't start daemon");
-	  exit(1);                                                
-	};
+        {
+          perror("Can't start daemon");
+          exit(1);
+        };
     };
 
   nice(-4);
 
   ret = InitcaptureLoop(&cdata);
   if (ret == BDREMOTE_FAIL)
-     {
-        BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
-        return BDREMOTE_FAIL;
-     }
+    {
+      BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
+      return BDREMOTE_FAIL;
+    }
 
   if (userAndGroupSet(&config) == 1)
-     {
-        BDREMOTE_DBG(config.debug, "Changing UID:GID.");
+    {
+      BDREMOTE_DBG(config.debug, "Changing UID:GID.");
 
-        if ((getuid() == 0) && (geteuid() == 0))
-           {
-              BDREMOTE_DBG(config.debug, "Can change UID:GID.");
-           }
-        else
-           {
-              BDREMOTE_DBG(config.debug, "Unable to change UID:GID..");
-              return BDREMOTE_FAIL;
-           }
+      if ((getuid() == 0) && (geteuid() == 0))
+        {
+          BDREMOTE_DBG(config.debug, "Can change UID:GID.");
+        }
+      else
+        {
+          BDREMOTE_DBG(config.debug, "Unable to change UID:GID..");
+          return BDREMOTE_FAIL;
+        }
 
-        if (changeUIDAndGID(config.user, config.group) == BDREMOTE_FAIL)
-           {
-              BDREMOTE_DBG(config.debug, "changeUIDAndGID() failed.");
-              return BDREMOTE_FAIL;
-           }
-     }
+      if (changeUIDAndGID(config.user, config.group) == BDREMOTE_FAIL)
+        {
+          BDREMOTE_DBG(config.debug, "changeUIDAndGID() failed.");
+          return BDREMOTE_FAIL;
+        }
+    }
 
   /* Open the logfile after changing UID/GID. */
   if (setLogFile(&config) == BDREMOTE_FAIL)
     {
       exit(0);
     }
-  
+
   if (config.log_filename_set)
     {
-      printf("Writting log to: '%s'\n", config.log_filename);
+      BDREMOTE_LOG(config.debug,
+                   printf("Writting log to: '%s'\n", config.log_filename);
+                   );
     }
 
   /* Start listening for BT clients. */
@@ -186,7 +191,7 @@ int main(int argc, char *argv[])
     {
       perror("Could not create BT client thread");
       closeLogFile();
-      exit(1);                                                
+      exit(1);
     }
 
   memset(&sa, 0, sizeof(sa));
@@ -196,7 +201,7 @@ int main(int argc, char *argv[])
   sigaction(SIGINT,  &sa, NULL);
   sa.sa_handler = sig_hup;
   sigaction(SIGHUP, &sa, NULL);
-  
+
   sa.sa_handler = SIG_IGN;
   sigaction(SIGCHLD, &sa, NULL);
   sigaction(SIGPIPE, &sa, NULL);
@@ -240,33 +245,34 @@ void* listener(void* _p)
   return 0;
 }
 
-void usage(void)                                                         
-{                                                                               
-	printf("bdremoteng - Sony BD Remote helper daemon version %s\n\n", VERSION);
-	printf("Usage:\n"                                                       
-		"\tbdremoteng [options]\n"                                 
-		"\n");
-	printf("Options:\n"                                                     
-		"\t-p <port>            Set port number for incoming LIRCD connections\n"       
-		"\t-t <timeout>         Set disconnect timeout for BD remote (in seconds)\n"        
-		"\t-a <address>         BT addres of remote.\n"
-          "\t                     For example: -a 00:19:C1:5A:F1:3F \n");
-   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
-          "\t-u <username>        Change UID to the UID of this user\n"
-          "\t-g <group>           Change GID to the GID of this group\n"
-          "\t                     second, when key is pressed\n"
-	  "\t-f <filename>        Write log to <filename>.\n"
-          "\t-d                   Enable debug.\n"     				
-          "\t-n                   Don't fork daemon to background\n"      
-          "\t-h, --help           Display help\n"                         
-          "\n");                                                          
+void usage(void)
+{
+  printf("bdremoteng - Sony BD Remote helper daemon version %s\n\n", VERSION);
+  printf("Usage:\n"
+         "\tbdremoteng [options]\n"
+         "\n");
+  printf("Options:\n"
+         "\t-p <port>            Set port number for incoming LIRCD connections\n"
+         "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds)\n"
+         "\t-a <address>         BT addres of remote.\n"
+         "\t                     For example: -a 00:19:C1:5A:F1:3F \n");
+  printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
+         "\t-e <num>             Wait <num> ms before repeating a key.\n"
+         "\t-u <username>        Change UID to the UID of this user\n"
+         "\t-g <group>           Change GID to the GID of this group\n"
+         "\t                     second, when key is pressed\n"
+         "\t-f <filename>        Write log to <filename>.\n"
+         "\t-d                   Enable debug.\n"
+         "\t-n                   Don't fork daemon to background\n"
+         "\t-h, --help           Display help\n"
+         "\n");
 
 }
 
 void sig_hup(int _sig)
 {
-   (void)_sig;
-   /* BDREMOTE_DBG("Not handling HUP."); */
+  (void)_sig;
+  /* BDREMOTE_DBG("Not handling HUP."); */
 }
 
 void sig_term(int _sig)

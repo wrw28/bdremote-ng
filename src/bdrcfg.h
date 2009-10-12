@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -22,15 +22,15 @@
  */
 
 /** @defgroup Gen Generic
- *  This group contains generic structures and functions used by this application. 
+ *  This group contains generic structures and functions used by this application.
  *  @{
  */
 
 /*! \file bdrcfg.h
-    \brief Configuration struct and functions used for handling it.
+  \brief Configuration struct and functions used for handling it.
 
-    The configuration struct and the functions in this header files
-    are used for storing the configuration of this application. 
+  The configuration struct and the functions in this header files
+  are used for storing the configuration of this application.
 */
 
 #ifndef BD_CFG_H
@@ -39,26 +39,29 @@
 /** Common configuration. */
 typedef struct
 {
-   /** Listen to this port for LIRC connections. */
-   int listen_port;
-   /** Disconnect BT peers after this number of seconds. */
-   int disconnect_timeout;
-   /** Repeat rate, number of messages per second. */
-   int repeat_rate;
-   /** Enable/disable printing of debug messages. */
-   int debug;
-   /** BT address of the PS3 remote. */
-   char* remote_addr;
-   /** Enable/disable detach from TTY.*/
-   int detach;
-   /** Change to the UID of this user. */
-   char* user;
-   /** Change to the GID of this group. */
-   char* group;
-   /** Indicates if the log filename was set.*/
-   int log_filename_set;
-   /** Write log to this file name. */
-   char* log_filename;
+  /** Listen to this port for LIRC connections. */
+  int listen_port;
+  /** Disconnect BT peers after this number of seconds. */
+  int disconnect_timeout;
+  /** Repeat rate, number of messages per second. */
+  int repeat_rate;
+  /** Repeat delay - the amount of messages to ignore before
+      repeating.*/
+  int repeat_delay;
+  /** Enable/disable printing of debug messages. */
+  int debug;
+  /** BT address of the PS3 remote. */
+  char* remote_addr;
+  /** Enable/disable detach from TTY.*/
+  int detach;
+  /** Change to the UID of this user. */
+  char* user;
+  /** Change to the GID of this group. */
+  char* group;
+  /** Indicates if the log filename was set.*/
+  int log_filename_set;
+  /** Write log to this file name. */
+  char* log_filename;
 } configuration;
 
 /** Set default configuration. */

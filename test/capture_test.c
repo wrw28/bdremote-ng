@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -25,11 +25,11 @@
 /*\@{*/
 
 /*! \file capture_test.c
-    \brief Test bluetooth capture.
+  \brief Test bluetooth capture.
 
-    Test application which should print something when the remote
-    connects and sends data.
-    Notice the hardcoded destination address.
+  Test application which should print something when the remote
+  connects and sends data.
+  Notice the hardcoded destination address.
 */
 
 #include <globaldefs.h>
@@ -41,43 +41,43 @@
 /** Capture interface implementation. */
 void RemoteConnected(void* _p)
 {
-   assert(_p);
-   printf("Remote connected.\n");
+  assert(_p);
+  printf("Remote connected.\n");
 }
 
 /** Capture interface implementation. */
 void DataInd(void* _p, const char* _data, const int _size)
 {
-   assert(_p);
-   assert(_data);
-   printf("Remote data indication, %d bytes.\n", _size);
+  assert(_p);
+  assert(_data);
+  printf("Remote data indication, %d bytes.\n", _size);
 }
 
 /** Capture interface implementation. */
 void RemoteDisconnected(void* _p)
 {
-   assert(_p);
-   printf("Remote disconnected.\n");
+  assert(_p);
+  printf("Remote disconnected.\n");
 }
 
 /** Capture test. */
 int main(int argc, char *argv[])
 {
-   /* Address of the remote. */
-   const char* destinationAddress = "00:19:C1:58:C3:B7";
-   configuration config;
-   captureData cd;
-   void* p = (void*)0x1; /* Unused here. */
-   int res = BDREMOTE_FAIL;
-   setDefaultLog();
-   InitCaptureData(&cd, 
-                   &config, 
-                   p, 
-                   destinationAddress, 
-                   30 /* timeout in secounds */);
-   
-   /* Run capture loop. */
-   res = captureLoop(&cd);
+  /* Address of the remote. */
+  const char* destinationAddress = "00:19:C1:58:C3:B7";
+  configuration config;
+  captureData cd;
+  void* p = (void*)0x1; /* Unused here. */
+  int res = BDREMOTE_FAIL;
+  setDefaultLog();
+  InitCaptureData(&cd,
+                  &config,
+                  p,
+                  destinationAddress,
+                  30 /* timeout in secounds */);
+
+  /* Run capture loop. */
+  res = captureLoop(&cd);
 
   if (res == BDREMOTE_FAIL)
     {

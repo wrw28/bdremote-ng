@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -51,8 +51,8 @@ void initLircData(lirc_data* _ld, const configuration* _config)
 {
   assert(_config != NULL);
   assert(
-	 pthread_mutex_init (&_ld->dataMutex, NULL) == 0
-	 );
+         pthread_mutex_init (&_ld->dataMutex, NULL) == 0
+         );
 
 #if BDREMOTE_DEBUG
   _ld->magic0 = 0x15;
@@ -62,7 +62,7 @@ void initLircData(lirc_data* _ld, const configuration* _config)
 
   pthread_mutex_lock (&_ld->dataMutex);
 
-  memset(&_ld->clis[0], 0, MAX_CLIENTS); 
+  memset(&_ld->clis[0], 0, MAX_CLIENTS);
   _ld->clin = 0;
 
   pthread_mutex_unlock (&_ld->dataMutex);
@@ -92,29 +92,29 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
     {
       return BDREMOTE_FAIL;
     }
- 
+
   sigfillset(&sigs);
   sigdelset(&sigs, SIGCHLD);
   sigdelset(&sigs, SIGPIPE);
   sigdelset(&sigs, SIGTERM);
   sigdelset(&sigs, SIGINT);
   sigdelset(&sigs, SIGHUP);
-  
+
   p.fd = _lircdata->sockinet;
   p.events = POLLIN | POLLERR | POLLHUP;
-  
-  while (!__io_canceled) 
+
+  while (!__io_canceled)
     {
       p.revents = 0;
       if (ppoll(&p, 1, NULL, &sigs) < 1)
-	{
-	  continue;
-	}
-      if (p.events & POLLIN) 
-	{
-	  BDREMOTE_DBG(_config->debug, "new client accepted.");
-	  add_client(_lircdata);
-	}
+        {
+          continue;
+        }
+      if (p.events & POLLIN)
+        {
+          BDREMOTE_DBG(_config->debug, "new client accepted.");
+          add_client(_lircdata);
+        }
     }
 
   pthread_mutex_lock (&_lircdata->dataMutex);
@@ -125,7 +125,7 @@ int lirc_server(configuration* _config, lirc_data* _lircdata)
       shutdown(_lircdata->clis[i],2);
       close(_lircdata->clis[i]);
     }
-  
+
   _lircdata->clin = 0;
 
   pthread_mutex_unlock (&_lircdata->dataMutex);
@@ -143,21 +143,21 @@ int create_listener(configuration* _config, lirc_data* _lircdata)
   int enable=1;
   unsigned short int port=_config->listen_port;
   struct sockaddr_in serv_addr_in;
-  /* create socket*/                                              
-  _lircdata->sockinet=socket(PF_INET,SOCK_STREAM,IPPROTO_IP);                
+  /* create socket*/
+  _lircdata->sockinet=socket(PF_INET,SOCK_STREAM,IPPROTO_IP);
   if (_lircdata->sockinet==-1)
     {
       perror("socket");
       BDREMOTE_DBG(_config->debug, "Could not create TCP/IP socket.");
       return BDREMOTE_FAIL;
     }
-  (void) setsockopt(_lircdata->sockinet,SOL_SOCKET,SO_REUSEADDR,&enable,sizeof(enable));                      
-  serv_addr_in.sin_family      = AF_INET;                                
-  serv_addr_in.sin_addr.s_addr = htonl(INADDR_ANY);                 
-  serv_addr_in.sin_port        = htons(port);                              
-  
+  (void) setsockopt(_lircdata->sockinet,SOL_SOCKET,SO_REUSEADDR,&enable,sizeof(enable));
+  serv_addr_in.sin_family      = AF_INET;
+  serv_addr_in.sin_addr.s_addr = htonl(INADDR_ANY);
+  serv_addr_in.sin_port        = htons(port);
+
   if (bind(_lircdata->sockinet,(struct sockaddr *) &serv_addr_in,
-	   sizeof(serv_addr_in))==-1)
+           sizeof(serv_addr_in))==-1)
     {
       BDREMOTE_DBG(_config->debug, "Could not assign address to socket\n");
       perror("bind");
@@ -180,15 +180,15 @@ void add_client(lirc_data* _lircdata)
 
   if (fd==-1)
     {
-      BDREMOTE_DBG(_lircdata->config->debug, 
-		   "accept() failed for new client.");
+      BDREMOTE_DBG(_lircdata->config->debug,
+                   "accept() failed for new client.");
       perror("accept");
     };
-  
+
   if(fd>=FD_SETSIZE || _lircdata->clin>=MAX_CLIENTS)
     {
       BDREMOTE_DBG(_lircdata->config->debug,
-		   "Connection rejected.");
+                   "Connection rejected.");
       shutdown(fd,2);
       close(fd);
       return;
@@ -212,18 +212,18 @@ void remove_client(lirc_data* _lircdata, int fd)
   for(i=0;i<_lircdata->clin;i++)
     {
       if(_lircdata->clis[i] == fd)
-	{
-	  shutdown(_lircdata->clis[i],2);
-	  close(_lircdata->clis[i]);
-	  
-	  _lircdata->clin--;
-	  
-	  for(;i<_lircdata->clin;i++)
-	    {
-	      _lircdata->clis[i]=_lircdata->clis[i+1];
-	    }
-	  return;			
-	}
+        {
+          shutdown(_lircdata->clis[i],2);
+          close(_lircdata->clis[i]);
+
+          _lircdata->clin--;
+
+          for(;i<_lircdata->clin;i++)
+            {
+              _lircdata->clis[i]=_lircdata->clis[i+1];
+            }
+          return;
+        }
     }
 }
 

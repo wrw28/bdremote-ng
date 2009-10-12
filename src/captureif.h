@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -22,16 +22,16 @@
  */
 
 /** @defgroup captureinterface Capture Interface
- 
+
  *  This group contains the capture interface used by this
  *  application. It needs to be implemented in order to capture
  *  bluetooth data from the PS3 remote.
- 
+
  *  @{
  */
 
 /*! \file captureif.h
-    \brief Bluetooth capture interface.
+  \brief Bluetooth capture interface.
 */
 
 #ifndef BD_CAPTUREIF_H
@@ -46,43 +46,43 @@
 typedef struct
 {
 #if BDREMOTE_DEBUG
-   /** Magic value used to assert on. */
-   int magic0;
+  /** Magic value used to assert on. */
+  int magic0;
 #endif /* BDREMOTE_DEBUG */
 
-   /** Pointer to configuration. */
-   const configuration* config;
+  /** Pointer to configuration. */
+  const configuration* config;
 
-   /** Context pointer - pointer to LIRC data, which is used when
-       calling the callback functions defined in this file. */
-   void* p;
+  /** Context pointer - pointer to LIRC data, which is used when
+      calling the callback functions defined in this file. */
+  void* p;
 
-   /** BT Address of the device to open. */
-   char* bt_dev_address;
+  /** BT Address of the device to open. */
+  char* bt_dev_address;
 
-   /** BT Address of the remote, which is sending keypresses to this
-       daemon. */
-   char* dest_address;
+  /** BT Address of the remote, which is sending keypresses to this
+      daemon. */
+  char* dest_address;
 
-   /** Timeout in seconds. */
-   int timeout;
+  /** Timeout in seconds. */
+  int timeout;
 
-   /** Sockets in use. */
-   int sockets[3];
+  /** Sockets in use. */
+  int sockets[3];
 } captureData;
 
 /** Function used to init the data used by this interface.
  * @param _cd           Data used for capturing.
- * @param _config       
+ * @param _config
  * @param _p            Pointer to LIRC data.
  * @param _dest_address BT address of ps3 remote.
  * @param _timeout      The number of seconds without activity before the BT connection is terminated.
  */
 void InitCaptureData(captureData* _cd,
-		     const configuration* _config,
-		     void* _p,
-		     const char* _dest_address,
-		     const int _timeout);
+                     const configuration* _config,
+                     void* _p,
+                     const char* _dest_address,
+                     const int _timeout);
 
 /* Release any data used by this interface. */
 void DestroyCaptureData(captureData* _cd);
@@ -109,10 +109,10 @@ void RemoteDisconnected(void* _p);
 int InitcaptureLoop(captureData* _capturedata);
 
 /** Main capture loop.
- * 
+ *
  * The idea is to run this as a thread and call the above callback
  * functions when a change is detected.
- * 
+ *
  * returns: -1 on error.
  */
 int captureLoop(captureData* _capturedata);
