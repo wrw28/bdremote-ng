@@ -124,7 +124,6 @@ int main(int argc, char *argv[])
      }
   
   initLircData(&ldata, &config);
-  startLircThread(&ldata);
 
   InitCaptureData(&cdata,
 		  &config,
@@ -202,7 +201,9 @@ int main(int argc, char *argv[])
   sigaction(SIGCHLD, &sa, NULL);
   sigaction(SIGPIPE, &sa, NULL);
 
-  
+  /* Start LIRC thread. */
+  startLircThread(&ldata);
+
   /* Start handling LIRC clients and forwarding data. */
   lirc_server(&config, &ldata);
 
