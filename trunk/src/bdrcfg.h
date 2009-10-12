@@ -21,6 +21,18 @@
  *
  */
 
+/** @defgroup Gen Generic
+ *  This group contains generic structures and functions used by this application. 
+ *  @{
+ */
+
+/*! \file bdrcfg.h
+    \brief Configuration struct and functions used for handling it.
+
+    The configuration struct and the functions in this header files
+    are used for storing the configuration of this application. 
+*/
+
 #ifndef BD_CFG_H
 #define BD_CFG_H
 
@@ -67,4 +79,6 @@ void destroyConfig(configuration* _config);
 void printConfig(const configuration* _config);
 
 #endif /* BD_CFG_H */
+
+/*\@}*/
 

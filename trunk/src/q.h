@@ -25,6 +25,17 @@
  * Muys.
  */
 
+/** \ingroup Gen */
+/*\@{*/
+
+/*! \file q.h
+    \brief Thread safe queue.
+
+    Thread safe queue used for communication between bluetooth thread
+    and LIRC thread.
+
+*/
+
 #ifndef BD_Q_H
 #define BD_Q_H
 
@@ -93,4 +104,6 @@ void queueAdd (queue* _q, queueData* _in);
 int queueRem (queue* _q, int _blockOnEmpty, queueData** _out);
 
 #endif /* BD_Q_H */
+
+/*\@}*/
 

@@ -21,6 +21,8 @@
  *
  */
 
+#include "capture_bluez.h"
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
@@ -42,10 +44,6 @@
 #include <bluetooth/hidp.h>
 
 #include <poll.h>
-
-#include <globaldefs.h>
-#include <captureif.h>
-
 #include <assert.h>
 
 #define L2CAP_PSM_HIDP_CTRL 0x11

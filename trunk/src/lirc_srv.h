@@ -21,6 +21,23 @@
  *
  */
 
+/** @defgroup LIRC LIRC
+
+ *  This group contains a function used to change the UID/GID of the
+ *  application to one with less priviledges.
+
+ *  @{
+ */
+
+/*! \file lirc_srv.h
+    \brief LIRC server.
+
+    This file contains a LIRC server. It's purpose is to translate
+    bluetooth events received using a queue from the bluetooth
+    interface into key press events which are understood by LIRC.
+
+*/
+
 #ifndef BD_LIRC_SRV_H
 #define BD_LIRC_SRV_H
 
@@ -62,6 +79,8 @@ typedef struct
    */
   queue qu;
   
+  /** Thread used to receive bluetooth events (keypresses) and
+      sending them to LIRC in a format it understands.. */
   pthread_t thread;
 
 } lirc_data;
@@ -69,8 +88,11 @@ typedef struct
 /** Init data used by the LIRC server part of this application. */
 void initLircData(lirc_data* _ld, const configuration* _config);
 
+/** Start a thread used to receive bluetooth events (keypresses) and
+    sending them to LIRC in a format it understands. */
 void startLircThread(lirc_data* _ld);
 
+/** Wait for the LIRC thread to terminate. */
 void waitForLircThread(lirc_data* _ld);
 
 /** Run a LIRC server. */
@@ -83,7 +105,7 @@ void broadcast_message(lirc_data* _lircdata, const char* _message);
 void destroyLircData(lirc_data* _ld);
 
 /** Write a message to a socket. */
-int write_socket(int fd, const char* buf, int len);
+int write_socket(int _fd, const char* _buf, int _len);
 
 /** Close sockets gracefully. */
 void nolinger(int sock);

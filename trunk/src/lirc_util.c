@@ -62,29 +62,30 @@ void updateTime(keyState* _ks)
   _ks->cl0 = clock();
 }
 
-int write_socket(int fd, const char* buf, int len)
+int write_socket(int _fd, const char* _buf, int _len)
 {
   int done = 0;
-  int todo = len;
+  int todo = _len;
   
   while (todo)
     {
-      done=write(fd,buf,todo);
+       done = write(_fd, _buf, todo);
+
       if (done<=0)
-	{
-	  return(done);
-	}
-      buf  += done;
-      todo -= done;
+         {
+            return done;
+         }
+      _buf  += done;
+      todo  -= done;
     }
 
-  return len;
+  return _len;
 }
 
-void nolinger(int sock)
+void nolinger(int _sock)
 {
   static struct linger  linger = {0, 0};
   int lsize  = sizeof(struct linger);
-  setsockopt(sock, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
+  setsockopt(_sock, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
 }
 
