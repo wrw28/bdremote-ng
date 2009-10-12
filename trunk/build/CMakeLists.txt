@@ -86,6 +86,7 @@ ${PREFIX}/globaldefs.h
 ${PREFIX}/keydef.h
 ${PREFIX}/lirc_srv.h
 ${PREFIX}/q.h
+${PREFIX}/l.h
 )
 
 SET(GENERIC_SOURCES
@@ -97,6 +98,7 @@ ${PREFIX}/lirc_srv.c
 ${PREFIX}/lirc_thr.c
 ${PREFIX}/lirc_util.c
 ${PREFIX}/q.c
+${PREFIX}/l.c
 )
 
 include_directories (${PREFIX})

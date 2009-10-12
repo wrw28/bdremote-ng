@@ -35,6 +35,7 @@
 #define _GNU_SOURCE
 #include <signal.h>
 
+extern FILE* printStream;
 extern volatile sig_atomic_t __io_canceled;
 
 /** The number of repeats before this driver detects that the user is
@@ -89,7 +90,7 @@ void* lircThread (void* q)
 
 #if BDREMOTE_DEBUG
   BDREMOTE_DBG_HDR(ld->config->debug);
-  printf("using repeat rate: %d.\n", rate_mod);
+  fprintf(printStream, "using repeat rate: %d.\n", rate_mod);
 #endif
 
   ks.keyDown = 0;
@@ -136,9 +137,12 @@ void* lircThread (void* q)
 
 	      if (ks.repeat_count > REPEATS_BEFORE_TRANSMIT)
 		{
-		  printf("Key is down: %lu\n", ks.elapsed);
+#if BDREMOTE_DEBUG
+		  BDREMOTE_DBG_HDR(ld->config->debug);
+		  fprintf(printStream, "Key is down: %lu\n", ks.elapsed);
+#endif
 		  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
-		  //broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /* ks.repeat_sent */, 0xFF);
+		  /* broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0, 0xFF); */
 		  ks.repeat_sent++;
 		}
 	      ks.repeat_count++;
@@ -223,7 +227,7 @@ void DataInd_keyDown(lirc_data* _lc,
       /* Key pressed. */
 #if BDREMOTE_DEBUG
       BDREMOTE_DBG_HDR(_lc->config->debug);
-      printf("key down: %02X, %08X\n", _code, _mask);
+      fprintf(printStream, "key down: %02X, %08X\n", _code, _mask);
       BDREMOTE_DBG(_lc->config->debug, "single.");
 #endif
       num               = codeToIndex(_code);
@@ -249,11 +253,11 @@ void DataInd_keyUp(lirc_data* _lc,
       /* Key up. */
 #if BDREMOTE_DEBUG
       BDREMOTE_DBG_HDR(_lc->config->debug);
-      printf("key up: %02X, %08X\n", _code, _mask);
+      fprintf(printStream, "key up: %02X, %08X\n", _code, _mask);
 #endif
       if (_ks->lastKey != ps3remote_undef)
 	{
-	  // broadcastToLirc(_lc, ps3remote_keys[_ks->lastKey].name, 0, _code);
+	  /* broadcastToLirc(_lc, ps3remote_keys[_ks->lastKey].name, 0, _code); */
 
 	  _ks->keyDown      = 0;
 	  _ks->lastKey      = ps3remote_undef;
@@ -274,7 +278,7 @@ void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _
 
 #if BDREMOTE_DEBUG
   BDREMOTE_DBG_HDR(_ld->config->debug);
-  printf("_ld->magic0=%d.\n", _ld->magic0);
+  fprintf(printStream, "_ld->magic0=%d.\n", _ld->magic0);
   assert(_ld->magic0 == 0x15);
 #endif /* BDREMOTE_DEBUG */
   assert(_ld->clin < MAX_CLIENTS);
@@ -292,7 +296,7 @@ void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _
       else
 	{
 	  BDREMOTE_DBG_HDR(_ld->config->debug);
-	  printf("broadcast %d bytes to socket id %d.\n", len, _ld->clis[i]);
+	  fprintf(printStream, "broadcast %d bytes to socket id %d.\n", len, _ld->clis[i]);
 	}
 #endif /* BDREMOTE_DEBUG */
     }

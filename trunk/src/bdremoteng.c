@@ -47,6 +47,7 @@
 #include <captureif.h>
 #include <lirc_srv.h>
 #include <ug.h>
+#include <l.h>
 
 static void sig_hup(int sig);
 static void sig_term(int sig);
@@ -63,11 +64,13 @@ int main(int argc, char *argv[])
   captureData cdata;
   int ret = -1;
 
+  setDefaultLog();
+
   memset(&cdata, 0, sizeof(cdata));
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
   
-  while ((opt=getopt(argc,argv,"+p:t:a:r:d:u:g:nh"))!=-1)
+  while ((opt=getopt(argc,argv,"+p:t:a:r:d:u:g:f:nh"))!=-1)
      {
         switch(opt)
            {
@@ -95,6 +98,9 @@ int main(int argc, char *argv[])
            case 'g':
               setGroup(&config, optarg);
               break;
+	   case 'f':
+	      setLogFilename(&config, optarg); 
+	      break;
            case 'h':
               usage();
               exit(0);
@@ -165,10 +171,22 @@ int main(int argc, char *argv[])
            }
      }
 
+  /* Open the logfile after changing UID/GID. */
+  if (setLogFile(&config) == BDREMOTE_FAIL)
+    {
+      exit(0);
+    }
+  
+  if (config.log_filename_set)
+    {
+      printf("Writting log to: '%s'\n", config.log_filename);
+    }
+
   /* Start listening for BT clients. */
   if (pthread_create(&bt_thread, NULL, listener, &cdata) != 0)
     {
       perror("Could not create BT client thread");
+      closeLogFile();
       exit(1);                                                
     }
 
@@ -200,6 +218,8 @@ int main(int argc, char *argv[])
   destroyLircData(&ldata);
 
   destroyConfig(&config);
+
+  closeLogFile();
 
   return EXIT_SUCCESS;
 }
@@ -233,7 +253,8 @@ void usage(void)
    printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
           "\t-u <username>        Change UID to the UID of this user\n"
           "\t-g <group>           Change GID to the GID of this group\n"
-          "\t                     second, when key is pressed\n"    
+          "\t                     second, when key is pressed\n"
+	  "\t-f <filename>        Write log to <filename>.\n"
           "\t-d                   Enable debug.\n"     				
           "\t-n                   Don't fork daemon to background\n"      
           "\t-h, --help           Display help\n"                         
@@ -253,3 +274,4 @@ void sig_term(int _sig)
   __io_canceled = 1;
   (void)_sig;
 }
+

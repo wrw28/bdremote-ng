@@ -51,27 +51,29 @@
 #  define BDREMOTE_DEBUG 1
 #endif
 
+#include <stdio.h>
+extern FILE* printStream;
+
 #if BDREMOTE_DEBUG
-#  include <stdio.h>
-#  include <time.h>
+#include <time.h>
 
 int getHour(time_t* _ltime);
 int getMinute(time_t* _ltime);
 int getSecond(time_t* _ltime);
 
 /** Macro used to print debug output. */
-#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { time_t ltime = time(NULL); printf("%s:%d -> %d:%d:%d %s\n", __FILE__, __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime), (_x)); }
+#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { time_t ltime = time(NULL); fprintf(printStream, "%s:%d -> %d:%d:%d %s\n", __FILE__, __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime), (_x)); fflush(printStream); }
 /** Macro used to print a time stamp. */
-#  define BDREMOTE_DBG_HDR(_ENABLED) if (_ENABLED) { time_t ltime = time(NULL); printf("%s:%d -> %d:%d:%d:\n", __FILE__, __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime)); }
+#  define BDREMOTE_DBG_HDR(_ENABLED) if (_ENABLED) { time_t ltime = time(NULL); fprintf(printStream, "%s:%d -> %d:%d:%d:\n", __FILE__, __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime)); fflush(printStream);}
 /** Macro used to print error output. */
-#  define BDREMOTE_ERR(x) printf("%s:%d -> ERROR: %s\n", __FILE__, __LINE__, x)
+#  define BDREMOTE_ERR(x) fprintf(printStream, "%s:%d -> ERROR: %s\n", __FILE__, __LINE__, x); fflush(printStream);
 #else
 /** Macro used to print debug output. */
-#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { printf("%s\n", _x); }
+#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { fprintf(printStream, "%s\n", _x); fflush(printStream);}
 /** Macro used to print a time stamp. */
 #  define BDREMOTE_DBG_HDR(_ENABLED)
 /** Macro used to print error output. */
-#  define BDREMOTE_ERR(x) printf("Error: %s\n", x)
+#  define BDREMOTE_ERR(x) fprintf(printStream, "Error: %s\n", x); fflush(printStream);
 #endif
 
 /** Macro used to copy a string to the config. */
