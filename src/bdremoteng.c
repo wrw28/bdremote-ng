@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
           config.repeat_delay=atoi(optarg);
           break;
         case 'd':
-          config.debug = atoi(optarg);
+          config.debug = 1;
           break;
         case 'n':
           config.detach=0;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
                   config.remote_addr,
                   config.disconnect_timeout);
 
-  if (config.detach==1)
+  if (config.detach == 1)
     {
       if (daemon(0, 0))
         {
