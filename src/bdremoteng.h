@@ -21,6 +21,18 @@
  *
  */
 
+/** @defgroup app Application
+ *  This group contains the non-generic parts of the application.
+ *  @{
+ */
+
+/*! \file bdremoteng.h
+    \brief Program name and version information.
+
+    This file contains the program name end version information.
+
+*/
+
 #ifndef BD_BDREMOTENG_H
 #define BD_BDREMOTENG_H
 
@@ -31,3 +43,6 @@
 void usage(void);
 
 #endif /* BD_BDREMOTENG_H */
+
+/*\@}*/
+

@@ -21,6 +21,18 @@
  *
  */
 
+/** \ingroup Gen */
+/*\@{*/
+
+/*! \file globaldefs.h
+    \brief Global defines used by this application.
+
+    This file contains all global defines used by this
+    application. This means some common definitions, macros and
+    debugging defines.
+
+*/
+
 #ifndef BD_GLOBALDEFS_H
 #define BD_GLOBALDEFS_H
 
@@ -83,4 +95,6 @@ int getSecond(time_t* _ltime);
    }
 
 #endif /* BD_GLOBALDEFS_H */
+
+/*\@}*/
 

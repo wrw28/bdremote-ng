@@ -24,9 +24,26 @@
 #ifndef BD_UG_H
 #define BD_UG_H
 
+/** @defgroup UID UID/GID Interface.
+
+ *  This group contains a function used to change the UID/GID of the
+ *  application to one with less priviledges.
+
+ *  @{
+ */
+
+/*! \file ug.h
+    \brief Change UID/GID.
+
+    This file contains a function used to change UID/GID.
+
+*/
+
 /** Change to the UID:GID corresponding to the provided user:group. */
 int changeUIDAndGID(const char* _user,
                     const char* _group);
 
 #endif /* BD_UG_H */
+
+/*\@}*/
 

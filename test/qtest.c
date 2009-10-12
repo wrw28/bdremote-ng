@@ -25,6 +25,18 @@
  * Muys.
  */
 
+/** @defgroup Test Tests
+ *  This group contains tests and test cases.
+ *  @{
+ */
+
+/*! \file qtest.c
+    \brief Test queue.
+
+    Test application which tests if the queue used to send messages
+    between the BT thread and the LIRC thread is working as expected.
+*/
+
 #include <q.h>
 
 #include <stdio.h>
@@ -110,3 +122,6 @@ void* consumer (void* q)
     }
   return (NULL);
 }
+
+/*\@}*/
+

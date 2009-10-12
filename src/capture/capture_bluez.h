@@ -21,10 +21,25 @@
  *
  */
 
+/** @defgroup bluezif Bluez capture interface implemenation
+ 
+ *  This group contains the Bluez capture interface implementation.
+ 
+ *  @{
+ */
+
+/*! \file capture_bluez.h
+    \brief Bluez capture interface.
+*/
+
 #ifndef BD_CAPTURE_BLUEZ_H
 #define BD_CAPTURE_BLUEZ_H
 
 #include <globaldefs.h>
+#include <captureif.h>
 
-#endif // BD_CAPTURE_BLUEZ_H
+int InitcaptureLoop(captureData* _capturedata);
+int captureLoop(captureData* _capturedata);
+
+#endif /* BD_CAPTURE_BLUEZ_H */
 

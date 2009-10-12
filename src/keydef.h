@@ -21,6 +21,20 @@
  *
  */
 
+/** @defgroup Keys PS3 remote key definition.
+ *  This group contains the definition of the keys on the PS3 remote. 
+ *  @{
+ */
+
+
+/*! \file keydef.h
+    \brief PS3 remote keys.
+
+    This file contains the definition of the keys on the PS3 remote
+    and some useful defines.
+
+*/
+
 #ifndef BD_KEYDEF_H
 #define BD_KEYDEF_H
 
@@ -37,6 +51,7 @@ struct key_info
 
 /** The code for a key release. */
 #define ps3remote_keyup 0xFF
+/** Undefined key. */
 #define ps3remote_undef -1
 
 /** The max number of keys. */
@@ -100,4 +115,6 @@ struct key_info ps3remote_keys[] =
   };                               
 
 #endif /* BD_KEYDEF_H */
+
+/*\@}*/
 

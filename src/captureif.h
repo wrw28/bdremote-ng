@@ -21,6 +21,19 @@
  *
  */
 
+/** @defgroup captureinterface Capture Interface
+ 
+ *  This group contains the capture interface used by this
+ *  application. It needs to be implemented in order to capture
+ *  bluetooth data from the PS3 remote.
+ 
+ *  @{
+ */
+
+/*! \file captureif.h
+    \brief Bluetooth capture interface.
+*/
+
 #ifndef BD_CAPTUREIF_H
 #define BD_CAPTUREIF_H
 
@@ -105,4 +118,6 @@ int InitcaptureLoop(captureData* _capturedata);
 int captureLoop(captureData* _capturedata);
 
 #endif /* BD_CAPTUREIF_H */
+
+/*\@}*/
 
