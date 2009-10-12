@@ -45,21 +45,25 @@ hidd --connect 00:19:C1:5A:F1:3F
 
 Then start "bdremoteng" as:
 {{{
-bdremoteng -a 00:19:C1:5A:F1:3F -n -d 1
+bdremoteng -a 00:19:C1:5A:F1:3F -n -d
 }}}
 (it should write some informative messages about what it is doing and not detach from the terminal it was started from)
 
 you can give extra command-line parameters to "bdremoteng"
 {{{
--p <port>            Set port number for incoming LIRCD connections.
-                     Default is 8888.
--t <timeout>         Set disconnect timeout for BD remote (in seconds)
-                     Default is 60. This option is meant to save batteries.
--a <address>         BT addres of remote.
-                     For example: -a 00:19:C1:5A:F1:3F
--r <rate>            Key repeat rate. Generate <rate> repeats per
-                     second, when key is pressed. Default is 10
--d <level>           Set debug output level. Default is 0.
+	-p <port>            Set port number for incoming LIRCD connections.
+	-t <timeout>         Set disconnect timeout for BD remote (in seconds).
+	-a <address>         BT addres of remote.
+	                     For example: -a 00:19:C1:5A:F1:3F. 
+	-r <rate>            Key repeat rate. Generate <rate> repeats per second.
+	-e <num>             Wait <num> ms before repeating a key.
+	-u <username>        Change UID to the UID of this user.
+	-g <group>           Change GID to the GID of this group.
+	                     second, when key is pressed.
+	-f <filename>        Write log to <filename>.
+	-d                   Enable debug.
+	-n                   Don't fork daemon to background.
+	-h, --help           Display help.
 }}}
 
 This daemon acts as a remote LIRC server. 
