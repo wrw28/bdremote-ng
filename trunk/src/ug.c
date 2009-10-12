@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -37,46 +37,46 @@
 int changeUIDAndGID(const char* _user,
                     const char* _group)
 {
-   int result              = BDREMOTE_OK;
-   struct passwd* s_passwd = NULL;
-   uid_t uid               = -1;
-   struct group* s_group   = NULL;
-   gid_t gid               = -1;
-   /* Resolve the user and group into uid/gid. */
-   
-   /* User. */
-   s_passwd = getpwnam(_user);
+  int result              = BDREMOTE_OK;
+  struct passwd* s_passwd = NULL;
+  uid_t uid               = -1;
+  struct group* s_group   = NULL;
+  gid_t gid               = -1;
+  /* Resolve the user and group into uid/gid. */
 
-   if (s_passwd == 0)
-      {
-         result = BDREMOTE_FAIL;
-         return result;
-      }
+  /* User. */
+  s_passwd = getpwnam(_user);
 
-   uid = s_passwd->pw_uid;
+  if (s_passwd == 0)
+    {
+      result = BDREMOTE_FAIL;
+      return result;
+    }
 
-   /* Group. */
-   s_group = getgrnam(_group);
-   
-   if (s_group == 0)
-      {
-         result = BDREMOTE_FAIL;
-         return result;
-      }
+  uid = s_passwd->pw_uid;
 
-   gid = s_group->gr_gid;
-   
-   /* Do the change. */
-   
-   if (setgid(gid) != 0)
-      {
-         result = BDREMOTE_FAIL;
-      }
+  /* Group. */
+  s_group = getgrnam(_group);
 
-   if (setuid(uid) != 0)
-      {
-         result = BDREMOTE_FAIL;
-      }
+  if (s_group == 0)
+    {
+      result = BDREMOTE_FAIL;
+      return result;
+    }
 
-   return result;
+  gid = s_group->gr_gid;
+
+  /* Do the change. */
+
+  if (setgid(gid) != 0)
+    {
+      result = BDREMOTE_FAIL;
+    }
+
+  if (setuid(uid) != 0)
+    {
+      result = BDREMOTE_FAIL;
+    }
+
+  return result;
 }

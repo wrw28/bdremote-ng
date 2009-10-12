@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -66,15 +66,15 @@ int write_socket(int _fd, const char* _buf, int _len)
 {
   int done = 0;
   int todo = _len;
-  
+
   while (todo)
     {
-       done = write(_fd, _buf, todo);
+      done = write(_fd, _buf, todo);
 
       if (done<=0)
-         {
-            return done;
-         }
+        {
+          return done;
+        }
       _buf  += done;
       todo  -= done;
     }

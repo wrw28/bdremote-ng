@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -27,19 +27,19 @@
  */
 
 /*! \file bdremoteng.h
-    \brief Program name and version information.
+  \brief Program name and version information.
 
-    This file contains the program name end version information.
+  This file contains the program name end version information.
 
 */
 
 /*! \mainpage bdremote-ng
  *
- * 
+ *
  * This projects attempts to write a working daemon that takes input
  * from a PS3 bluetooth remote and converts it into something that can
  * be given to LIRC.
- * 
+ *
  */
 
 #ifndef BD_BDREMOTENG_H

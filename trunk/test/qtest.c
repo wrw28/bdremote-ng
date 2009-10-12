@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -31,10 +31,10 @@
  */
 
 /*! \file qtest.c
-    \brief Test queue.
+  \brief Test queue.
 
-    Test application which tests if the queue used to send messages
-    between the BT thread and the LIRC thread is working as expected.
+  Test application which tests if the queue used to send messages
+  between the BT thread and the LIRC thread is working as expected.
 */
 
 #include <q.h>
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   pthread_t pro, con;
 
   int res = queueInit(&fifo);
-  if (res ==  Q_ERR) 
+  if (res ==  Q_ERR)
     {
       fprintf (stderr, "main: Queue Init failed.\n");
       exit(1);
@@ -79,7 +79,7 @@ void* producer (void* q)
   char msg[100];
   queueData* qd = NULL;
 
-  for (i = 0; i < LOOP; i++) 
+  for (i = 0; i < LOOP; i++)
     {
       sprintf(msg, "Test 1: %d", i);
       qd = queueDataInit(msg, strlen(msg)+1);
@@ -104,7 +104,7 @@ void* consumer (void* q)
   int i;
   queueData* d = 0;
 
-  for (i = 0; i < LOOP; i++) 
+  for (i = 0; i < LOOP; i++)
     {
       queueRem (fifo, 1, &d);
       printf ("consumer: recieved %s.\n", d->buffer);
@@ -112,7 +112,7 @@ void* consumer (void* q)
       d = NULL;
       usleep(200000);
     }
-  for (i = 0; i < LOOP; i++) 
+  for (i = 0; i < LOOP; i++)
     {
       queueRem (fifo, 1, &d);
       printf ("consumer: recieved %s.\n", d->buffer);

@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -29,10 +29,10 @@
 #include <globaldefs.h>
 
 void InitCaptureData(captureData* _cd,
-		     const configuration* _config,
-		     void* _p,
-		     const char* _dest_address,
-		     const int _timeout )
+                     const configuration* _config,
+                     void* _p,
+                     const char* _dest_address,
+                     const int _timeout )
 {
 #if BDREMOTE_DEBUG
   _cd->magic0 = 127;
@@ -42,7 +42,7 @@ void InitCaptureData(captureData* _cd,
   assert(_p != NULL);
   assert(_dest_address != NULL);
   assert(_timeout > 0);
-  
+
   assert(_cd->config == NULL);
   _cd->config = _config;
 
@@ -54,7 +54,7 @@ void InitCaptureData(captureData* _cd,
   FREEVAL(_cd->dest_address);
   SETVAL(_cd->dest_address, _dest_address)
 
-  _cd->timeout = _timeout;
+    _cd->timeout = _timeout;
   memset(&_cd->sockets[0], 0, 2);
 }
 

@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -30,11 +30,11 @@
  */
 
 /*! \file lirc_srv.h
-    \brief LIRC server.
+  \brief LIRC server.
 
-    This file contains a LIRC server. It's purpose is to translate
-    bluetooth events received using a queue from the bluetooth
-    interface into key press events which are understood by LIRC.
+  This file contains a LIRC server. It's purpose is to translate
+  bluetooth events received using a queue from the bluetooth
+  interface into key press events which are understood by LIRC.
 
 */
 
@@ -63,22 +63,22 @@ typedef struct
   const configuration* config;
   /** Socked used to accept new LIRC clients. */
   int sockinet;
-  
+
   /** Client sockets. */
-  int clis[MAX_CLIENTS]; 
+  int clis[MAX_CLIENTS];
   /** Number of client sockets. */
   int clin;
-  
+
   /* State information. */
-  
+
   /** Mutex used. */
   pthread_mutex_t dataMutex;
-  
+
   /** Queue used to communicate BT events to lirc clients.
    * Thread safe.
    */
   queue qu;
-  
+
   /** Thread used to receive bluetooth events (keypresses) and
       sending them to LIRC in a format it understands.. */
   pthread_t thread;

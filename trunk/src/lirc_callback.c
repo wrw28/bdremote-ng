@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -35,7 +35,7 @@ void RemoteConnected(void* _p)
   BDREMOTE_DBG(lc->config->debug, "Remote connected.");
 }
 
-/* Received some data from the ps3 remote. 
+/* Received some data from the ps3 remote.
  * Forward it to LIRC clients.
  * Note: no threads are used, so no need for locking.
  */
@@ -58,4 +58,4 @@ void RemoteDisconnected(void* _p)
   BDREMOTE_DBG(lc->config->debug, "Remote disconnected.");
 }
 
-	
+

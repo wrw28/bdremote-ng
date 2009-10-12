@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -77,7 +77,7 @@ int queueInit (queue* _q)
   pthread_cond_init (_q->notFull, NULL);
   _q->notEmpty = (pthread_cond_t *) malloc (sizeof (pthread_cond_t));
   pthread_cond_init (_q->notEmpty, NULL);
-	
+
   return Q_OK;
 }
 
@@ -86,7 +86,7 @@ void queueDeinit (queue* _q)
   assert(_q != NULL);
 
   pthread_mutex_destroy (_q->mut);
-  free (_q->mut);	
+  free (_q->mut);
   pthread_cond_destroy (_q->notFull);
   free (_q->notFull);
   pthread_cond_destroy (_q->notEmpty);
@@ -100,7 +100,7 @@ void queueAdd (queue* _q, queueData* _in)
 
   pthread_mutex_lock (_q->mut);
 
-  while (_q->full) 
+  while (_q->full)
     {
 #if BDREMOTE_DEBUG
 #if Q_DBG
@@ -127,7 +127,7 @@ void queueAdd (queue* _q, queueData* _in)
       _q->full = 1;
     }
   _q->empty = 0;
-  
+
   pthread_mutex_unlock (_q->mut);
   pthread_cond_signal (_q->notEmpty);
 }
@@ -146,43 +146,43 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
   if (_blockOnEmpty == 1)
     {
       while (_q->empty)
-	{
+        {
 #if BDREMOTE_DEBUG
 #if Q_DBG
-	  printf ("Rem: queue EMPTY.\n");
+          printf ("Rem: queue EMPTY.\n");
 #endif
 #endif
-	  pthread_cond_wait (_q->notEmpty, _q->mut);
-	}
+          pthread_cond_wait (_q->notEmpty, _q->mut);
+        }
     }
   else
     {
       while (_q->empty)
-	{
-	  gettimeofday(&tp, NULL);
-	  abstime.tv_sec  = tp.tv_sec;
-	  abstime.tv_nsec = tp.tv_usec * 1000;
-	  /* Wait for 100 ns. */
-	  abstime.tv_nsec += 100;
+        {
+          gettimeofday(&tp, NULL);
+          abstime.tv_sec  = tp.tv_sec;
+          abstime.tv_nsec = tp.tv_usec * 1000;
+          /* Wait for 100 ns. */
+          abstime.tv_nsec += 100;
 
-	  if (pthread_cond_timedwait(_q->notEmpty, _q->mut, &abstime) == ETIMEDOUT)
-	    {
-	      /* Timeout. */
-	      i = 0;
-	      break;
-	    }
-	}
+          if (pthread_cond_timedwait(_q->notEmpty, _q->mut, &abstime) == ETIMEDOUT)
+            {
+              /* Timeout. */
+              i = 0;
+              break;
+            }
+        }
 
       if (i == 0)
-	{
+        {
 #if BDREMOTE_DEBUG
 #if Q_DBG
-	  printf ("Rem: queue EMPTY.\n");
+          printf ("Rem: queue EMPTY.\n");
 #endif
 #endif
-	  pthread_mutex_unlock (_q->mut);
-	  return Q_ERR;
-	}
+          pthread_mutex_unlock (_q->mut);
+          return Q_ERR;
+        }
 #if BDREMOTE_DEBUG
 #if Q_DBG
       printf ("Rem: done waiting for cond.\n");
@@ -191,7 +191,7 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
     }
 
   *_out = _q->buf[_q->head];
-  
+
   _q->head++;
   if (_q->head == QUEUESIZE)
     {
@@ -202,7 +202,7 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
       _q->empty = 1;
     }
   _q->full = 0;
-  
+
   pthread_mutex_unlock (_q->mut);
   pthread_cond_signal (_q->notFull);
 #if BDREMOTE_DEBUG

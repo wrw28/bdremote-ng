@@ -1,7 +1,7 @@
 /*
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
- *  
+ *
  *  Copyright (C) 2009  Michael Wojciechowski <wojci@wojci.dk>
  *
  *
@@ -39,12 +39,12 @@ int setLogFile(const configuration* _config)
   if (_config->log_filename_set)
     {
       FILE* f = fopen(_config->log_filename, "a");
-  
+
       if (f == NULL)
-	{
-	  printf("Unable to open log file '%s'.\n", _config->log_filename);
-	  return BDREMOTE_FAIL;
-	}
+        {
+          printf("Unable to open log file '%s'.\n", _config->log_filename);
+          return BDREMOTE_FAIL;
+        }
 
       printStream = f;
     }
