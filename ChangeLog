@@ -1,5 +1,11 @@
+bdremote-ng 0.4
+---------------
+
+002 Implement support for repeat.
+
 bdremote-ng 0.3
 ---------------
+
 Fixes a minor bug.
 
 009 free(): invalid pointer in captureif.c:54.
