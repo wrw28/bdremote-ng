@@ -21,6 +21,18 @@
  *
  */
 
+/** \ingroup UID
+ *  @{
+ */
+
+/*! \file ug.c
+  \brief Change UID/GID implemention.
+
+  A function used to resolve user/group into UID/GID and then to
+  change the current UID/GID into the specified ones.
+
+*/
+
 #include "ug.h"
 
 #include <sys/types.h>
