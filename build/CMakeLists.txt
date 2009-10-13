@@ -5,6 +5,16 @@ SET(CMAKE_INSTALL_PREFIX "")
 
 OPTION(USE_SPLINT "Run splint after compiling" OFF)
 
+OPTION(ENABLE_REPEAT "Enable key repeat." OFF)
+
+IF(ENABLE_REPEAT)
+  message(STATUS "Repeat enabled.")
+  ADD_DEFINITIONS("-DENABLE_REPEAT=1")
+ELSE(ENABLE_REPEAT)
+  message(STATUS "Repeat disabled.")
+  ADD_DEFINITIONS("-DENABLE_REPEAT=0")
+ENDIF(ENABLE_REPEAT)
+
 #
 # Version check.
 #
