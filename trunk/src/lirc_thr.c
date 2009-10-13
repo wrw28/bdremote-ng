@@ -91,6 +91,7 @@ void* lircThread (void* q)
   queueData* qd = NULL;
   int res       = Q_ERR;
   keyState ks;
+#if ENABLE_REPEAT
   int rate_mod  = 0;
   unsigned long rate_delay = 100;
   if (ld->config->repeat_delay > 0)
@@ -106,22 +107,34 @@ void* lircThread (void* q)
     {
       rate_mod = 100;
     }
+#endif
 
-#if BDREMOTE_DEBUG
+#if ENABLE_REPEAT
+#  if BDREMOTE_DEBUG
   BDREMOTE_LOG(ld->config->debug,
                fprintf(printStream, "Started LIRC thread:\n");
                fprintf(printStream, " - using repeat rate : %d.\n", ld->config->repeat_rate);
                fprintf(printStream, " - using repeat delay: %lu.\n", rate_delay);
                );
+#  endif
+#else
+#  if BDREMOTE_DEBUG
+  BDREMOTE_LOG(ld->config->debug,
+               fprintf(printStream, "Started LIRC thread:\n");
+               fprintf(printStream, " - repeat disabled.");
+               );
+#  endif
 #endif
 
   ks.keyDown = 0;
   ks.lastKey = ps3remote_undef;
 
+#if ENABLE_REPEAT
   initTime(&ks);
   ks.elapsed_last = 0;
   ks.repeat_sent  = 0;
   ks.repeat_count = 0;
+#endif
 
   while (!__io_canceled)
     {
@@ -134,13 +147,14 @@ void* lircThread (void* q)
           handleKey(ld, qd->buffer, qd->size, &ks);
 
           queueDataDeInit(qd);
-
+#if ENABLE_REPEAT
           initTime(&ks);
           ks.elapsed_last = 0;
           ks.repeat_sent  = 0;
           ks.repeat_count = 0;
+#endif
         }
-
+#if ENABLE_REPEAT
       if (ks.keyDown == 1)
         {
           updateTime(&ks);
@@ -169,8 +183,18 @@ void* lircThread (void* q)
         }
       else
         {
-          usleep(100);
+           usleep(100);
         }
+#else
+      if (ks.keyDown == 1)
+         {
+            usleep(10);
+         }
+      else
+         {
+            usleep(100);
+         }
+#endif
     }
 
   BDREMOTE_DBG(ld->config->debug, "Thread terminating ..");
