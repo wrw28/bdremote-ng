@@ -101,8 +101,13 @@ void printConfig(const configuration* _config)
   fprintf(printStream, "Configuration:\n");
   fprintf(printStream, " - listen port : %d.\n", _config->listen_port);
   fprintf(printStream, " - timeout     : %d second(s).\n", _config->disconnect_timeout);
+#if ENABLE_REPEAT
   fprintf(printStream, " - repeat rate : %d per secound.\n", _config->repeat_rate);
   fprintf(printStream, " - repeat delay: %d ms.\n", _config->repeat_delay);
+#else
+  fprintf(printStream, " - repeat rate : disabled.\n");
+  fprintf(printStream, " - repeat delay: disabled.\n");
+#endif
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
   fprintf(printStream, " - remote addr : %s.\n", _config->remote_addr);
   fprintf(printStream, " - detach      : %d.\n", _config->detach);
@@ -124,11 +129,11 @@ void printConfig(const configuration* _config)
     }
   if (_config->log_filename_set)
     {
-      fprintf(printStream, " - log:        : '%s'.\n", _config->log_filename);
+      fprintf(printStream, " - log         : '%s'.\n", _config->log_filename);
     }
   else
     {
-      fprintf(printStream, " - log:        : stdout.\n");
+      fprintf(printStream, " - log         : stdout.\n");
     }
 }
 
