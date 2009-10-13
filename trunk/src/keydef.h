@@ -116,5 +116,5 @@ struct key_info ps3remote_keys[] =
 
 #endif /* BD_KEYDEF_H */
 
-/*\@}*/
+/*@}*/
 

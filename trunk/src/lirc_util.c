@@ -21,6 +21,16 @@
  *
  */
 
+/** \ingroup LIRC */
+/*@{*/
+
+/*! \file lirc_util.c
+  \brief LIRC, utility functions.
+
+  Implements a few utility functions used by the LIRC server.
+
+*/
+
 #include "lirc_srv.h"
 
 #include <globaldefs.h>
@@ -88,4 +98,6 @@ void nolinger(int _sock)
   int lsize  = sizeof(struct linger);
   setsockopt(_sock, SOL_SOCKET, SO_LINGER, (void *)&linger, lsize);
 }
+
+/*@}*/
 

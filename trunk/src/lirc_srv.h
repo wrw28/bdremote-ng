@@ -95,7 +95,8 @@ void startLircThread(lirc_data* _ld);
 /** Wait for the LIRC thread to terminate. */
 void waitForLircThread(lirc_data* _ld);
 
-/** Run a LIRC server. */
+/** Run a LIRC server. Should be run from the main thread of an
+    application. Blocks. */
 int lirc_server(configuration* _config, lirc_data* _lircdata);
 
 /** Broadcast a message to all connected LIRC sockets. */
@@ -148,4 +149,5 @@ void updateTime(keyState* _ks);
 
 #endif /* BD_LIRC_SRV_H */
 
+/*@}*/
 

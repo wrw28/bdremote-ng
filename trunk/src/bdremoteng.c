@@ -21,6 +21,17 @@
  *
  */
 
+/** \ingroup app
+ *  @{
+ */
+
+/*! \file bdremoteng.c
+  \brief The main application.
+
+  This file contains the main application.
+
+*/
+
 #include "bdremoteng.h"
 
 #define _GNU_SOURCE
@@ -49,9 +60,13 @@
 #include <ug.h>
 #include <l.h>
 
+/** Handle signal: HUP. */
 static void sig_hup(int sig);
+
+/** Handle signal: TERM. */
 static void sig_term(int sig);
 
+/** Thread. Captures from BT interface. */
 void* listener(void* _p);
 
 int main(int argc, char *argv[])
@@ -281,4 +296,6 @@ void sig_term(int _sig)
   __io_canceled = 1;
   (void)_sig;
 }
+
+/*@}*/
 
