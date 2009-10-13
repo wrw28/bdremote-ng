@@ -34,6 +34,7 @@
 
 #if BDREMOTE_DEBUG
 #  include <assert.h>
+#  include <string.h>
 
 /** Handy macro to extract some part from time_t. */
 #  define getPart(PART) {                       \

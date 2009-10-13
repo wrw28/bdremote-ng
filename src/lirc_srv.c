@@ -40,7 +40,6 @@
 #include "lirc_srv.h"
 
 #include <globaldefs.h>
-
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
@@ -51,10 +50,15 @@
 #include <syslog.h>
 #include <signal.h>
 #include <getopt.h>
+#ifndef __USE_GNU
+/* Define this to avoid a warning about implicit definition of
+   ppoll.*/
+#  define __USE_GNU
+#endif
 #include <sys/poll.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <poll.h>
+/* #include <poll.h> */
 #include <netinet/in.h>
 #include <assert.h>
 
