@@ -43,3 +43,5 @@ int captureLoop(captureData* _capturedata);
 
 #endif /* BD_CAPTURE_BLUEZ_H */
 
+/*@}*/
+

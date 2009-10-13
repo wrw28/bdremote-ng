@@ -21,6 +21,14 @@
  *
  */
 
+/** \ingroup bluezif
+ *  @{
+ */
+
+/*! \file capture_bluez.c
+  \brief Bluez capture interface implementation.
+*/
+
 #include "capture_bluez.h"
 
 #define _GNU_SOURCE
@@ -46,30 +54,40 @@
 #include <poll.h>
 #include <assert.h>
 
+/** PSM corresponding to HID control channel. */
 #define L2CAP_PSM_HIDP_CTRL 0x11
+/** PSM corresponding to HID interrupt channel. */
 #define L2CAP_PSM_HIDP_INTR 0x13
+
+/** The max buffer used for reading from BT sockets. */
 #define MAXBUFFERSIZE 1024
 
 extern volatile sig_atomic_t __io_canceled;
 
+/** Read from a socket, until timeout or error.
+ * @returns 0 - daemon shutting down becase of signal from outside world. 
+ *          1 - client disconnected. 
+ *          2 - timeout.
+ */
 int readFromSocket(captureData* _capturedata, int _socket);
 
-/* Returns:
- * 0 - unknown device.
- * 1 - known device.
+/** Check the source address of a connected socket against the address
+ *  given as parameter.
+ * 
+ * @return 0 - unknown device or 1 - known device.
  */
-int l2cap_checkSource(int sock, bdaddr_t* address)
+int l2cap_checkSource(int _sock, const bdaddr_t* _address)
 {
   struct sockaddr_l2 addr;
   socklen_t addrlen = (socklen_t)sizeof(addr);
 
-  if (getpeername(sock, (struct sockaddr *) &addr, &addrlen) < 0)
+  if (getpeername(_sock, (struct sockaddr *) &addr, &addrlen) < 0)
     {
       perror("getpeername");
       return BDREMOTE_FAIL;
     }
 
-  assert(sizeof(addr.l2_bdaddr) == sizeof(*address));
+  assert(sizeof(addr.l2_bdaddr) == sizeof(*_address));
 
 #if 0
   int i = 0;
@@ -82,7 +100,7 @@ int l2cap_checkSource(int sock, bdaddr_t* address)
     }
 #endif
 
-  if (memcmp(&addr.l2_bdaddr, address, sizeof(*address)) == 0)
+  if (memcmp(&addr.l2_bdaddr, _address, sizeof(*_address)) == 0)
     {
       return 1;
     }
@@ -90,50 +108,7 @@ int l2cap_checkSource(int sock, bdaddr_t* address)
   return 0;
 }
 
-int l2cap_connect(bdaddr_t *src, bdaddr_t *dst, unsigned short psm)
-{
-  struct sockaddr_l2 addr;
-  socklen_t addrlen = (socklen_t)sizeof(addr);
-  struct l2cap_options opts;
-  int sk;
-
-  if ((sk = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP)) < 0)
-    {
-      return BDREMOTE_FAIL;
-    }
-
-  memset(&addr, 0, (size_t)addrlen);
-  addr.l2_family  = AF_BLUETOOTH;
-  bacpy(&addr.l2_bdaddr, src);
-
-  if (bind(sk, (struct sockaddr *) &addr, addrlen) < 0)
-    {
-      (void)close(sk);
-      return BDREMOTE_FAIL;
-    }
-
-  memset(&opts, 0, sizeof(opts));
-  opts.imtu = HIDP_DEFAULT_MTU;
-  opts.omtu = HIDP_DEFAULT_MTU;
-  opts.flush_to = 0xffff;
-
-  (void)setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS,
-                   &opts, (socklen_t)sizeof(opts));
-
-  memset(&addr, 0, (size_t)addrlen);
-  addr.l2_family  = AF_BLUETOOTH;
-  bacpy(&addr.l2_bdaddr, dst);
-  addr.l2_psm = htobs(psm);
-
-  if (connect(sk, (struct sockaddr *) &addr, addrlen) < 0)
-    {
-      (void)close(sk);
-      return BDREMOTE_FAIL;
-    }
-
-  return sk;
-}
-
+/** l2cap version of listen(). */
 int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog)
 {
   struct sockaddr_l2 addr;
@@ -180,6 +155,7 @@ int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog
   return sk;
 }
 
+/** l2cap version of accept(). */
 int l2cap_accept(int sk, bdaddr_t *bdaddr)
 {
   struct sockaddr_l2 addr;
@@ -201,12 +177,6 @@ int l2cap_accept(int sk, bdaddr_t *bdaddr)
   return nsk;
 }
 
-/* Read from a socket, until timeout or error.
- * Returns:
- * 0 - daemon shutting down becase of signal from outside world.
- * 1 - client disconnected.
- * 2 - timeout.
- */
 int readFromSocket(captureData* _capturedata, int _socket)
 {
   struct pollfd p;
@@ -267,6 +237,7 @@ int readFromSocket(captureData* _capturedata, int _socket)
   return 0;
 }
 
+/** Called by captureLoop to do the actual work. */
 void run_server(captureData* _capturedata,
                 int csk, int isk)
 {
@@ -440,3 +411,6 @@ int captureLoop(captureData* _capturedata)
 
   return BDREMOTE_OK;
 }
+
+/*@}*/
+
