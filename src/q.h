@@ -26,7 +26,7 @@
  */
 
 /** \ingroup Gen */
-/*\@{*/
+/*@{*/
 
 /*! \file q.h
   \brief Thread safe queue.
@@ -105,5 +105,5 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out);
 
 #endif /* BD_Q_H */
 
-/*\@}*/
+/*@}*/
 

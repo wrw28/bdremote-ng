@@ -90,5 +90,5 @@ void printConfig(const configuration* _config);
 
 #endif /* BD_CFG_H */
 
-/*\@}*/
+/*@}*/
 

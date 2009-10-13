@@ -21,6 +21,22 @@
  *
  */
 
+/** \ingroup LIRC */
+/*@{*/
+
+/*! \file lirc_srv.c
+  \brief Implements a LIRC server.
+  
+  This file implements a LIRC server. This means listening for a
+  socket for connections from LIRC and accepting new clients. Added
+  client are broadcast keypresses in other part of this application -
+  see lirc_thr.c.
+
+  The lirc_server() function is the one to examine in order to
+  understand how this module works.
+
+*/
+
 #include "lirc_srv.h"
 
 #include <globaldefs.h>
@@ -42,6 +58,7 @@
 #include <netinet/in.h>
 #include <assert.h>
 
+/** Indicates that a TERM signal was received which interrupted IO. */
 volatile sig_atomic_t __io_canceled = 0;
 
 void add_client(lirc_data* _lircdata);
@@ -226,4 +243,6 @@ void remove_client(lirc_data* _lircdata, int fd)
         }
     }
 }
+
+/*@}*/
 

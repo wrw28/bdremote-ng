@@ -21,14 +21,33 @@
  *
  */
 
+/** @defgroup log Logging */
+/*@{*/
+
+/*! \file l.h
+  \brief Logging.
+
+  Support function to setup logging to a file/stdout.
+
+*/
+
 #ifndef BD_L_H
 #define BD_L_H
 
 #include <bdrcfg.h>
 
+/** Set the default log - stdout. */
 void setDefaultLog();
+
+/** Set logging to the file specified in the config. If no file is
+    specified, do nothing. */
 int setLogFile(const configuration* _config);
+
+/** Close the log file previously opened for reading. If none was
+    opened, do nothing.*/
 void closeLogFile();
 
 #endif /* BD_L_H */
+
+/*@}*/
 

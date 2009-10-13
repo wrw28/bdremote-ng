@@ -21,6 +21,19 @@
  *
  */
 
+/** \ingroup LIRC */
+/*@{*/
+
+/*! \file lirc_thr.c
+  \brief Thread used to handle messages from capture interface.
+
+  This file implements a thread which is used to receive messages
+  (trough a thread safe queue) from the capture interface. This thread
+  parses the contents and, if configured to do so, handles repeat -
+  that is holding down a key on the remote.
+
+*/
+
 #include "lirc_srv.h"
 
 #include <globaldefs.h>
@@ -37,10 +50,6 @@
 
 extern FILE* printStream;
 extern volatile sig_atomic_t __io_canceled;
-
-/** The number of repeats before this driver detects that the user is
-    holding down a key on the remote. */
-#define REPEATS_BEFORE_TRANSMIT 2
 
 /** Thread. */
 void* lircThread (void* q);
@@ -75,6 +84,7 @@ void waitForLircThread(lirc_data* _ld)
   pthread_join(_ld->thread, NULL);
 }
 
+/** LIRC thread. */
 void* lircThread (void* q)
 {
   lirc_data* ld = (lirc_data*)q;
@@ -168,11 +178,10 @@ void* lircThread (void* q)
   return (NULL);
 }
 
-/* Received some data from the ps3 remote.
+/** Received some data from the ps3 remote.
  * Forward it to LIRC clients.
  * Note: no threads are used, so no need for locking.
  */
-
 void handleKey(lirc_data* _ld,
                const char* _data, const int _size,
                keyState* _ks)
@@ -210,6 +219,8 @@ void handleKey(lirc_data* _ld,
     }
 }
 
+/** Convert a code received from the remote to an index into an array
+    of remote keys. */
 int codeToIndex(unsigned int _code)
 {
   int num = ps3remote_undef;
@@ -273,7 +284,7 @@ void DataInd_keyUp(lirc_data* _ld,
     }
 }
 
-/* Broadcast the last received key to all connected LIRC clients. */
+/** Broadcast the last received key to all connected LIRC clients. */
 void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _code)
 {
   int i = 0;
@@ -312,3 +323,6 @@ void broadcastToLirc(lirc_data* _ld, const char* _name, int _rep, unsigned int _
 
   pthread_mutex_unlock (&_ld->dataMutex);
 }
+
+/*@}*/
+

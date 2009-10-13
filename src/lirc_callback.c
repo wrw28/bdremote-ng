@@ -21,6 +21,17 @@
  *
  */
 
+/** \ingroup LIRC */
+/*@{*/
+
+/*! \file lirc_callback.c
+  \brief Capture device, callback implementation.
+
+  This file implements the callback mechanism specified by the capture
+  interface. Look in the captureif.h header file.
+
+*/
+
 #include "lirc_srv.h"
 #include <globaldefs.h>
 
@@ -58,4 +69,5 @@ void RemoteDisconnected(void* _p)
   BDREMOTE_DBG(lc->config->debug, "Remote disconnected.");
 }
 
+/*@}*/
 

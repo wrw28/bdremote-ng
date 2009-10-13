@@ -84,7 +84,7 @@ void InitCaptureData(captureData* _cd,
                      const char* _dest_address,
                      const int _timeout);
 
-/* Release any data used by this interface. */
+/** Release any data used by this interface. */
 void DestroyCaptureData(captureData* _cd);
 
 /*
@@ -119,5 +119,5 @@ int captureLoop(captureData* _capturedata);
 
 #endif /* BD_CAPTUREIF_H */
 
-/*\@}*/
+/*@}*/
 

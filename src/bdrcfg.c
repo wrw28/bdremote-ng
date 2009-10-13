@@ -21,6 +21,16 @@
  *
  */
 
+/** \ingroup Gen
+ *  @{
+ */
+
+/*! \file bdrcfg.c
+  \brief Implements functions for handling configuration.
+
+  Implements a few functions used to set certain config keys.
+*/
+
 #include "bdrcfg.h"
 
 #include <stdlib.h>
@@ -147,3 +157,6 @@ void setLogFilename(configuration* _config, const char* _filename)
   SETVAL(_config->log_filename, _filename);
   _config->log_filename_set = 1;
 }
+
+/*@}*/
+

@@ -22,7 +22,7 @@
  */
 
 /** \ingroup Gen */
-/*\@{*/
+/*@{*/
 
 /*! \file globaldefs.h
   \brief Global defines used by this application.
@@ -57,14 +57,20 @@ extern FILE* printStream;
 #if BDREMOTE_DEBUG
 #include <time.h>
 
+/** Extract the hour from a time_t struct. */
 int getHour(time_t* _ltime);
+
+/** Extract the minute from a time_t struct. */
 int getMinute(time_t* _ltime);
+
+/** Extract the second from a time_t struct. */
 int getSecond(time_t* _ltime);
 
-const char* slashOffset(const char* _filenameWithSlashes);
+/** Given a path, return the file name only*/
+const char* bdrGetFilename(const char* _filenameWithSlashes);
 
 /** Macro used to print a time stamp. */
-#  define BDREMOTE_DBG_HDR(_ENABLED) { if (_ENABLED) { time_t ltime = time(NULL); fprintf(printStream, "%s:%d -> %d:%d:%d:\n", slashOffset(__FILE__), __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime)); fflush(printStream);} }
+#  define BDREMOTE_DBG_HDR(_ENABLED) { if (_ENABLED) { time_t ltime = time(NULL); fprintf(printStream, "%s:%d -> %d:%d:%d:\n", bdrGetFilename(__FILE__), __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime)); fflush(printStream);} }
 
 /** Macro used to print a number of messages using fprintf. */
 #   define BDREMOTE_LOG(_ENABLED, _x) { if (_ENABLED) { BDREMOTE_DBG_HDR(_ENABLED); _x; fflush(printStream); } }
@@ -114,5 +120,5 @@ const char* slashOffset(const char* _filenameWithSlashes);
 
 #endif /* BD_GLOBALDEFS_H */
 
-/*\@}*/
+/*@}*/
 

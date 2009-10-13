@@ -21,11 +21,21 @@
  *
  */
 
+/** \ingroup Gen */
+/*@{*/
+
+/*! \file globaldefs.c
+  \brief Functions used by the macros in globaldefs.h.
+
+  Implements a few functions used by the macros in globaldefs.h.
+*/
+
 #include "globaldefs.h"
 
 #if BDREMOTE_DEBUG
 #  include <assert.h>
 
+/** Handy macro to extract some part from time_t. */
 #  define getPart(PART) {                       \
     struct tm* Tm = localtime(_ltime);          \
     return Tm->PART;                            \
@@ -46,7 +56,7 @@ int getSecond(time_t* _ltime)
   getPart(tm_sec);
 }
 
-const char* slashOffset(const char* _filenameWithSlashes)
+const char* bdrGetFilename(const char* _filenameWithSlashes)
 {
   int offset = 0;
   int len    = 0;
@@ -74,4 +84,6 @@ const char* slashOffset(const char* _filenameWithSlashes)
 }
 
 #endif /* BDREMOTE_DEBUG */
+
+/*@}*/
 

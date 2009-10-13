@@ -45,5 +45,5 @@ int changeUIDAndGID(const char* _user,
 
 #endif /* BD_UG_H */
 
-/*\@}*/
+/*@}*/
 

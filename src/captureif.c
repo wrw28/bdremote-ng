@@ -21,6 +21,18 @@
  *
  */
 
+/** \ingroup captureinterface
+ *  @{
+ */
+
+/*! \file captureif.c
+  \brief Capture interface, init functions.
+
+  Implements functions used to init/destroy the data used by the
+  capture interface.
+
+*/
+
 #include "captureif.h"
 
 #include <stdlib.h>
@@ -35,36 +47,39 @@ void InitCaptureData(captureData* _cd,
                      const int _timeout )
 {
 #if BDREMOTE_DEBUG
-  _cd->magic0 = 127;
+   _cd->magic0 = 127;
 #endif /* BDREMOTE_DEBUG */
-  assert(_config != NULL);
-  assert(_cd != NULL);
-  assert(_p != NULL);
-  assert(_dest_address != NULL);
-  assert(_timeout > 0);
+   assert(_config != NULL);
+   assert(_cd != NULL);
+   assert(_p != NULL);
+   assert(_dest_address != NULL);
+   assert(_timeout > 0);
 
-  assert(_cd->config == NULL);
-  _cd->config = _config;
+   assert(_cd->config == NULL);
+   _cd->config = _config;
 
-  _cd->p = _p;
+   _cd->p = _p;
 
-  FREEVAL(_cd->bt_dev_address);
-  _cd->bt_dev_address = NULL;
+   FREEVAL(_cd->bt_dev_address);
+   _cd->bt_dev_address = NULL;
 
-  FREEVAL(_cd->dest_address);
-  SETVAL(_cd->dest_address, _dest_address)
+   FREEVAL(_cd->dest_address);
+   SETVAL(_cd->dest_address, _dest_address)
 
-    _cd->timeout = _timeout;
-  memset(&_cd->sockets[0], 0, 2);
+   _cd->timeout = _timeout;
+   memset(&_cd->sockets[0], 0, 2);
 }
 
 void DestroyCaptureData(captureData* _cd)
 {
-  _cd->p = NULL;
+   _cd->p = NULL;
 
-  free(_cd->bt_dev_address);
-  _cd->bt_dev_address = NULL;
+   free(_cd->bt_dev_address);
+   _cd->bt_dev_address = NULL;
 
-  free(_cd->dest_address);
-  _cd->dest_address = NULL;
+   free(_cd->dest_address);
+   _cd->dest_address = NULL;
 }
+
+/*@}*/
+

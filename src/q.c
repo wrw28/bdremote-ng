@@ -21,6 +21,17 @@
  *
  */
 
+/** \ingroup Gen */
+/*@{*/
+
+/*! \file q.c
+  \brief Thread safe queue implementation.
+
+  Implements a thread safe queue used for communication between
+  bluetooth thread and LIRC thread.
+
+*/
+
 #include "q.h"
 
 #include <stdio.h>
@@ -31,6 +42,8 @@
 #include <errno.h>
 #include <sys/time.h>
 
+/** Set to 1 to enabled some output using printf. Not recomended,
+    unless you really mean to see a lot of debugging output. */
 #define Q_DBG 0
 
 queueData* queueDataInit(const char* _s, int _size)
@@ -212,3 +225,6 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
 #endif
   return Q_OK;
 }
+
+/*@}*/
+

@@ -55,5 +55,5 @@ void usage(void);
 
 #endif /* BD_BDREMOTENG_H */
 
-/*\@}*/
+/*@}*/
 
