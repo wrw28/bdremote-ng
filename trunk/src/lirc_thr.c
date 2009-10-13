@@ -111,7 +111,7 @@ void* lircThread (void* q)
   BDREMOTE_LOG(ld->config->debug,
                fprintf(printStream, "Started LIRC thread:\n");
                fprintf(printStream, " - using repeat rate : %d.\n", ld->config->repeat_rate);
-               fprintf(printStream, " - using repeat delay: %d.\n", ld->config->repeat_delay);
+               fprintf(printStream, " - using repeat delay: %lu.\n", rate_delay);
                );
 #endif
 
