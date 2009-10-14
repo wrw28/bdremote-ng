@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
 
-  while ((opt=getopt(argc,argv,"+p:t:a:r:e:d:u:g:f:nh"))!=-1)
+  while ((opt=getopt(argc,argv,"+p:t:a:r:e:u:g:f:ndh"))!=-1)
     {
       switch(opt)
         {
@@ -275,7 +275,6 @@ void usage(void)
          "\t-e <num>             Wait <num> ms before repeating a key.\n"
          "\t-u <username>        Change UID to the UID of this user.\n"
          "\t-g <group>           Change GID to the GID of this group.\n"
-         "\t                     second, when key is pressed.\n"
          "\t-f <filename>        Write log to <filename>.\n"
          "\t-d                   Enable debug.\n"
          "\t-n                   Don't fork daemon to background.\n"
