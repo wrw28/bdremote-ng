@@ -17,9 +17,9 @@ For next instructions I assume that you already have installed
 and properly configured linux bluetooth stack
 (at least {{{bluez-libs}}}, {{{libbluetooth-dev}}} and {{{bluex-utils}}} on a Debian system).
 
-Make sure that you have CMake installed.
+Make sure that you have [http://www.cmake.org CMake] installed.
 
-Execute gen.sh in the build directory. This will run cmake, which will generate a build in build/linux. One of the options in the script is {{{-DENABLE_REPEAT:BOOL=OFF}}}. Set this to ON, if you want to use repeating keys.
+Execute gen.sh in the build directory. This will run [http://www.cmake.org CMake], which will generate a build in build/linux. One of the [http://www.cmake.org CMake] options for in the script is {{{-DENABLE_REPEAT:BOOL=OFF}}}. Set this to ON, if you want to use repeating keys.
 
 Type "make" in this directory and you'll get executable named "bdremoteng".
 Copy this binary somewhere, for example to /usr/local/sbin.
