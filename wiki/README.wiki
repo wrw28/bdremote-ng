@@ -7,14 +7,14 @@ http://bdremote-ng.googlecode.com/svn/trunk/doc/remote-small.jpg
 This is helper application for Sony BD Bluetooth Remote Control, which
 allows to use this remote with LIRC.
 
-This is a partial rewrite of bdremote 0.2, so it is easier to understand and maintain. Also, I could not get bdremote 0.2 to work on ubuntu. And it was not the most verbose application, so this one was created instead. Also, porting to a non-bluez bluetooth stack should be possible now. Bluetooth and LIRC/network handing has been seperated and one thread has been removed.
+This is a partial rewrite of bdremote 0.2, so it is easier to understand and maintain. Also, I could not get bdremote 0.2 to work on ubuntu. And it was not the most verbose application, so this one was created instead. Also, porting to a non-bluez bluetooth stack should be possible now. Bluetooth and LIRC/network handing has been separated.
 
 Why use this? Because using a PS3 remote as a HID device makes little sense to me (You have to instruct bluez to connect to it before you can use it. So it means that you need to have a script which continuously tries to connect to the remote. And you have to make the ps3 remote discoverable before the script will succeed.)  
 
-= Compillation and installation =
+= Compilation and installation =
 
 For next instructions I assume that you already have installed 
-and properly configured linux bluetooth stack
+and properly configured Linux bluetooth stack
 (at least {{{bluez-libs}}}, {{{libbluetooth-dev}}} and {{{bluex-utils}}} on a Debian system).
 
 Make sure that you have [http://www.cmake.org CMake] installed.
@@ -53,7 +53,7 @@ you can give extra command-line parameters to "bdremoteng"
 {{{
 	-p <port>            Set port number for incoming LIRCD connections.
 	-t <timeout>         Set disconnect timeout for BD remote (in seconds).
-	-a <address>         BT addres of remote.
+	-a <address>         BT address of remote.
 	                     For example: -a 00:19:C1:5A:F1:3F. 
 	-r <rate>            Key repeat rate. Generate <rate> repeats per second.
 	-e <num>             Wait <num> ms before repeating a key.
