@@ -86,6 +86,16 @@ NOTE: Connection with remote will be established only after you press
 some key on remote for first time after start of daemon and it can 
 take some time, so result of first key press will be slightly delayed.
 
+= Reporting Bugs =
+
+When reporting bugs, please provide the following information.
+
+ * SVN version or release information.
+ * Output of running {{{build/gen.sh}}}.
+ * Log files, produced by giving the following arguments to bdremoteng: {{{-d -f /tmp/bdremote.log}}}.
+ * Core dumps, if applicable.
+ * Details about how to reproduce the problem you are experiencing.
+
 = Notes =
 
  * Disable bluetooth auth and encryption. This application will not work with those enabled. Adding "{{{ auth disable; encrypt disable; }}}" to {{{/etc/bluetooth/hcid.conf}}} might do the trick.
