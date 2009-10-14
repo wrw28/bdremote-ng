@@ -46,7 +46,7 @@ void setDefaults(configuration* _config)
   _config->listen_port = 8888;
   _config->disconnect_timeout = 60;
   _config->repeat_rate  = 10;
-  _config->repeat_delay = 2;
+  _config->repeat_delay = 200;
   _config->debug       = 0;
   FREEVAL(_config->remote_addr);
   _config->remote_addr = NULL;
