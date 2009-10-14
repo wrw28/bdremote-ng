@@ -269,7 +269,7 @@ void usage(void)
   printf("Options:\n"
          "\t-p <port>            Set port number for incoming LIRCD connections.\n"
          "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds).\n"
-         "\t-a <address>         BT addres of remote.\n"
+         "\t-a <address>         BT address of remote.\n"
          "\t                     For example: -a 00:19:C1:5A:F1:3F. \n");
   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
          "\t-e <num>             Wait <num> ms before repeating a key.\n"
