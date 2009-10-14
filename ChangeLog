@@ -1,7 +1,12 @@
 bdremote-ng 0.4
 ---------------
 
+Adds support for repeating a key (after an initial delay), when its being held down. Also adds doxygen comments.
+
 002 Implement support for repeat.
+008 Add doxygen comments for all interfaces.
+015 Running in background results in no remote control.
+017 Add doxygen for all files.
 
 bdremote-ng 0.3
 ---------------
