@@ -19,7 +19,7 @@ and properly configured linux bluetooth stack
 
 Make sure that you have CMake installed.
 
-Execute gen.sh in the build directory. This will run cmake, which will generate a build in build/linux.
+Execute gen.sh in the build directory. This will run cmake, which will generate a build in build/linux. One of the options in the script is {{{-DENABLE_REPEAT:BOOL=OFF}}}. Set this to ON, if you want to use repeating keys.
 
 Type "make" in this directory and you'll get executable named "bdremoteng".
 Copy this binary somewhere, for example to /usr/local/sbin.
