@@ -48,6 +48,8 @@ void setDefaults(configuration* _config)
   _config->repeat_rate  = 10;
   _config->repeat_delay = 200;
   _config->debug       = 0;
+  _config->interface_addr_set = 0;
+  FREEVAL(_config->interface_addr);
   FREEVAL(_config->remote_addr);
   _config->remote_addr = NULL;
   _config->detach      = 1;
@@ -66,6 +68,15 @@ void setRemoteAddress(configuration* _config, const char* _address)
   assert(_address != NULL);
 
   SETVAL(_config->remote_addr, _address);
+}
+
+void setInterfaceAddress(configuration* _config, const char* _address)
+{
+  assert(_config != NULL);
+  assert(_address != NULL);
+
+  SETVAL(_config->interface_addr, _address);
+  _config->interface_addr_set = 1;
 }
 
 void setUser(configuration* _config, const char* _user)
@@ -109,6 +120,16 @@ void printConfig(const configuration* _config)
   fprintf(printStream, " - repeat delay: disabled.\n");
 #endif
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
+
+  if (_config->interface_addr_set)
+    {
+      fprintf(printStream, " - iface addr  : %s.\n", _config->interface_addr);
+    }
+  else
+    {
+      fprintf(printStream, " - iface addr  : ANY.\n");
+    }
+
   fprintf(printStream, " - remote addr : %s.\n", _config->remote_addr);
   fprintf(printStream, " - detach      : %d.\n", _config->detach);
   if (_config->user == NULL)

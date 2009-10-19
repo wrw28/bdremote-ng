@@ -177,6 +177,81 @@ int l2cap_accept(int sk, bdaddr_t *bdaddr)
   return nsk;
 }
 
+/** Return an error, if there is no actual device corresponding to the
+ *  address given as argument.
+ */
+
+/* My one and only comment about the level of bluez documentation:
+ * KURWA! 
+ */
+int bt_device_exists(bdaddr_t* _bdaddr)
+{
+  int found = 0;
+  int ctl   = -1;
+  struct hci_dev_info di;
+  struct hci_dev_list_req* dl = NULL;
+  struct hci_dev_req* dr      = NULL;
+  int i = 0;
+
+  if ((ctl = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI)) < 0) 
+    {
+      perror("Can't open HCI socket.");
+      exit(1);
+    }
+
+  dl = malloc(HCI_MAX_DEV * sizeof(struct hci_dev_req) + sizeof(uint16_t));
+  if (!dl)
+    {
+      perror("Can't allocate memory");
+      return BDREMOTE_FAIL;
+    }
+
+  dl->dev_num = HCI_MAX_DEV;
+  dr          = dl->dev_req;
+
+  if (ioctl(ctl, HCIGETDEVLIST, (void *) dl) < 0) 
+    {
+      perror("Can't get device list");
+      return BDREMOTE_FAIL;
+    }
+
+  for (i = 0; i< dl->dev_num; i++) 
+    {
+      di.dev_id = (dr+i)->dev_id;
+
+      if (ioctl(ctl, HCIGETDEVINFO, (void *) &di) < 0)
+	{
+	  continue;
+	}
+
+      if (hci_test_bit(HCI_RAW, &di.flags) && !bacmp(&di.bdaddr, BDADDR_ANY)) 
+	{
+	  int dd = hci_open_dev(di.dev_id);
+	  hci_read_bd_addr(dd, &di.bdaddr, 1000);
+	  hci_close_dev(dd);
+	}
+
+      assert(sizeof(di.bdaddr) == sizeof(bdaddr_t));
+      if (memcmp(&di.bdaddr, _bdaddr, sizeof(di.bdaddr)) == 0)
+	{
+	  found = 1;
+	  break;
+	}
+    }
+
+  close(ctl);
+  free(dl);
+
+  if (found)
+    {
+      return BDREMOTE_OK;
+    }
+  else
+    {
+      return BDREMOTE_FAIL;
+    }
+}
+
 int readFromSocket(captureData* _capturedata, int _socket)
 {
   struct pollfd p;
@@ -340,27 +415,53 @@ int InitcaptureLoop(captureData* _capturedata)
 
   /* Find the first interface, using BT primitives. */
   struct hci_dev_info devinfo;
-  int ret = hci_devinfo(0, &devinfo);
+  int ret = 0;
 
+  if (_capturedata->bt_dev_address == NULL)
+    {
+      /* Use any BT interface. */
+      ret = hci_devinfo(0, &devinfo);
+
+      if (ret < 0)
+	{
+	  perror("hci_devinfo");
+	  return BDREMOTE_FAIL;
+	}
+
+      assert(_capturedata->bt_dev_address == NULL);
+      _capturedata->bt_dev_address = (char*)malloc(127);
+      memset(_capturedata->bt_dev_address, 0, 127);
+      ret = ba2str(&devinfo.bdaddr, _capturedata->bt_dev_address);
+
+      if (ret < 0)
+	{
+	  perror("ba2str");
+	  return BDREMOTE_FAIL;
+	}
+      assert(_capturedata->bt_dev_address != NULL);
+    }
+  else
+    {
+      /* Address was set using command line argument. */
+      assert(_capturedata->bt_dev_address != NULL);
+    }
+
+  ret = str2ba(_capturedata->bt_dev_address, &bdaddr);
   if (ret < 0)
     {
-      perror("hci_devinfo");
+      perror("str2ba");
       return BDREMOTE_FAIL;
     }
 
-  assert(_capturedata->bt_dev_address == NULL);
-  _capturedata->bt_dev_address = (char*)malloc(127);
-  memset(_capturedata->bt_dev_address, 0, 127);
-  ret = ba2str(&devinfo.bdaddr, _capturedata->bt_dev_address);
-
-  if (ret < 0)
+  ret = bt_device_exists(&bdaddr);
+  if (ret == BDREMOTE_FAIL)
     {
-      perror("ba2str");
+      BDREMOTE_LOG(_capturedata->config->debug,
+		   fprintf(printStream, "Unable to use interface address: %s.\n", _capturedata->bt_dev_address);
+		   );
+
       return BDREMOTE_FAIL;
     }
-
-  assert(_capturedata->bt_dev_address != NULL);
-  str2ba(_capturedata->bt_dev_address, &bdaddr);
 
   BDREMOTE_LOG(_capturedata->config->debug,
                fprintf(printStream, "Using BT address: %s.\n", _capturedata->bt_dev_address);
