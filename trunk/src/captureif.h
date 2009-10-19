@@ -73,16 +73,12 @@ typedef struct
 
 /** Function used to init the data used by this interface.
  * @param _cd           Data used for capturing.
- * @param _config
+ * @param _config       Configuration to use.
  * @param _p            Pointer to LIRC data.
- * @param _dest_address BT address of ps3 remote.
- * @param _timeout      The number of seconds without activity before the BT connection is terminated.
  */
 void InitCaptureData(captureData* _cd,
                      const configuration* _config,
-                     void* _p,
-                     const char* _dest_address,
-                     const int _timeout);
+                     void* _p);
 
 /** Release any data used by this interface. */
 void DestroyCaptureData(captureData* _cd);

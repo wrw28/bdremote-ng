@@ -70,12 +70,13 @@ int main(int argc, char *argv[])
   void* p = (void*)0x1; /* Unused here. */
   int res = BDREMOTE_FAIL;
   setDefaultLog();
+  setDefaults(&config);
+  setRemoteAddress(&config, destinationAddress);
+ 
   InitCaptureData(&cd,
                   &config,
-                  p,
-                  destinationAddress,
-                  30 /* timeout in secounds */);
-
+                  p);
+  
   /* Run capture loop. */
   res = captureLoop(&cd);
 

@@ -42,9 +42,7 @@
 
 void InitCaptureData(captureData* _cd,
                      const configuration* _config,
-                     void* _p,
-                     const char* _dest_address,
-                     const int _timeout )
+                     void* _p)
 {
 #if BDREMOTE_DEBUG
    _cd->magic0 = 127;
@@ -52,8 +50,8 @@ void InitCaptureData(captureData* _cd,
    assert(_config != NULL);
    assert(_cd != NULL);
    assert(_p != NULL);
-   assert(_dest_address != NULL);
-   assert(_timeout > 0);
+   assert(_config->remote_addr != NULL);
+   assert(_config->disconnect_timeout > 0);
 
    assert(_cd->config == NULL);
    _cd->config = _config;
@@ -63,10 +61,16 @@ void InitCaptureData(captureData* _cd,
    FREEVAL(_cd->bt_dev_address);
    _cd->bt_dev_address = NULL;
 
-   FREEVAL(_cd->dest_address);
-   SETVAL(_cd->dest_address, _dest_address)
+   if (_config->interface_addr_set)
+     {
+       SETVAL(_cd->bt_dev_address, _config->interface_addr);
+     }
 
-   _cd->timeout = _timeout;
+   FREEVAL(_cd->dest_address);
+   SETVAL(_cd->dest_address, _config->remote_addr);
+   
+   _cd->timeout = _config->disconnect_timeout;
+
    memset(&_cd->sockets[0], 0, 2);
 }
 

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
 
-  while ((opt=getopt(argc,argv,"+p:t:a:r:e:u:g:f:ndh"))!=-1)
+  while ((opt=getopt(argc,argv,"+p:t:a:i:r:e:u:g:f:ndh"))!=-1)
     {
       switch(opt)
         {
@@ -98,6 +98,9 @@ int main(int argc, char *argv[])
         case 'a':
           setRemoteAddress(&config, optarg);
           break;
+	case 'i':
+	  setInterfaceAddress(&config, optarg);
+	  break;
         case 'r':
           config.repeat_rate=atoi(optarg);
           break;
@@ -145,9 +148,7 @@ int main(int argc, char *argv[])
 
   InitCaptureData(&cdata,
                   &config,
-                  &ldata,
-                  config.remote_addr,
-                  config.disconnect_timeout);
+                  &ldata);
 
   if (config.detach == 1)
     {
@@ -269,6 +270,7 @@ void usage(void)
   printf("Options:\n"
          "\t-p <port>            Set port number for incoming LIRCD connections.\n"
          "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds).\n"
+         "\t-i <address>         BT address of interface to use.\n"
          "\t-a <address>         BT address of remote.\n"
          "\t                     For example: -a 00:19:C1:5A:F1:3F. \n");
   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
