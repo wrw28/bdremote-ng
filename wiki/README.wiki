@@ -53,13 +53,13 @@ you can give extra command-line parameters to "bdremoteng"
 {{{
 	-p <port>            Set port number for incoming LIRCD connections.
 	-t <timeout>         Set disconnect timeout for BD remote (in seconds).
+	-i <address>         BT address of interface to use.
 	-a <address>         BT address of remote.
 	                     For example: -a 00:19:C1:5A:F1:3F. 
 	-r <rate>            Key repeat rate. Generate <rate> repeats per second.
 	-e <num>             Wait <num> ms before repeating a key.
 	-u <username>        Change UID to the UID of this user.
 	-g <group>           Change GID to the GID of this group.
-	                     second, when key is pressed.
 	-f <filename>        Write log to <filename>.
 	-d                   Enable debug.
 	-n                   Don't fork daemon to background.
