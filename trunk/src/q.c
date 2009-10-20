@@ -175,8 +175,8 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
           gettimeofday(&tp, NULL);
           abstime.tv_sec  = tp.tv_sec;
           abstime.tv_nsec = tp.tv_usec * 1000;
-          /* Wait for 100 ns. */
-          abstime.tv_nsec += 100;
+          /* Wait for 50 ms. */
+	  abstime.tv_nsec += 50000000;/* 50 milliseconds */
 
           if (pthread_cond_timedwait(_q->notEmpty, _q->mut, &abstime) == ETIMEDOUT)
             {
