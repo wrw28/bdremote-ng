@@ -39,6 +39,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+static const unsigned int moduleMask = MODULEMASK_LIRC_CB;
+
 void RemoteConnected(void* _p)
 {
   lirc_data* lc = (lirc_data*)_p;

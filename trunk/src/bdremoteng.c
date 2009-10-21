@@ -69,6 +69,13 @@ static void sig_term(int sig);
 /** Thread. Captures from BT interface. */
 void* listener(void* _p);
 
+unsigned int globalLogMask = 
+  MODULEMASK_LIRC_THR | MODULEMASK_LIRC_SOCK | 
+  MODULEMASK_LIRC_CB | MODULEMASK_BT_IF | MODULEMASK_BT_IMPL | 
+  MODULEMASK_QUEUE | MODULEMASK_SPARE | MODULEMASK_MAIN;
+
+static const unsigned int moduleMask = MODULEMASK_MAIN;
+
 int main(int argc, char *argv[])
 {
   pthread_t bt_thread;
@@ -78,6 +85,8 @@ int main(int argc, char *argv[])
   lirc_data ldata;
   captureData cdata;
   int ret = -1;
+
+  printf("Mask: %u.\n", globalLogMask);
 
   setDefaultLog();
 

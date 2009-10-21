@@ -120,6 +120,27 @@ void printConfig(const configuration* _config)
   fprintf(printStream, " - repeat delay: disabled.\n");
 #endif
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
+  if (_config->debug)
+    {
+      fprintf(printStream, "                 LIRC thread(%u) sock(%u) callback (%u),\n",
+	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_THR),
+	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_SOCK),
+	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_CB));
+
+      fprintf(printStream, "                 bluetooth interface(%u) implementation(%u),\n",
+	      BDREMOTE_MASKCHECK(MODULEMASK_BT_IF),
+	      BDREMOTE_MASKCHECK(MODULEMASK_BT_IMPL));
+ 
+      fprintf(printStream, "                 queue(%u),\n", 
+	      BDREMOTE_MASKCHECK(MODULEMASK_QUEUE));
+
+      fprintf(printStream, "                 spare(%u),\n", 
+	      BDREMOTE_MASKCHECK(MODULEMASK_SPARE));
+
+      fprintf(printStream, "                 main(%u).\n", 
+	      BDREMOTE_MASKCHECK(MODULEMASK_MAIN));
+
+    }
 
   if (_config->interface_addr_set)
     {

@@ -36,7 +36,15 @@
 #include <captureif.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include <l.h>
+
+unsigned int globalLogMask = 
+  MODULEMASK_LIRC_THR | MODULEMASK_LIRC_SOCK | 
+  MODULEMASK_LIRC_CB | MODULEMASK_BT_IF | MODULEMASK_BT_IMPL | 
+  MODULEMASK_QUEUE | MODULEMASK_SPARE | MODULEMASK_MAIN;
+
+static const unsigned int moduleMask = MODULEMASK_MAIN;
 
 /** Capture interface implementation. */
 void RemoteConnected(void* _p)
@@ -70,6 +78,9 @@ int main(int argc, char *argv[])
   void* p = (void*)0x1; /* Unused here. */
   int res = BDREMOTE_FAIL;
   setDefaultLog();
+  memset(&config, 0, sizeof(config));
+  memset(&cd, 0, sizeof(cd));
+
   setDefaults(&config);
   setRemoteAddress(&config, destinationAddress);
  
@@ -77,6 +88,13 @@ int main(int argc, char *argv[])
                   &config,
                   p);
   
+  res = InitcaptureLoop(&cd);
+  if (res == BDREMOTE_FAIL)
+    {
+      BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
+      return BDREMOTE_FAIL;
+    }
+
   /* Run capture loop. */
   res = captureLoop(&cd);
 

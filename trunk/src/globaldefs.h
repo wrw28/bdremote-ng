@@ -51,6 +51,34 @@
 #  define BDREMOTE_DEBUG 1
 #endif
 
+/* Masks used for logging. */
+
+/** Mask: LIRC thread. */
+#define MODULEMASK_LIRC_THR  0x1
+/** Mask: LIRC server. */
+#define MODULEMASK_LIRC_SOCK 0x2
+/** Mask: LIRC callback. */
+#define MODULEMASK_LIRC_CB   0x4
+/** Mask: bluetooth interface. */
+#define MODULEMASK_BT_IF     0x8
+/** Mask: bluetooth implementation. */
+#define MODULEMASK_BT_IMPL   0x10
+/** Mask: queue. */
+#define MODULEMASK_QUEUE     0x20
+/** Mask: unused. */
+#define MODULEMASK_SPARE     0x40 /* Unused. */
+/** Mask: main application. */
+#define MODULEMASK_MAIN      0x80
+
+/** Mask used for debugging. */
+extern unsigned int globalLogMask;
+
+/** Macro used to check, if a mask is set. */
+#define BDREMOTE_MASKCHECK(_MASK) ((globalLogMask & _MASK) == _MASK)
+
+/** Macro used to cgecj if a module mask is set. */
+#define BDREMOTE_ISMASKSET BDREMOTE_MASKCHECK(moduleMask)
+
 #include <stdio.h>
 extern FILE* printStream;
 
@@ -73,10 +101,10 @@ const char* bdrGetFilename(const char* _filenameWithSlashes);
 #  define BDREMOTE_DBG_HDR(_ENABLED) { if (_ENABLED) { time_t ltime = time(NULL); fprintf(printStream, "%s:%d -> %d:%d:%d:\n", bdrGetFilename(__FILE__), __LINE__, getHour(&ltime), getMinute(&ltime), getSecond(&ltime)); fflush(printStream);} }
 
 /** Macro used to print a number of messages using fprintf. */
-#   define BDREMOTE_LOG(_ENABLED, _x) { if (_ENABLED) { BDREMOTE_DBG_HDR(_ENABLED); _x; fflush(printStream); } }
+#   define BDREMOTE_LOG(_ENABLED, _x) { if ((_ENABLED) && (BDREMOTE_ISMASKSET)) { BDREMOTE_DBG_HDR(_ENABLED); _x; fflush(printStream); } }
 
 /** Macro used to print debug output. */
-#  define BDREMOTE_DBG(_ENABLED, _x) { BDREMOTE_DBG_HDR(_ENABLED); if (_ENABLED) { fprintf(printStream, "%s\n",_x); fflush(printStream); }}
+#  define BDREMOTE_DBG(_ENABLED, _x) { if ((_ENABLED) && (BDREMOTE_ISMASKSET)) { BDREMOTE_DBG_HDR(_ENABLED); fprintf(printStream, "%s\n",_x); fflush(printStream); }}
 
 
 /** Macro used to print error output. */
@@ -88,10 +116,10 @@ const char* bdrGetFilename(const char* _filenameWithSlashes);
 #  define BDREMOTE_DBG_HDR(_ENABLED)
 
 /** Macro used to print a number of messages using fprintf. */
-#  define BDREMOTE_LOG(_ENABLED, _x) { if (_ENABLED) {_x; fflush(printStream); } }
+#  define BDREMOTE_LOG(_ENABLED, _x) { if ((_ENABLED && (BDREMOTE_ISMASKSET)) {_x; fflush(printStream); } }
 
 /** Macro used to print debug output. */
-#  define BDREMOTE_DBG(_ENABLED, _x) if (_ENABLED) { fprintf(printStream, "%s\n", _x); fflush(printStream);}
+#  define BDREMOTE_DBG(_ENABLED, _x) if ((_ENABLED) && (BDREMOTE_ISMASKSET)) { fprintf(printStream, "%s\n", _x); fflush(printStream);}
 
 /** Macro used to print error output. */
 #  define BDREMOTE_ERR(x) fprintf(printStream, "Error: %s\n", x); fflush(printStream);

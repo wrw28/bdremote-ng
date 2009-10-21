@@ -62,6 +62,8 @@
 /** The max buffer used for reading from BT sockets. */
 #define MAXBUFFERSIZE 1024
 
+static const unsigned int moduleMask = MODULEMASK_BT_IMPL;
+
 extern volatile sig_atomic_t __io_canceled;
 
 /** Read from a socket, until timeout or error.

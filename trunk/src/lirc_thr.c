@@ -51,6 +51,8 @@
 extern FILE* printStream;
 extern volatile sig_atomic_t __io_canceled;
 
+static const unsigned int moduleMask = MODULEMASK_LIRC_THR;
+
 /** Thread. */
 void* lircThread (void* q);
 

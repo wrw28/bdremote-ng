@@ -46,6 +46,8 @@
     unless you really mean to see a lot of debugging output. */
 #define Q_DBG 0
 
+static const unsigned int moduleMask = MODULEMASK_QUEUE;
+
 queueData* queueDataInit(const char* _s, int _size)
 {
   queueData* qd = (queueData*)malloc(sizeof(queueData));

@@ -51,6 +51,14 @@
 void* producer (void *args);
 void* consumer (void *args);
 
+unsigned int globalLogMask = 
+  MODULEMASK_LIRC_THR | MODULEMASK_LIRC_SOCK | 
+  MODULEMASK_LIRC_CB | MODULEMASK_BT_IF | MODULEMASK_BT_IMPL | 
+  MODULEMASK_QUEUE | MODULEMASK_SPARE | MODULEMASK_MAIN;
+
+
+static const unsigned int moduleMask = MODULEMASK_MAIN;
+
 int main(int argc, char *argv[])
 {
   queue fifo;
