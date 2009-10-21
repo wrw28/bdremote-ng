@@ -40,6 +40,8 @@
 #include <assert.h>
 #include <globaldefs.h>
 
+static const unsigned int moduleMask = MODULEMASK_BT_IF;
+
 void InitCaptureData(captureData* _cd,
                      const configuration* _config,
                      void* _p)

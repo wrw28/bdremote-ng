@@ -62,6 +62,8 @@
 #include <netinet/in.h>
 #include <assert.h>
 
+static const unsigned int moduleMask = MODULEMASK_LIRC_SOCK;
+
 /** Indicates that a TERM signal was received which interrupted IO. */
 volatile sig_atomic_t __io_canceled = 0;
 
