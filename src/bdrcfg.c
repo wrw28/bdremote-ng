@@ -122,7 +122,7 @@ void printConfig(const configuration* _config)
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
   if (_config->debug)
     {
-      fprintf(printStream, "                 LIRC thread(%u) sock(%u) callback (%u),\n",
+      fprintf(printStream, "                 LIRC thread(%u) sock(%u) callback(%u),\n",
 	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_THR),
 	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_SOCK),
 	      BDREMOTE_MASKCHECK(MODULEMASK_LIRC_CB));
