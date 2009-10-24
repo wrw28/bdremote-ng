@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 {
   queue fifo;
   pthread_t pro, con;
-
+  
   int res = queueInit(&fifo);
   if (res ==  Q_ERR)
     {
@@ -111,10 +111,10 @@ void* consumer (void* q)
   queue* fifo = (queue *)q;
   int i;
   queueData* d = 0;
-
+  
   for (i = 0; i < LOOP; i++)
     {
-      queueRem (fifo, 1, &d);
+      queueRemBlock(fifo, &d);
       printf ("consumer: recieved %s.\n", d->buffer);
       queueDataDeInit(d);
       d = NULL;
@@ -122,7 +122,7 @@ void* consumer (void* q)
     }
   for (i = 0; i < LOOP; i++)
     {
-      queueRem (fifo, 1, &d);
+      queueRemBlock(fifo, &d);
       printf ("consumer: recieved %s.\n", d->buffer);
       queueDataDeInit(d);
       d = NULL;

@@ -235,6 +235,20 @@ target_link_libraries(qtest bdremoteng_generic)
 #target_link_libraries(capturetest -lbluetooth)
 target_link_libraries(qtest -lpthread)
 
+SET(T_TEST_HEADERS
+)
+
+SET(T_TEST_SOURCES
+${PREFIX}/ttest.c
+)
+
+add_executable (ttest ${T_TEST_HEADERS} ${T_TEST_SOURCES})
+
+install(FILES ${T_TEST_HEADERS} ${T_TEST_SOURCES} DESTINATION test)
+
+target_link_libraries(ttest bdremoteng_generic) 
+target_link_libraries(ttest -lpthread)
+
 # Extra build files.
 
 SET(PREFIX ".")

@@ -47,6 +47,8 @@
 #include <stdint.h>
 
 #include <pthread.h>
+#include <sys/time.h>
+
 #include <q.h>
 
 /** The number of LIRC clients that can connect at the same time. */
@@ -122,23 +124,24 @@ typedef struct
   /** Last sent key. */
   int lastKey;
   /** Clock used to keep time. */
-  clock_t cl0;
+  struct timeval cl0;
   /** Clock used to keep time. */
-  clock_t cl1;
+  struct timeval cl1;
 
   /** Number of elapsed miliseconds. */
   unsigned long elapsed;
 
-  /** Last number of elapsed miliseconds. */
-  unsigned long elapsed_last;
-
-  /** Number of repeat keys already sent.*/
-  int repeat_sent;
-
   /** Repeat counter. */
   int repeat_count;
 
+  /** Indicates that the driver is done waiting to begin stending
+      repeated keypresses. */
+  int done_waiting;
+
 } keyState;
+
+/* The following two functions should be used to get elapsed time
+   under one second. */
 
 /** Start keeping track of time. */
 void initTime(keyState* _ks);
