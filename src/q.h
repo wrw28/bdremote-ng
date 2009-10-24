@@ -98,10 +98,16 @@ void queueDeinit (queue* _q);
  */
 void queueAdd (queue* _q, queueData* _in);
 
-/** Remove an element from the queue. Returns Q_ERR if the queue is empty.
+/** Remove an element from the queue. Blocks.
  * Notice that the pointer should be disposed of by the caller.
  */
-int queueRem (queue* _q, int _blockOnEmpty, queueData** _out);
+void queueRemBlock (queue* _q, queueData** _out);
+
+/** Remove an element from the queue. Returns Q_ERR if the queue is empty.
+ * Blocks for most _n ms.
+ * Notice that the pointer should be disposed of by the caller.
+ */
+int queueRemNonBlock (queue* _q, int _n, queueData** _out);
 
 #endif /* BD_Q_H */
 

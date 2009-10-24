@@ -147,7 +147,47 @@ void queueAdd (queue* _q, queueData* _in)
   pthread_cond_signal (_q->notEmpty);
 }
 
-int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
+void queueRemBlock(queue* _q, queueData** _out)
+{
+  assert(_q != NULL);
+  assert(*_out == NULL);
+
+  pthread_mutex_lock (_q->mut);
+
+  while (_q->empty)
+    {
+#if BDREMOTE_DEBUG
+#if Q_DBG
+      printf ("Rem: queue EMPTY.\n");
+#endif
+#endif
+      pthread_cond_wait (_q->notEmpty, _q->mut);
+    }
+
+#if BDREMOTE_DEBUG
+#if Q_DBG
+      printf ("Rem: done waiting for cond.\n");
+#endif
+#endif
+
+      *_out = _q->buf[_q->head];
+
+      _q->head++;
+      if (_q->head == QUEUESIZE)
+	{
+	  _q->head = 0;
+	}
+      if (_q->head == _q->tail)
+	{
+	  _q->empty = 1;
+	}
+      _q->full = 0;
+
+      pthread_mutex_unlock (_q->mut);
+      pthread_cond_signal (_q->notFull);
+}
+
+int queueRemNonBlock(queue* _q, int _n, queueData** _out)
 {
   struct timeval tp;
   struct timespec abstime;
@@ -158,51 +198,31 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
 
   pthread_mutex_lock (_q->mut);
 
-  if (_blockOnEmpty == 1)
+  while (_q->empty)
     {
-      while (_q->empty)
-        {
-#if BDREMOTE_DEBUG
-#if Q_DBG
-          printf ("Rem: queue EMPTY.\n");
-#endif
-#endif
-          pthread_cond_wait (_q->notEmpty, _q->mut);
-        }
+      gettimeofday(&tp, NULL);
+      abstime.tv_sec  = tp.tv_sec;
+      abstime.tv_nsec = tp.tv_usec * 1000;
+      /* Wait for _n ms. */
+
+      abstime.tv_nsec += (_n * 1000000); /* milliseconds */
+      assert(abstime.tv_nsec >= 0);
+      // abstime.tv_nsec += 50 000000;/* 50 milliseconds */
+
+      // printf("WTF!? %ld.\n", abstime.tv_nsec);
+
+      if (pthread_cond_timedwait(_q->notEmpty, _q->mut, &abstime) == ETIMEDOUT)
+	{
+	  /* Timeout. */
+	  i = 0;
+	  break;
+	}
     }
-  else
+
+  if (i == 0)
     {
-      while (_q->empty)
-        {
-          gettimeofday(&tp, NULL);
-          abstime.tv_sec  = tp.tv_sec;
-          abstime.tv_nsec = tp.tv_usec * 1000;
-          /* Wait for 50 ms. */
-	  abstime.tv_nsec += 50000000;/* 50 milliseconds */
-
-          if (pthread_cond_timedwait(_q->notEmpty, _q->mut, &abstime) == ETIMEDOUT)
-            {
-              /* Timeout. */
-              i = 0;
-              break;
-            }
-        }
-
-      if (i == 0)
-        {
-#if BDREMOTE_DEBUG
-#if Q_DBG
-          printf ("Rem: queue EMPTY.\n");
-#endif
-#endif
-          pthread_mutex_unlock (_q->mut);
-          return Q_ERR;
-        }
-#if BDREMOTE_DEBUG
-#if Q_DBG
-      printf ("Rem: done waiting for cond.\n");
-#endif
-#endif
+      pthread_mutex_unlock (_q->mut);
+      return Q_ERR;
     }
 
   *_out = _q->buf[_q->head];
@@ -220,11 +240,7 @@ int queueRem (queue* _q, int _blockOnEmpty, queueData** _out)
 
   pthread_mutex_unlock (_q->mut);
   pthread_cond_signal (_q->notFull);
-#if BDREMOTE_DEBUG
-#if Q_DBG
-  printf ("Rem: queue contains something ..\n");
-#endif
-#endif
+
   return Q_OK;
 }
 

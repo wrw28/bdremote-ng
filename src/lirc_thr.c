@@ -53,6 +53,9 @@ extern volatile sig_atomic_t __io_canceled;
 
 static const unsigned int moduleMask = MODULEMASK_LIRC_THR;
 
+/** Block this amount of time when reading messages from a queue. */
+static int blockInMs = 10;
+
 /** Thread. */
 void* lircThread (void* q);
 
@@ -89,13 +92,14 @@ void waitForLircThread(lirc_data* _ld)
 /** LIRC thread. */
 void* lircThread (void* q)
 {
-  lirc_data* ld = (lirc_data*)q;
-  queueData* qd = NULL;
-  int res       = Q_ERR;
+  lirc_data* ld  = (lirc_data*)q;
+  queueData* qd  = NULL;
+  int res        = Q_ERR;
   keyState ks;
+
 #if ENABLE_REPEAT
-  int rate_mod  = 0;
-  unsigned long rate_delay = 100;
+  unsigned long sendAfterMs = 0;
+  unsigned long rate_delay  = 100;
   if (ld->config->repeat_delay > 0)
     {
       rate_delay = (unsigned long)ld->config->repeat_delay;
@@ -103,11 +107,11 @@ void* lircThread (void* q)
 
   if (ld->config->repeat_rate > 0)
     {
-      rate_mod = (int) (1000 / ld->config->repeat_rate);
+      sendAfterMs = (int) (1000 / ld->config->repeat_rate);
     }
   else
     {
-      rate_mod = 100;
+      sendAfterMs = 100;
     }
 #endif
 
@@ -116,6 +120,7 @@ void* lircThread (void* q)
   BDREMOTE_LOG(ld->config->debug,
                fprintf(printStream, "Started LIRC thread:\n");
                fprintf(printStream, " - using repeat rate : %d.\n", ld->config->repeat_rate);
+	       fprintf(printStream, " - waiting ms between repeated keys: %lu.\n", sendAfterMs);
                fprintf(printStream, " - using repeat delay: %lu.\n", rate_delay);
                );
 #  endif
@@ -128,20 +133,19 @@ void* lircThread (void* q)
 #  endif
 #endif
 
-  ks.keyDown = 0;
-  ks.lastKey = ps3remote_undef;
+  ks.keyDown    = 0;
+  ks.lastKey    = ps3remote_undef;
 
 #if ENABLE_REPEAT
   initTime(&ks);
-  ks.elapsed_last = 0;
-  ks.repeat_sent  = 0;
   ks.repeat_count = 0;
+  ks.done_waiting = 0;
 #endif
 
   while (!__io_canceled)
     {
       qd  = NULL;
-      res = queueRem (&ld->qu, 0 /* No blocking. */, &qd);
+      res = queueRemNonBlock(&ld->qu, blockInMs, &qd);
 
       if (res == Q_OK)
         {
@@ -151,51 +155,41 @@ void* lircThread (void* q)
           queueDataDeInit(qd);
 #if ENABLE_REPEAT
           initTime(&ks);
-          ks.elapsed_last = 0;
-          ks.repeat_sent  = 0;
           ks.repeat_count = 0;
+	  ks.done_waiting = 0;
 #endif
         }
+
 #if ENABLE_REPEAT
       if (ks.keyDown == 1)
         {
           updateTime(&ks);
 
-          if (ks.elapsed % rate_mod == 0)
-            {
-              if (ks.elapsed_last == ks.elapsed)
-                {
-                  usleep(10);
-                  continue;
-                }
-
-              ks.elapsed_last = ks.elapsed;
-
+	  if (ks.done_waiting == 0)
+	    {
 	      if (ks.elapsed >= rate_delay)
-                {
-                  BDREMOTE_LOG(ld->config->debug,
-                               fprintf(printStream, "Key is down (repeat): %lu\n", ks.elapsed);
-                               );
-                  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
-                  /* broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0, 0xFF); */
-                  ks.repeat_sent++;
-                }
-              ks.repeat_count++;
-            }
-        }
-      else
-        {
-           usleep(100);
-        }
-#else
-      if (ks.keyDown == 1)
-         {
-            usleep(10);
-         }
-      else
-         {
-            usleep(100);
-         }
+		{
+		  ks.done_waiting = 1;
+		  ks.elapsed      = 0;
+		}
+	      continue;
+	    }
+	  else
+	    {
+	      if (ks.elapsed >= sendAfterMs)
+		{
+		  /* Send keypress. */
+		  BDREMOTE_LOG(ld->config->debug,
+			       fprintf(printStream, "Key is down (repeat #%d): %lu\n", ks.repeat_count, ks.elapsed);
+			       );
+		  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
+		  /* Reset elapsed time.*/
+		  ks.elapsed = 0;
+		  
+		  ks.repeat_count++;
+		}
+	    }
+	}
 #endif
     }
 
@@ -278,8 +272,6 @@ void DataInd_keyDown(lirc_data* _ld,
       _ks->keyDown      = 1;
       _ks->lastKey      = num;
       _ks->repeat_count = 0;
-      _ks->repeat_sent  = 0;
-
     }
   if (num != ps3remote_undef)
     {
@@ -305,7 +297,6 @@ void DataInd_keyUp(lirc_data* _ld,
           _ks->keyDown      = 0;
           _ks->lastKey      = ps3remote_undef;
           _ks->repeat_count = 0;
-          _ks->repeat_sent  = 0;
         }
     }
 }

@@ -54,22 +54,35 @@
 
 void initTime(keyState* _ks)
 {
-  _ks->cl0     = clock();
+  _ks->cl0.tv_sec  = 0;
+  _ks->cl0.tv_usec = 0;
+  _ks->cl1.tv_sec  = 0;
+  _ks->cl1.tv_usec = 0;
+
+  gettimeofday(&_ks->cl0, NULL);
   _ks->cl1     = _ks->cl0;
   _ks->elapsed = 0;
 }
 
 void updateTime(keyState* _ks)
 {
-  clock_t temp = 0;
-  clock_t e    = 0;
-  _ks->cl1     = clock();
-  assert(_ks->cl1 >= _ks->cl0);
-  temp = ((_ks->cl1 - _ks->cl0) * 1000);
-  e = (temp / CLOCKS_PER_SEC);
-  _ks->elapsed += e;
+  time_t usec    = 0;
+  time_t elapsed = 0;
 
-  _ks->cl0 = clock();
+  gettimeofday(&_ks->cl1, NULL);
+
+  assert(_ks->cl1.tv_sec >= _ks->cl0.tv_sec);
+
+  usec = _ks->cl1.tv_usec - _ks->cl0.tv_usec;
+
+  if (usec > 0)
+    {
+      elapsed += (usec / 1000);
+    }
+
+  _ks->elapsed += elapsed;
+
+  _ks->cl0 = _ks->cl1;
 }
 
 int write_socket(int _fd, const char* _buf, int _len)
