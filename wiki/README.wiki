@@ -100,6 +100,6 @@ When reporting bugs, please provide the following information.
 
  * Disable bluetooth auth and encryption. This application will not work with those enabled. Adding "{{{ auth disable; encrypt disable; }}}" to {{{/etc/bluetooth/hcid.conf}}} might do the trick.
 
- * Start this application before you start bluez daemons.
+ * Start this application before you start bluez daemons. See [initscripts].
 
  * The amount of time, before the connection to the remote is closed is per default set to {{{60 seconds}}}. This is far too low, according to Atso Peter. One should use {{{1800 seconds}}} instead. The original driver times out after {{{60 minutes}}}.
