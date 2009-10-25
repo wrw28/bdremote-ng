@@ -337,7 +337,7 @@ void run_server(captureData* _capturedata,
     }
 
   BDREMOTE_LOG(_capturedata->config->debug,
-               fprintf(printStream, "Using destination address: %s", _capturedata->dest_address);
+               fprintf(printStream, "Using destination address: %s.\n", _capturedata->dest_address);
                );
 
   sigfillset(&sigs);
