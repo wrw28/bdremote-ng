@@ -1,0 +1,52 @@
+#summary How to run bdremote-ng from init scripts.
+
+Using the following init script for bedremote-ng seems to work.
+
+{{{
+#!/bin/bash
+#
+#
+
+BDREMOTED=bdremoteng
+
+BDREMOTE_ARGS="-i 00:11:22:33:44:55 -a 00:66:77:88:99:00 -u user -g group -p 8888 -t 600 -f /tmp/bdremote.log -r10 -e800 -d" 
+
+case "$1" in
+    start)
+        /etc/init.d/bluetooth stop
+        echo -n "Starting bdremote daemon: "
+        /bin/sleep 1
+        start-stop-daemon --start --quiet --exec "$BDREMOTED" -- $BDREMOTE_ARGS
+        /etc/init.d/bluetooth start
+        echo
+        ;;
+    stop)
+        echo -n "Stopping bdremote daemon: "
+        start-stop-daemon --stop --quiet --exec "$BDREMOTED" 
+        echo
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/bdremote {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
+}}}
+
+Notice that bluetooth service is stopped before executing {{{bdremoteng}}}. The order of services which needs to be started is as follows.
+
+ * Bluetooth (initialize bluetooth devices).
+ * bdremote (bind to bluetooth device, it needs to be initialized).
+ * LIRC (connect to bdremoteng).
+
+The following from an ubuntu system seems to work.
+
+{{{
+S80bluetooth -> ../init.d/bluetooth
+S95bdremote -> ../init.d/bdremote
+S99lirc -> ../init.d/lirc
+}}}
