@@ -1,0 +1,20 @@
+As described in:
+http://chrisroos.co.uk/blog/2008-07-30-converting-google-code-wiki-content-to-html
+
+I’ve created a little script that allows me to convert documents in the google code wiki format to HTML.
+
+The script lives in my google code repository. Check it out from subversion:
+
+svn co http://chrisroos.googlecode.com/svn/trunk/google-wiki-syntax
+
+The wiki_convertor script takes two arguments. The first is the wiki file, or directory containing multiple wiki files, and the second is the output directory. So, to use it to create an html copy of the google-doctype wiki content, in my home Sites directory, I’d use the following command:
+
+wiki_convertor.rb ~/Code/third-party/google-doctype/wiki/ ~/Sites/google-doctype/
+
+This is the first step towards being able to, hopefully, create a pdf copy of the google-doctype content. Actually, if anyone has any thoughts on this I’d love to hear them: should I output a different format (docbook, for example) or is it easy enough to convert from (x)html to pdf?
+
+The code is covered by quite a few tests but, if peeps find problems converting their own wiki content (for example) then I’d love to hear from you.
+
+Note There’s a chance that this becomes less important if/when Google use gears in their google docreader app to allow offline access.
+
+Note If you don’t want to go through this process then you can use a standalone version of moinmoin to view your wiki content offline.
