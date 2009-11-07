@@ -14,7 +14,7 @@ D=`pwd`
 
 # Utility used to convert google wiki files from SVN into html.
 # Slightly broken, needs patch in doc/tools.
-CONVERT="ruby -I ~/remote-svn/google-wiki-syntax ~/remote-svn/google-wiki-syntax/wiki_convertor.rb"
+CONVERT="ruby -I $HOME/remote-svn/google-wiki-syntax $HOME/remote-svn/google-wiki-syntax/wiki_convertor.rb"
 
 # Delete/create directory.
 rm -fr bdremoteng-$VER-doc
