@@ -83,6 +83,9 @@ void initLircData(lirc_data* _ld, const configuration* _config)
   _ld->config   = _config;
   _ld->sockinet = -1;
 
+  _ld->charge_percent     = 100;
+  _ld->charge_percent_set = 0;
+
   pthread_mutex_lock (&_ld->dataMutex);
 
   memset(&_ld->clis[0], 0, MAX_CLIENTS);

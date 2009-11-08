@@ -57,10 +57,21 @@ int main(int argc, char *argv[])
   int i = 0;
   keyState ks;
 
+  if (argc > 1)
+    {
+      printf("Arguments are not supported.\n");
+
+      for (i = 1; i < argc; i++)
+	{
+	  printf("Unhandled argument: %s.\n", argv[i]);
+	}
+      return -1;
+    }
+
   initTime(&ks);
 
-  //sleep(1);
-
+  /* sleep(1); */
+  i = 0;
   while (i < 50)
     {
       printf("Sleep #%d.\n", i);

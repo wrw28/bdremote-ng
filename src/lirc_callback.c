@@ -50,7 +50,6 @@ void RemoteConnected(void* _p)
 
 /* Received some data from the ps3 remote.
  * Forward it to LIRC clients.
- * Note: no threads are used, so no need for locking.
  */
 void DataInd(void* _p, const char* _data, const int _size)
 {
@@ -62,6 +61,28 @@ void DataInd(void* _p, const char* _data, const int _size)
 
   qd = queueDataInit(_data, _size);
   queueAdd(&lc->qu, qd);
+}
+
+void RemoteBatteryCharge(void* _p, int _val)
+{
+  lirc_data* lc = (lirc_data*)_p;
+
+  if (lc->charge_percent_set)
+    {
+      if (lc->charge_percent != _val)
+	{
+	  fprintf(printStream, "Battery charge changed, from %d %% to %d %%.\n", lc->charge_percent, _val);
+	  lc->charge_percent = _val;
+	}
+    }
+  else
+    {
+      lc->charge_percent     = _val;
+      lc->charge_percent_set = 1;
+
+      fprintf(printStream, "Battery charge %d %%.\n", lc->charge_percent);
+    }
+
 }
 
 void RemoteDisconnected(void* _p)

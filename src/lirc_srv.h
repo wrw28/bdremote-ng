@@ -73,6 +73,12 @@ typedef struct
 
   /* State information. */
 
+  /** Battery charge in percent. */
+  int charge_percent;
+
+  /** Indictes if a charge was previously set.*/
+  int charge_percent_set;
+
   /** Mutex used. */
   pthread_mutex_t dataMutex;
 

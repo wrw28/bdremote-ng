@@ -261,7 +261,7 @@ int readFromSocket(captureData* _capturedata, int _socket)
   /* Number of seconds since last read which returned data. */
   int numberOfSeconds  = 0;
   int recv_len         = 0;
-
+  int charge_percent   = 0;
   char buffer[MAXBUFFERSIZE];
   struct timespec timeout;
 
@@ -304,6 +304,39 @@ int readFromSocket(captureData* _capturedata, int _socket)
         }
       else
         {
+	  if (recv_len > 12)
+	    {
+	      /* Inspired by a LIRC patch by Benjamin Drung
+		 <benjamin.drung@gmail.com>. */
+	      /*
+	       * Byte 12 is very likely the battery status. The
+	       * highest value ever seen was 0x05. So the range is
+	       * probably from 0x00 to 0x05.
+	       */
+	      switch (buffer[12])
+		{
+		case 0x0:
+		case 0x1:
+		case 0x2:
+		case 0x3:
+		case 0x4:
+		case 0x5:
+		  {
+		    charge_percent = buffer[12]*20;
+		    RemoteBatteryCharge(_capturedata->p, charge_percent);
+		    break;
+		  }
+		default:
+		  {
+		    /* Print a warning. */
+		    BDREMOTE_LOG(_capturedata->config->debug,
+				 fprintf(printStream, "Unexpected battery status: %d.\n", buffer[12]);
+				 );
+		    break;
+		  }
+		}
+	    }
+
           BDREMOTE_DBG(_capturedata->config->debug, "Calling DataInd.");
 #if BDREMOTE_DEBUG
           assert(_capturedata->magic0 == 127);
