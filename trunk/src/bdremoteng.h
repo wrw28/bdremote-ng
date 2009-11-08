@@ -48,7 +48,7 @@
 /** Application name. */
 #define progname "bdremoted"
 /** Application version. */
-#define VERSION "0.4"
+#define VERSION "0.5"
 
 /** Print usage information to stdout. */
 void usage(void);

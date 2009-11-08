@@ -63,8 +63,21 @@ int main(int argc, char *argv[])
 {
   queue fifo;
   pthread_t pro, con;
+  int res = -1;
+  int i   = 0;
   
-  int res = queueInit(&fifo);
+  if (argc > 1)
+    {
+      printf("Arguments are not supported.\n");
+
+      for (i = 1; i < argc; i++)
+	{
+	  printf("Unhandled argument: %s.\n", argv[i]);
+	}
+      return -1;
+    }
+
+  res = queueInit(&fifo);
   if (res ==  Q_ERR)
     {
       fprintf (stderr, "main: Queue Init failed.\n");

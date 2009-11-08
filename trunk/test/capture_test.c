@@ -68,6 +68,12 @@ void RemoteDisconnected(void* _p)
   printf("Remote disconnected.\n");
 }
 
+void RemoteBatteryCharge(void* _p, int _val)
+{
+  assert(_p);
+  printf("Battery charge %d %%.\n", _val);
+}
+
 /** Capture test. */
 int main(int argc, char *argv[])
 {
@@ -77,6 +83,19 @@ int main(int argc, char *argv[])
   captureData cd;
   void* p = (void*)0x1; /* Unused here. */
   int res = BDREMOTE_FAIL;
+  int i   = 0;
+
+  if (argc > 1)
+    {
+      printf("Arguments are not supported.\n");
+      
+      for (i = 1; i < argc; i++)
+	{
+	  printf("Unhandled argument: %s.\n", argv[i]);
+	}
+      return -1;
+    }
+  
   setDefaultLog();
   memset(&config, 0, sizeof(config));
   memset(&cd, 0, sizeof(cd));

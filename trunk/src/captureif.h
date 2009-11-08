@@ -95,6 +95,12 @@ void RemoteConnected(void* _p);
  */
 void DataInd(void* p, const char* _data, const int _size);
 
+/** Battery charge change detected.
+ * p    - context pointer.
+ * _val - charge in percent.
+ */
+void RemoteBatteryCharge(void* _p, int _val);
+
 /** Remote disconnected. */
 void RemoteDisconnected(void* _p);
 
