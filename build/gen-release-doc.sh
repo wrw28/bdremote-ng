@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Versions.
-VER="0.4"
-REL="r90"
+VER="0.5"
+REL="r98"
 
 # Where to find the files.
 WIKIDOCROOT=http://bdremote-ng.googlecode.com/svn-history/$REL/wiki
