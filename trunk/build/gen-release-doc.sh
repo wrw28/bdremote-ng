@@ -17,8 +17,8 @@ D=`pwd`
 CONVERT="ruby -I $HOME/remote-svn/google-wiki-syntax $HOME/remote-svn/google-wiki-syntax/wiki_convertor.rb"
 
 # Delete/create directory.
-rm -fr bdremoteng-$VER-doc
-mkdir -p bdremoteng-$VER-doc
+rm -fr bdremote-ng-$VER-doc
+mkdir -p bdremote-ng-$VER-doc
 
 GetDoc()
 {
@@ -40,7 +40,7 @@ ConvertDoc()
  
 DOCS="README Releases initscripts relproc"
 
-cd bdremoteng-$VER-doc && \
+cd bdremote-ng-$VER-doc && \
 for DOC in `echo $DOCS`
 do
     GetDoc $DOC
@@ -65,11 +65,11 @@ echo "Generating doxygen .. "
 cd ../../doc/ && \
 rm -fr html && \
 doxygen && \
-cd ../build/bdremoteng-$VER-doc && \
+cd ../build/bdremote-ng-$VER-doc && \
 cp -r ../../doc/html doxygen && \
 echo "Generated doxygen .."
 
-cd .. && tar -cvjf bdremoteng-$VER-doc.tar.bz2 bdremoteng-$VER-doc
+cd .. && tar -cvjf bdremote-ng-$VER-doc.tar.bz2 bdremote-ng-$VER-doc
 
 exit 0
 
