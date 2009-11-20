@@ -183,7 +183,15 @@ void* lircThread (void* q)
 		  BDREMOTE_LOG(ld->config->debug,
 			       fprintf(printStream, "Key is down (repeat #%d): %lu\n", ks.repeat_count, ks.elapsed);
 			       );
-		  broadcastToLirc(ld, ps3remote_keys[ks.lastKey].name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
+                  if (ld->config->lirc_namespace)
+                  {
+                      name = ps3remote_keys[ks.lastKey].name_lirc;
+                  }
+                  else
+                  {
+                      name = ps3remote_keys[ks.lastKey].name_orig;
+                  }
+		  broadcastToLirc(ld, name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
 		  /* Reset elapsed time.*/
 		  ks.elapsed = 0;
 		  
@@ -263,6 +271,7 @@ void DataInd_keyDown(lirc_data* _ld,
                      keyState* _ks)
 {
   int num = ps3remote_undef;
+  const char* name = NULL;
   if (_code != ps3remote_keyup)
     {
       /* Key pressed. */
@@ -276,7 +285,15 @@ void DataInd_keyDown(lirc_data* _ld,
     }
   if (num != ps3remote_undef)
     {
-      broadcastToLirc(_ld, ps3remote_keys[num].name, 0, ps3remote_keys[num].code);
+      if (_ld->config->lirc_namespace)
+      {
+          name = ps3remote_keys[num].name_lirc;
+      }
+      else
+      {
+          name = ps3remote_keys[num].name_orig;
+      }
+      broadcastToLirc(_ld, name, 0, ps3remote_keys[num].code);
     }
 }
 
@@ -286,6 +303,7 @@ void DataInd_keyUp(lirc_data* _ld,
                    keyState* _ks)
 {
   char release_name[100];
+  const char* name = NULL;
 
   if (_code == ps3remote_keyup)
     {
@@ -297,9 +315,17 @@ void DataInd_keyUp(lirc_data* _ld,
         {
           if (_ld->config->release != NULL)
           {
-              if ((strlen(ps3remote_keys[_ks->lastKey].name) + strlen(_ld->config->release)) < 100)
+              if (_ld->config->lirc_namespace)
               {
-                  sprintf(release_name, "%s%s", ps3remote_keys[_ks->lastKey].name, _ld->config->release);
+                  name = ps3remote_keys[_ks->lastKey].name_lirc;
+              }
+              else
+              {
+                  name = ps3remote_keys[_ks->lastKey].name_orig;
+              }
+              if ((strlen(name) + strlen(_ld->config->release)) < 100)
+              {
+                  sprintf(release_name, "%s%s", name, _ld->config->release);
                   broadcastToLirc(_ld, release_name, 0, _code);
               }
           }

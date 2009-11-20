@@ -50,6 +50,8 @@ typedef struct
   int repeat_delay;
   /** Generate key release appended with the following string */
   char* release;
+  /** Enable/disable use of LIRC namespace. */
+  int lirc_namespace;
   /** Enable/disable printing of debug messages. */
   int debug;
   /** Indicates if the BT address of the interface to use was set. */
