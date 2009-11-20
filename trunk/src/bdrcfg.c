@@ -54,6 +54,7 @@ void setDefaults(configuration* _config)
   _config->remote_addr = NULL;
   _config->detach      = 1;
   FREEVAL(_config->release);
+  _config->lirc_namespace = 0;
   _config->release     = NULL;
   FREEVAL(_config->user);
   _config->user        = NULL;
@@ -138,6 +139,7 @@ void printConfig(const configuration* _config)
     {
       fprintf(printStream, " - release     : %s.\n", _config->release);
     }
+  fprintf(printStream, " - LIRC names  : %d.\n", _config->lirc_namespace);
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
   if (_config->debug)
     {
