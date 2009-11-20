@@ -48,6 +48,8 @@ typedef struct
   /** Repeat delay - the amount of messages to ignore before
       repeating.*/
   int repeat_delay;
+  /** Generate key release appended with the following string */
+  char* release;
   /** Enable/disable printing of debug messages. */
   int debug;
   /** Indicates if the BT address of the interface to use was set. */
@@ -76,6 +78,9 @@ void setRemoteAddress(configuration* _config, const char* _address);
 
 /** Set the BD address of the interface to use. */
 void setInterfaceAddress(configuration* _config, const char* _address);
+
+/** Set release key append string. */
+void setRelease(configuration* _config, const char* _release);
 
 /** Set user to change to after opening sockets. */
 void setUser(configuration* _config, const char* _user);

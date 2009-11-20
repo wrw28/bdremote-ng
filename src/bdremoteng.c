@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   memset(&config, 0, sizeof(config));
   setDefaults(&config);
 
-  while ((opt=getopt(argc,argv,"+p:t:a:i:r:e:u:g:f:ndh"))!=-1)
+  while ((opt=getopt(argc,argv,"+p:t:a:i:r:e:R:u:g:f:ndh"))!=-1)
     {
       switch(opt)
         {
@@ -129,6 +129,9 @@ int main(int argc, char *argv[])
           break;
         case 'g':
           setGroup(&config, optarg);
+          break;
+        case 'R':
+          setRelease(&config, optarg);
           break;
         case 'f':
           setLogFilename(&config, optarg);
@@ -286,6 +289,7 @@ void usage(void)
          "\t                     For example: -a 00:19:C1:5A:F1:3F. \n");
   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
          "\t-e <num>             Wait <num> ms before repeating a key.\n"
+         "\t-R <suffix>          Auto-generate release events with appended <suffix>.\n"
          "\t-u <username>        Change UID to the UID of this user.\n"
          "\t-g <group>           Change GID to the GID of this group.\n"
          "\t-f <filename>        Write log to <filename>.\n"
