@@ -97,6 +97,7 @@ void* lircThread (void* q)
   queueData* qd  = NULL;
   int res        = Q_ERR;
   keyState ks;
+  const char* name = NULL;
 
 #if ENABLE_REPEAT
   unsigned long sendAfterMs = 0;
