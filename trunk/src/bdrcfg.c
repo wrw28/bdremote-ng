@@ -53,6 +53,8 @@ void setDefaults(configuration* _config)
   FREEVAL(_config->remote_addr);
   _config->remote_addr = NULL;
   _config->detach      = 1;
+  FREEVAL(_config->release);
+  _config->release     = NULL;
   FREEVAL(_config->user);
   _config->user        = NULL;
   FREEVAL(_config->group);
@@ -79,6 +81,14 @@ void setInterfaceAddress(configuration* _config, const char* _address)
   _config->interface_addr_set = 1;
 }
 
+void setRelease(configuration* _config, const char* _release)
+{
+  assert(_config != NULL);
+  assert(_release != NULL);
+
+  SETVAL(_config->release, _release);
+}
+
 void setUser(configuration* _config, const char* _user)
 {
   assert(_config != NULL);
@@ -100,6 +110,7 @@ void destroyConfig(configuration* _config)
   assert(_config != NULL);
 
   FREEVAL(_config->remote_addr);
+  FREEVAL(_config->release);
   FREEVAL(_config->user);
   FREEVAL(_config->group);
   FREEVAL(_config->log_filename);
@@ -119,6 +130,14 @@ void printConfig(const configuration* _config)
   fprintf(printStream, " - repeat rate : disabled.\n");
   fprintf(printStream, " - repeat delay: disabled.\n");
 #endif
+  if (_config->release == NULL)
+    {
+      fprintf(printStream, " - release     : not set.\n");
+    }
+  else
+    {
+      fprintf(printStream, " - release     : %s.\n", _config->release);
+    }
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
   if (_config->debug)
     {

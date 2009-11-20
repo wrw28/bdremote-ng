@@ -42,6 +42,7 @@
 #include <keydef.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include <unistd.h>
 
@@ -284,6 +285,8 @@ void DataInd_keyUp(lirc_data* _ld,
                    uint32_t _mask,
                    keyState* _ks)
 {
+  char release_name[100];
+
   if (_code == ps3remote_keyup)
     {
       /* Key up. */
@@ -292,7 +295,14 @@ void DataInd_keyUp(lirc_data* _ld,
                    );
       if (_ks->lastKey != ps3remote_undef)
         {
-          /* broadcastToLirc(_ld, ps3remote_keys[_ks->lastKey].name, 0, _code); */
+          if (_ld->config->release != NULL)
+          {
+              if ((strlen(ps3remote_keys[_ks->lastKey].name) + strlen(_ld->config->release)) < 100)
+              {
+                  sprintf(release_name, "%s%s", ps3remote_keys[_ks->lastKey].name, _ld->config->release);
+                  broadcastToLirc(_ld, release_name, 0, _code);
+              }
+          }
 
           _ks->keyDown      = 0;
           _ks->lastKey      = ps3remote_undef;
