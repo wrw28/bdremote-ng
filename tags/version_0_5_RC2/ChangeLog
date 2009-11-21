@@ -1,0 +1,56 @@
+bdremote-ng 0.5
+---------------
+
+Adds support for printing the battery charge %.
+
+022 Battery information.
+023 Merge patch from Paul Bender: release support.
+024 Merge patch from Paul Bender: namespace support 
+025 Add missing variable.
+
+bdremote-ng 0.4
+---------------
+
+Adds support for repeating a key (after an initial delay), when
+its being held down. A number of more or less serious bugs were
+fixed in this release. Also adds doxygen comments.
+
+002 Implement support for repeat.
+008 Add doxygen comments for all interfaces.
+015 Running in background results in no remote control.
+017 Add doxygen for all files.
+018 High cpu usage.
+019 Repeat is erratic.
+020 Typos.
+021 Not working when another HID is also to be used.
+
+bdremote-ng 0.3
+---------------
+
+Fixes a minor bug.
+
+009 free(): invalid pointer in captureif.c:54.
+
+bdremote-ng 0.2
+---------------
+
+Fixes a couple of minor bugs.
+
+The following bugs were fixed:
+
+006 Drop privileges after opening sockets.
+007 Fix GCC warnings.
+008 Add doxygen comments for all interfaces.
+
+bdremote-ng 0.1
+---------------
+
+Initial release, for public consumption.
+
+The following bugs were fixed:
+
+001 Add cmake build files.
+003 Add support for timeout.
+004 Create release.
+005 Check for memory leaks.
+
