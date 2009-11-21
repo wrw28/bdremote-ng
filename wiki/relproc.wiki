@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This page describes the steps required for create a bdremote-ng release.
+This page describes the steps required to create a bdremote-ng release.
 
 = Procedure ==
 
@@ -14,3 +14,7 @@ This page describes the steps required for create a bdremote-ng release.
  * Update list of releases on wiki.
  * Send e-mail to mailing list.
  * Update http://freshmeat.net entry.
+
+= Release Candidate =
+
+The above steps should also be used to create a RC, without updating the freshmeat.net entry.
