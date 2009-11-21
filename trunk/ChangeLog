@@ -4,6 +4,9 @@ bdremote-ng 0.5
 Adds support for printing the battery charge %.
 
 022 Battery information.
+023 Merge patch from Paul Bender: release support.
+024 Merge patch from Paul Bender: namespace support 
+025 Add missing variable.
 
 bdremote-ng 0.4
 ---------------
