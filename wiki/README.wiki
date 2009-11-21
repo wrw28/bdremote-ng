@@ -104,4 +104,4 @@ When reporting bugs, please provide the following information.
 
  * Start this application before you start bluez daemons. See [initscripts].
 
- * The amount of time, before the connection to the remote is closed is per default set to {{{60 seconds}}}. This is far too low, according to Atso Peter. One should use {{{1800 seconds}}} instead. The original driver times out after {{{60 minutes}}}.
+ * The amount of time, before the connection to the remote is closed is per default set to {{{60 seconds}}}. This is far too low, according to Peter Atso. One should use {{{1800 seconds}}} instead. The original driver times out after {{{60 minutes}}}.
