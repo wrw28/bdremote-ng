@@ -58,6 +58,8 @@ you can give extra command-line parameters to "bdremoteng"
 	                     For example: -a 00:19:C1:5A:F1:3F. 
 	-r <rate>            Key repeat rate. Generate <rate> repeats per second.
 	-e <num>             Wait <num> ms before repeating a key.
+	-R <suffix>          Auto-generate release events with appended <suffix>.
+	-l                   Follow LIRC namespace for the key names.
 	-u <username>        Change UID to the UID of this user.
 	-g <group>           Change GID to the GID of this group.
 	-f <filename>        Write log to <filename>.
