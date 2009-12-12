@@ -1,0 +1,13 @@
+Index: lib/wiki_syntax.rb
+===================================================================
+--- lib/wiki_syntax.rb	(revision 1893)
++++ lib/wiki_syntax.rb	(working copy)
+@@ -227,7 +227,7 @@
+         block
+       else
+         # remove newlines within normal (non-code) blocks of text
+-        "<p>" + block.gsub(/\n/, ' ') + "</p>"
++        "<p>" + block + "</p>"
+       end
+     end.join
+   end
