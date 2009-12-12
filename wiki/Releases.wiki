@@ -3,6 +3,7 @@
 == List of Releases == 
 
 || *Name* || *Type* || *Source* || *Docs* || *Changelog* ||
+|| bdremote-ng-0.5 RC3 || feature release || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC3.tar.bz2 bdremote-ng-0.5-RC3.tar.bz2] || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC3-doc.tar.bz2 bdremote-ng-0.5-RC3-doc.tar.bz2] || [http://code.google.com/p/bdremote-ng/source/browse/tags/version_0_5_RC3/ChangeLog Changelog] || 
 || bdremote-ng-0.5 RC2 || feature release || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC2.tar.bz2 bdremote-ng-0.5-RC2.tar.bz2] || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC2-doc.tar.bz2 bdremote-ng-0.5-RC2-doc.tar.bz2] || [http://code.google.com/p/bdremote-ng/source/browse/tags/version_0_5_RC2/ChangeLog Changelog] || 
 || bdremote-ng-0.5 RC1 || feature release || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC1.tar.bz2 bdremote-ng-0.5-RC1.tar.bz2] || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.5-RC1-doc.tar.bz2 bdremote-ng-0.5-RC1-doc.tar.bz2] || [http://code.google.com/p/bdremote-ng/source/browse/tags/version_0_5_RC1/ChangeLog Changelog] || 
 || bdremote-ng-0.4 || feature release || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.4.tar.bz2 bdremote-ng-0.4.tar.bz2] || [http://bdremote-ng.googlecode.com/files/bdremote-ng-0.4-doc.tar.bz2 bdremote-ng-0.4-doc.tar.bz2] || [http://code.google.com/p/bdremote-ng/source/browse/tags/version_0_4/ChangeLog Changelog] || 
