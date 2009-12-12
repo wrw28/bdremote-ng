@@ -72,249 +72,255 @@ void* listener(void* _p);
 /*unsigned int globalLogMask = MODULEMASK_LIRC_THR;*/
 
 unsigned int globalLogMask = 
-  MODULEMASK_LIRC_THR | MODULEMASK_LIRC_SOCK | 
-  MODULEMASK_LIRC_CB | MODULEMASK_BT_IF | MODULEMASK_BT_IMPL | 
-  MODULEMASK_QUEUE | MODULEMASK_SPARE | MODULEMASK_MAIN;
+   MODULEMASK_LIRC_THR | MODULEMASK_LIRC_SOCK | 
+   MODULEMASK_LIRC_CB | MODULEMASK_BT_IF | MODULEMASK_BT_IMPL | 
+   MODULEMASK_QUEUE | MODULEMASK_SPARE | MODULEMASK_MAIN;
 
 static const unsigned int moduleMask = MODULEMASK_MAIN;
 
 int main(int argc, char *argv[])
 {
-  pthread_t bt_thread;
-  struct sigaction sa;
-  int opt;
-  configuration config;
-  lirc_data ldata;
-  captureData cdata;
-  int ret = -1;
+   pthread_t bt_thread;
+   struct sigaction sa;
+   int opt;
+   configuration config;
+   lirc_data ldata;
+   captureData cdata;
+   int ret = -1;
 
-  /* printf("Mask: %u.\n", globalLogMask); */
+   /* printf("Mask: %u.\n", globalLogMask); */
 
-  setDefaultLog();
+   setDefaultLog();
 
-  memset(&cdata, 0, sizeof(cdata));
-  memset(&config, 0, sizeof(config));
-  setDefaults(&config);
+   memset(&cdata, 0, sizeof(cdata));
+   memset(&config, 0, sizeof(config));
+   setDefaults(&config);
 
-  while ((opt=getopt(argc,argv,"+p:t:a:i:r:e:R:u:g:f:ndhl"))!=-1)
-    {
-      switch(opt)
-        {
-        case 'p':
-          config.listen_port=atoi(optarg);
-          break;
-        case 't':
-          config.disconnect_timeout=atoi(optarg);
-          break;
-        case 'a':
-          setRemoteAddress(&config, optarg);
-          break;
-	case 'i':
-	  setInterfaceAddress(&config, optarg);
-	  break;
-        case 'r':
-          config.repeat_rate=atoi(optarg);
-          break;
-        case 'e':
-          config.repeat_delay=atoi(optarg);
-          break;
-        case 'd':
-          config.debug = 1;
-          break;
-        case 'n':
-          config.detach=0;
-          break;
-        case 'u':
-          setUser(&config, optarg);
-          break;
-        case 'g':
-          setGroup(&config, optarg);
-          break;
-        case 'R':
-          setRelease(&config, optarg);
-          break;
-        case 'l':
-          config.lirc_namespace = 1;
-          break;
-        case 'f':
-          setLogFilename(&config, optarg);
-          break;
-        case 'h':
-          usage();
-          exit(0);
-          break;
-        default:
-          exit(0);
-        }
-    }
+   while ((opt=getopt(argc,argv,"+p:t:a:b:i:r:e:R:u:g:f:ndhl"))!=-1)
+      {
+         switch(opt)
+            {
+            case 'p':
+               config.listen_port=atoi(optarg);
+               break;
+            case 't':
+               config.disconnect_timeout=atoi(optarg);
+               break;
+            case 'a':
+               setRemoteAddress(&config, optarg);
+               break;
+            case 'b':
+               setBatteryScript(&config, optarg);
+               break;
+            case 'i':
+               setInterfaceAddress(&config, optarg);
+               break;
+            case 'r':
+               config.repeat_rate=atoi(optarg);
+               break;
+            case 'e':
+               config.repeat_delay=atoi(optarg);
+               break;
+            case 'd':
+               config.debug = 1;
+               break;
+            case 'n':
+               config.detach=0;
+               break;
+            case 'u':
+               setUser(&config, optarg);
+               break;
+            case 'g':
+               setGroup(&config, optarg);
+               break;
+            case 'R':
+               setRelease(&config, optarg);
+               break;
+            case 'l':
+               config.lirc_namespace = 1;
+               break;
+            case 'f':
+               setLogFilename(&config, optarg);
+               break;
+            case 'h':
+               usage();
+               exit(0);
+               break;
+            default:
+               exit(0);
+            }
+      }
 
-  if (config.remote_addr == NULL)
-    {
-      usage();
-      printf("\nPlease specify a remote BD address using the -a switch.\n");
+   if (config.remote_addr == NULL)
+      {
+         usage();
+         printf("\nPlease specify a remote BD address using the -a switch.\n");
 
-      exit(0);
-    }
+         exit(0);
+      }
 
-  if (config.debug == 1)
-    {
-      printConfig(&config);
-    }
+   if (config.debug == 1)
+      {
+         printConfig(&config);
+      }
 
-  initLircData(&ldata, &config);
+   initLircData(&ldata, &config);
 
-  InitCaptureData(&cdata,
-                  &config,
-                  &ldata);
+   InitCaptureData(&cdata,
+                   &config,
+                   &ldata);
 
-  if (config.detach == 1)
-    {
-      if (daemon(0, 0))
-        {
-          perror("Can't start daemon");
-          exit(1);
-        };
-    };
+   if (config.detach == 1)
+      {
+         if (daemon(0, 0))
+            {
+               perror("Can't start daemon");
+               exit(1);
+            };
+      };
 
-  nice(-4);
+   nice(-4);
 
-  ret = InitcaptureLoop(&cdata);
-  if (ret == BDREMOTE_FAIL)
-    {
-      BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
-      return BDREMOTE_FAIL;
-    }
+   ret = InitcaptureLoop(&cdata);
+   if (ret == BDREMOTE_FAIL)
+      {
+         BDREMOTE_DBG(config.debug, "InitcaptureLoop failed.");
+         return BDREMOTE_FAIL;
+      }
 
-  if (userAndGroupSet(&config) == 1)
-    {
-      BDREMOTE_DBG(config.debug, "Changing UID:GID.");
+   if (userAndGroupSet(&config) == 1)
+      {
+         BDREMOTE_DBG(config.debug, "Changing UID:GID.");
 
-      if ((getuid() == 0) && (geteuid() == 0))
-        {
-          BDREMOTE_DBG(config.debug, "Can change UID:GID.");
-        }
-      else
-        {
-          BDREMOTE_DBG(config.debug, "Unable to change UID:GID..");
-          return BDREMOTE_FAIL;
-        }
+         if ((getuid() == 0) && (geteuid() == 0))
+            {
+               BDREMOTE_DBG(config.debug, "Can change UID:GID.");
+            }
+         else
+            {
+               BDREMOTE_DBG(config.debug, "Unable to change UID:GID..");
+               return BDREMOTE_FAIL;
+            }
 
-      if (changeUIDAndGID(config.user, config.group) == BDREMOTE_FAIL)
-        {
-          BDREMOTE_DBG(config.debug, "changeUIDAndGID() failed.");
-          return BDREMOTE_FAIL;
-        }
-    }
+         if (changeUIDAndGID(config.user, config.group) == BDREMOTE_FAIL)
+            {
+               BDREMOTE_DBG(config.debug, "changeUIDAndGID() failed.");
+               return BDREMOTE_FAIL;
+            }
+      }
 
-  /* Open the logfile after changing UID/GID. */
-  if (setLogFile(&config) == BDREMOTE_FAIL)
-    {
-      exit(0);
-    }
+   /* Open the logfile after changing UID/GID. */
+   if (setLogFile(&config) == BDREMOTE_FAIL)
+      {
+         exit(0);
+      }
 
-  if (config.log_filename_set)
-    {
-      BDREMOTE_LOG(config.debug,
-                   printf("Writting log to: '%s'\n", config.log_filename);
-                   );
-    }
+   if (config.log_filename_set)
+      {
+         BDREMOTE_LOG(config.debug,
+                      printf("Writting log to: '%s'\n", config.log_filename);
+                      );
+      }
 
-  /* Start listening for BT clients. */
-  if (pthread_create(&bt_thread, NULL, listener, &cdata) != 0)
-    {
-      perror("Could not create BT client thread");
-      closeLogFile();
-      exit(1);
-    }
+   /* Start listening for BT clients. */
+   if (pthread_create(&bt_thread, NULL, listener, &cdata) != 0)
+      {
+         perror("Could not create BT client thread");
+         closeLogFile();
+         exit(1);
+      }
 
-  memset(&sa, 0, sizeof(sa));
-  sa.sa_flags = SA_NOCLDSTOP;
-  sa.sa_handler = sig_term;
-  sigaction(SIGTERM, &sa, NULL);
-  sigaction(SIGINT,  &sa, NULL);
-  sa.sa_handler = sig_hup;
-  sigaction(SIGHUP, &sa, NULL);
+   memset(&sa, 0, sizeof(sa));
+   sa.sa_flags = SA_NOCLDSTOP;
+   sa.sa_handler = sig_term;
+   sigaction(SIGTERM, &sa, NULL);
+   sigaction(SIGINT,  &sa, NULL);
+   sa.sa_handler = sig_hup;
+   sigaction(SIGHUP, &sa, NULL);
 
-  sa.sa_handler = SIG_IGN;
-  sigaction(SIGCHLD, &sa, NULL);
-  sigaction(SIGPIPE, &sa, NULL);
+   sa.sa_handler = SIG_IGN;
+   sigaction(SIGCHLD, &sa, NULL);
+   sigaction(SIGPIPE, &sa, NULL);
 
-  /* Start LIRC thread. */
-  startLircThread(&ldata);
+   /* Start LIRC thread. */
+   startLircThread(&ldata);
 
-  /* Start handling LIRC clients and forwarding data. */
-  lirc_server(&config, &ldata);
+   /* Start handling LIRC clients and forwarding data. */
+   lirc_server(&config, &ldata);
 
-  BDREMOTE_DBG(config.debug, "Terminating.");
+   BDREMOTE_DBG(config.debug, "Terminating.");
 
-  pthread_kill (bt_thread, SIGTERM);
-  BDREMOTE_DBG(config.debug, "Waiting for threads to finish.");
-  pthread_join(bt_thread, NULL);
-  waitForLircThread(&ldata);
-  BDREMOTE_DBG(config.debug, "Done.");
+   pthread_kill (bt_thread, SIGTERM);
+   BDREMOTE_DBG(config.debug, "Waiting for threads to finish.");
+   pthread_join(bt_thread, NULL);
+   waitForLircThread(&ldata);
+   BDREMOTE_DBG(config.debug, "Done.");
 
-  DestroyCaptureData(&cdata);
-  destroyLircData(&ldata);
+   DestroyCaptureData(&cdata);
+   destroyLircData(&ldata);
 
-  destroyConfig(&config);
+   destroyConfig(&config);
 
-  closeLogFile();
+   closeLogFile();
 
-  return EXIT_SUCCESS;
+   return EXIT_SUCCESS;
 }
 
 void* listener(void* _p)
 {
-  captureData* cd = (captureData*)_p;
-  int ret         = -1;
+   captureData* cd = (captureData*)_p;
+   int ret         = -1;
 
-  BDREMOTE_DBG(cd->config->debug, "Started listener thread.");
-  ret = captureLoop(cd);
-  if (ret < 0)
-    {
-      BDREMOTE_DBG(cd->config->debug, "captureLoop failed.");
-    }
+   BDREMOTE_DBG(cd->config->debug, "Started listener thread.");
+   ret = captureLoop(cd);
+   if (ret < 0)
+      {
+         BDREMOTE_DBG(cd->config->debug, "captureLoop failed.");
+      }
 
-  return 0;
+   return 0;
 }
 
 void usage(void)
 {
-  printf("bdremoteng - Sony BD Remote helper daemon version %s\n\n", VERSION);
-  printf("Usage:\n"
-         "\tbdremoteng [options]\n"
-         "\n");
-  printf("Options:\n"
-         "\t-p <port>            Set port number for incoming LIRCD connections.\n"
-         "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds).\n"
-         "\t-i <address>         BT address of interface to use.\n"
-         "\t-a <address>         BT address of remote.\n"
-         "\t                     For example: -a 00:19:C1:5A:F1:3F. \n");
-  printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
-         "\t-e <num>             Wait <num> ms before repeating a key.\n"
-         "\t-R <suffix>          Auto-generate release events with appended <suffix>.\n"
-         "\t-l                   Follow LIRC namespace for the key names.\n"
-         "\t-u <username>        Change UID to the UID of this user.\n"
-         "\t-g <group>           Change GID to the GID of this group.\n"
-         "\t-f <filename>        Write log to <filename>.\n"
-         "\t-d                   Enable debug.\n"
-         "\t-n                   Don't fork daemon to background.\n"
-         "\t-h, --help           Display help.\n"
-         "\n");
+   printf("bdremoteng - Sony BD Remote helper daemon version %s\n\n", VERSION);
+   printf("Usage:\n"
+          "\tbdremoteng [options]\n"
+          "\n");
+   printf("Options:\n"
+          "\t-p <port>            Set port number for incoming LIRCD connections.\n"
+          "\t-t <timeout>         Set disconnect timeout for BD remote (in seconds).\n"
+          "\t-i <address>         BT address of interface to use.\n"
+          "\t-a <address>         BT address of remote.\n"
+          "\t                     For example: -a 00:19:C1:5A:F1:3F. \n"
+          "\t-b <script>          Execute <script> when battery info changes.\n"
+          "\t                     Arguments: <prev charge> <current charge>, both in percent.\n");
+
+   printf("\t-r <rate>            Key repeat rate. Generate <rate> repeats per second.\n"
+          "\t-e <num>             Wait <num> ms before repeating a key.\n"
+          "\t-R <suffix>          Auto-generate release events with appended <suffix>.\n"
+          "\t-l                   Follow LIRC namespace for the key names.\n"
+          "\t-u <username>        Change UID to the UID of this user.\n"
+          "\t-g <group>           Change GID to the GID of this group.\n"
+          "\t-f <filename>        Write log to <filename>.\n"
+          "\t-d                   Enable debug.\n"
+          "\t-n                   Don't fork daemon to background.\n"
+          "\t-h, --help           Display help.\n"
+          "\n");
 
 }
 
 void sig_hup(int _sig)
 {
-  (void)_sig;
-  /* BDREMOTE_DBG("Not handling HUP."); */
+   (void)_sig;
+   /* BDREMOTE_DBG("Not handling HUP."); */
 }
 
 void sig_term(int _sig)
 {
-  extern volatile sig_atomic_t __io_canceled;
-  __io_canceled = 1;
-  (void)_sig;
+   extern volatile sig_atomic_t __io_canceled;
+   __io_canceled = 1;
+   (void)_sig;
 }
 
 /*@}*/
