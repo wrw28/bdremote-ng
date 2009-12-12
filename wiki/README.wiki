@@ -88,6 +88,19 @@ NOTE: Connection with remote will be established only after you press
 some key on remote for first time after start of daemon and it can 
 take some time, so result of first key press will be slightly delayed.
 
+= Battery change =
+
+Example script used to receive battery change notifications.
+
+{{{
+#!/bin/bash
+
+PREV=$1
+NOW=$2
+
+/usr/bin/logger "PS3 remote battery status change: from $PREV% to $NOW%."
+}}}
+
 = Reporting Bugs =
 
 When reporting bugs, please provide the following information.
