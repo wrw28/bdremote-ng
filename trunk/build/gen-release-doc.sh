@@ -2,7 +2,7 @@
 
 # Versions.
 VER="0.5"
-REL="r108"
+REL="r119"
 
 # Where to find the files.
 WIKIDOCROOT=http://bdremote-ng.googlecode.com/svn-history/$REL/wiki
