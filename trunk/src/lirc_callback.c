@@ -120,7 +120,7 @@ void CallBatteryChargeScript(const configuration* _config, int _prev, int _now)
          return;
       }
 
-   result = snprintf(&cmd[0], cmd_len, "%s '%d' '%d'", _config->battery_script, _prev, _now);
+   result = snprintf(&cmd[0], cmd_len, "%s '%d' '%d' &", _config->battery_script, _prev, _now);
    if (result <= 0)
       {
          BDREMOTE_DBG(_config->debug, "Unable to call battery script: call to sprintf() failed.")
