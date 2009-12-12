@@ -39,37 +39,43 @@
 /** Common configuration. */
 typedef struct
 {
-  /** Listen to this port for LIRC connections. */
-  int listen_port;
-  /** Disconnect BT peers after this number of seconds. */
-  int disconnect_timeout;
-  /** Repeat rate, number of messages per second. */
-  int repeat_rate;
-  /** Repeat delay - the amount of messages to ignore before
-      repeating.*/
-  int repeat_delay;
-  /** Generate key release appended with the following string */
-  char* release;
-  /** Enable/disable use of LIRC namespace. */
-  int lirc_namespace;
-  /** Enable/disable printing of debug messages. */
-  int debug;
-  /** Indicates if the BT address of the interface to use was set. */
-  int interface_addr_set;
-  /** BT address of the interface to use. */
-  char* interface_addr;
-  /** BT address of the PS3 remote. */
-  char* remote_addr;
-  /** Enable/disable detach from TTY.*/
-  int detach;
-  /** Change to the UID of this user. */
-  char* user;
-  /** Change to the GID of this group. */
-  char* group;
-  /** Indicates if the log filename was set.*/
-  int log_filename_set;
-  /** Write log to this file name. */
-  char* log_filename;
+   /** Listen to this port for LIRC connections. */
+   int listen_port;
+   /** Disconnect BT peers after this number of seconds. */
+   int disconnect_timeout;
+   /** Repeat rate, number of messages per second. */
+   int repeat_rate;
+   /** Repeat delay - the amount of messages to ignore before
+       repeating.*/
+   int repeat_delay;
+   /** Generate key release appended with the following string */
+   char* release;
+   /** Enable/disable use of LIRC namespace. */
+   int lirc_namespace;
+   /** Enable/disable printing of debug messages. */
+   int debug;
+   /** Indicates if the BT address of the interface to use was set. */
+   int interface_addr_set;
+   /** BT address of the interface to use. */
+   char* interface_addr;
+   /** BT address of the PS3 remote. */
+   char* remote_addr;
+   /** Enable/disable detach from TTY.*/
+   int detach;
+   /** Change to the UID of this user. */
+   char* user;
+   /** Change to the GID of this group. */
+   char* group;
+   /** Indicates if the log filename was set.*/
+   int log_filename_set;
+   /** Write log to this file name. */
+   char* log_filename;
+   /** Inidcates that script to execute when battery info changes was
+    *  set. 
+    */
+   int battery_script_set;
+   /** Script executed when battery info changes. */
+   char* battery_script;
 } configuration;
 
 /** Set default configuration. */
@@ -95,6 +101,9 @@ int userAndGroupSet(const configuration* _config);
 
 /** Set filename used for logging. */
 void setLogFilename(configuration* _config, const char* _filename);
+
+/** Set battery info script. */
+void setBatteryScript(configuration* _config, const char* _script);
 
 /** Destroy the config. */
 void destroyConfig(configuration* _config);

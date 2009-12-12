@@ -63,6 +63,9 @@ void setDefaults(configuration* _config)
   _config->log_filename_set = 0;
   FREEVAL(_config->log_filename);
   _config->log_filename = NULL;
+  _config->battery_script_set = 0;
+  FREEVAL(_config->battery_script);
+  _config->battery_script = NULL;
 }
 
 void setRemoteAddress(configuration* _config, const char* _address)
@@ -106,6 +109,15 @@ void setGroup(configuration* _config, const char* _group)
   SETVAL(_config->group, _group);
 }
 
+void setBatteryScript(configuration* _config, const char* _script)
+{
+   assert(_config != NULL);
+   assert(_script != NULL);
+
+   SETVAL(_config->battery_script, _script);
+   _config->battery_script_set = 1;
+}
+
 void destroyConfig(configuration* _config)
 {
   assert(_config != NULL);
@@ -115,6 +127,7 @@ void destroyConfig(configuration* _config)
   FREEVAL(_config->user);
   FREEVAL(_config->group);
   FREEVAL(_config->log_filename);
+  FREEVAL(_config->battery_script);
 }
 
 void printConfig(const configuration* _config)
@@ -198,6 +211,16 @@ void printConfig(const configuration* _config)
     {
       fprintf(printStream, " - log         : stdout.\n");
     }
+  if (_config->battery_script_set)
+     {
+        fprintf(printStream, " - battery\n");
+        fprintf(printStream, " - script    : '%s'.\n", _config->battery_script);
+     }
+  else
+     {
+        fprintf(printStream, " - battery\n");
+        fprintf(printStream, " - script    : not set.\n");
+     }
 }
 
 int userAndGroupSet(const configuration* _config)
