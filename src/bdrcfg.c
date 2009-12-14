@@ -56,6 +56,7 @@ void setDefaults(configuration* _config)
   FREEVAL(_config->release);
   _config->lirc_namespace = 0;
   _config->release     = NULL;
+  _config->event_out = 0;
   FREEVAL(_config->user);
   _config->user        = NULL;
   FREEVAL(_config->group);
@@ -153,6 +154,7 @@ void printConfig(const configuration* _config)
       fprintf(printStream, " - release     : %s.\n", _config->release);
     }
   fprintf(printStream, " - LIRC names  : %d.\n", _config->lirc_namespace);
+  fprintf(printStream, " - event output: %d.\n", _config->event_out);
   fprintf(printStream, " - debug       : %d.\n", _config->debug);
   if (_config->debug)
     {

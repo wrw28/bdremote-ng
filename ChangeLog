@@ -4,7 +4,8 @@ bdremote-ng 0.5
 Adds support for printing the battery charge %. Merges patches
 from Paul Bender. Adds option to call a script, when battery
 charge % changes.
-	
+
+027 Merge patch from Paul Bender: uinput support.
 026 Call script when battery info changes.
 022 Battery information.
 023 Merge patch from Paul Bender: release support.
