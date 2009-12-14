@@ -33,13 +33,13 @@
   that is holding down a key on the remote.
 
 */
+#include <keydef.h>
 
 #include "lirc_srv.h"
 
 #include <globaldefs.h>
 
 #include <stdint.h>
-#include <keydef.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -48,6 +48,8 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
+
+#include "event_out.h"
 
 extern FILE* printStream;
 extern volatile sig_atomic_t __io_canceled;
@@ -193,6 +195,10 @@ void* lircThread (void* q)
                       name = ps3remote_keys[ks.lastKey].name_orig;
                   }
 		  broadcastToLirc(ld, name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
+                  if (ld->config->event_out)
+                  {
+                      event_out_send(ps3remote_keys[ks.lastKey].event_code, 2);
+                  }
 		  /* Reset elapsed time.*/
 		  ks.elapsed = 0;
 		  
@@ -295,6 +301,10 @@ void DataInd_keyDown(lirc_data* _ld,
           name = ps3remote_keys[num].name_orig;
       }
       broadcastToLirc(_ld, name, 0, ps3remote_keys[num].code);
+      if (_ld->config->event_out)
+      {
+          event_out_send(ps3remote_keys[num].event_code, 1);
+      }
     }
 }
 
@@ -314,21 +324,25 @@ void DataInd_keyUp(lirc_data* _ld,
                    );
       if (_ks->lastKey != ps3remote_undef)
         {
+          if (_ld->config->lirc_namespace)
+          {
+              name = ps3remote_keys[_ks->lastKey].name_lirc;
+          }
+          else
+          {
+                  name = ps3remote_keys[_ks->lastKey].name_orig;
+          }
           if (_ld->config->release != NULL)
           {
-              if (_ld->config->lirc_namespace)
-              {
-                  name = ps3remote_keys[_ks->lastKey].name_lirc;
-              }
-              else
-              {
-                  name = ps3remote_keys[_ks->lastKey].name_orig;
-              }
               if ((strlen(name) + strlen(_ld->config->release)) < 100)
               {
                   sprintf(release_name, "%s%s", name, _ld->config->release);
                   broadcastToLirc(_ld, release_name, 0, _code);
               }
+          }
+          if (_ld->config->event_out)
+          {
+              event_out_send(ps3remote_keys[_ks->lastKey].event_code, 0);
           }
 
           _ks->keyDown      = 0;

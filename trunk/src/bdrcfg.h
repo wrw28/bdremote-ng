@@ -52,6 +52,8 @@ typedef struct
    char* release;
    /** Enable/disable use of LIRC namespace. */
    int lirc_namespace;
+   /** Enable/disable use of uinput based event output device. */
+   int event_out;
    /** Enable/disable printing of debug messages. */
    int debug;
    /** Indicates if the BT address of the interface to use was set. */

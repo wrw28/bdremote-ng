@@ -102,6 +102,7 @@ ${PREFIX}/keydef.h
 ${PREFIX}/lirc_srv.h
 ${PREFIX}/q.h
 ${PREFIX}/l.h
+${PREFIX}/event_out.h
 )
 
 SET(GENERIC_SOURCES
@@ -114,6 +115,7 @@ ${PREFIX}/lirc_thr.c
 ${PREFIX}/lirc_util.c
 ${PREFIX}/q.c
 ${PREFIX}/l.c
+${PREFIX}/event_out.c
 )
 
 include_directories (${PREFIX})

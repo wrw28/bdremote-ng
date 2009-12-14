@@ -59,6 +59,7 @@
 #include <lirc_srv.h>
 #include <ug.h>
 #include <l.h>
+#include <event_out.h>
 
 /** Handle signal: HUP. */
 static void sig_hup(int sig);
@@ -96,7 +97,7 @@ int main(int argc, char *argv[])
    memset(&config, 0, sizeof(config));
    setDefaults(&config);
 
-   while ((opt=getopt(argc,argv,"+p:t:a:b:i:r:e:R:u:g:f:ndhl"))!=-1)
+   while ((opt=getopt(argc,argv,"+p:t:a:b:i:r:e:R:u:g:f:ndhlE"))!=-1)
       {
          switch(opt)
             {
@@ -138,6 +139,9 @@ int main(int argc, char *argv[])
                break;
             case 'l':
                config.lirc_namespace = 1;
+               break;
+            case 'E':
+               config.event_out = 1;
                break;
             case 'f':
                setLogFilename(&config, optarg);
@@ -242,6 +246,12 @@ int main(int argc, char *argv[])
    sigaction(SIGCHLD, &sa, NULL);
    sigaction(SIGPIPE, &sa, NULL);
 
+   /* Initialize output event device. */
+   if (config.event_out)
+   {
+       event_out_init();
+   }
+
    /* Start LIRC thread. */
    startLircThread(&ldata);
 
@@ -258,6 +268,8 @@ int main(int argc, char *argv[])
 
    DestroyCaptureData(&cdata);
    destroyLircData(&ldata);
+
+   event_out_destroy();
 
    destroyConfig(&config);
 
@@ -300,6 +312,7 @@ void usage(void)
           "\t-e <num>             Wait <num> ms before repeating a key.\n"
           "\t-R <suffix>          Auto-generate release events with appended <suffix>.\n"
           "\t-l                   Follow LIRC namespace for the key names.\n"
+          "\t-E                   Make output available through a Linux event device.\n"
           "\t-u <username>        Change UID to the UID of this user.\n"
           "\t-g <group>           Change GID to the GID of this group.\n"
           "\t-f <filename>        Write log to <filename>.\n"
