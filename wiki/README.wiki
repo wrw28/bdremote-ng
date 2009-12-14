@@ -92,7 +92,7 @@ take some time, so result of first key press will be slightly delayed.
 
 = Battery change =
 
-This application lets you use the option {{{-s <script>}}} to call {{{<script>}}} when battery charge changes. {{{<script>}}} will be given two arguments: {{{<prev> <now>}}}, where {{{<prev>}}} is the previous change and {{{<now>}}} is the current charge. Both in percent.
+This application lets you use the option {{{-b <script>}}} to call {{{<script>}}} when battery charge changes. {{{<script>}}} will be given two arguments: {{{<prev> <now>}}}, where {{{<prev>}}} is the previous change and {{{<now>}}} is the current charge. Both in percent.
 
 Example script used to receive battery change notifications.
 
