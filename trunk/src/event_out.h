@@ -2,7 +2,7 @@
  *  bdremoteng - helper daemon for Sony(R) BD Remote Control
  *  Based on bdremoted, written by Anton Starikov <antst@mail.ru>.
  *
- *  Copyright (C) 2009 Paul Bender <pebender@san.rr.com>
+ *  Copyright (C) 2009 Paul Bender <pebender@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
