@@ -15,7 +15,7 @@ Why use this? Because using a PS3 remote as a HID device makes little sense to m
 
 For next instructions I assume that you already have installed 
 and properly configured Linux bluetooth stack
-(at least {{{bluez-libs}}}, {{{libbluetooth-dev}}} and {{{bluex-utils}}} on a Debian system).
+(at least {{{bluez-libs}}}, {{{libbluetooth-dev}}} and {{{bluez-utils}}} on a Debian system).
 
 Make sure that you have [http://www.cmake.org CMake] installed.
 
