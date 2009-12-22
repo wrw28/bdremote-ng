@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (bdremote-ng)
+project (bdremote-ng C)
 
 SET(CMAKE_INSTALL_PREFIX "")
 
