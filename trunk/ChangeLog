@@ -9,7 +9,7 @@ charge % changes.
 026 Call script when battery info changes.
 022 Battery information.
 023 Merge patch from Paul Bender: release support.
-024 Merge patch from Paul Bender: namespace support 
+024 Merge patch from Paul Bender: namespace support.
 025 Add missing variable.
 
 bdremote-ng 0.4
