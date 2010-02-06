@@ -194,7 +194,7 @@ void* lircThread (void* q)
                   {
                       name = ps3remote_keys[ks.lastKey].name_orig;
                   }
-		  broadcastToLirc(ld, name, 0 /*ks.repeat_sent*/, ps3remote_keys[ks.lastKey].code);
+		  broadcastToLirc(ld, name, ks.repeat_count, ps3remote_keys[ks.lastKey].code);
                   if (ld->config->event_out)
                   {
                       event_out_send(ps3remote_keys[ks.lastKey].event_code, 2);
