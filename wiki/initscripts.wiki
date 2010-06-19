@@ -1,6 +1,11 @@
 #summary How to run bdremote-ng from init scripts.
 
-Using the following init script for bedremote-ng seems to work.
+=Introduction=
+
+The scripts on this page are meant as examples only. _You_ are supposed to adjust them to your own system/distribution.
+ 
+=Older Ubuntu Systems (pre 10.04)=
+Using the following init script for bedremote-ng seems to work on older Ubuntu systems.
 
 {{{
 #!/bin/bash
@@ -49,4 +54,87 @@ The following from an ubuntu system seems to work.
 S80bluetooth -> ../init.d/bluetooth
 S95bdremote -> ../init.d/bdremote
 S99lirc -> ../init.d/lirc
+}}}
+
+=Newer Ubuntu systems (10.04)=
+
+== Bluez ==
+
+Disable hid with:
+{{{
+DisablePlugins? = input
+}}}
+in {{{/etc/bluetooth/main.conf}}}.
+
+== Scripts ==
+
+{{{
+S80bluetooth -> ../init.d/bluetooth
+S95bdremote -> ../init.d/bdremote
+S99bdremote_lirc -> ../init.d/bdremote_lirc
+}}}
+
+=== bdremote ===
+{{{
+#!/bin/bash
+BDREMOTED=/home/user/remote-svn/bdremote-ng/build/linux/bdremoteng
+
+BDREMOTE_ARGS="-i 00:11:22:33:44:55 -a 00:66:77:88:99:00 -u user -g group -p 8888 -t 600 -f /tmp/bdremote.log -r10 -e800 -d -b /home/user/batterychange.sh -n"
+
+case "$1" in
+    start)
+        /usr/bin/logger "starting bdremote"
+        echo -n "Starting bdremote daemon: "
+        /usr/bin/logger "Attempting to start bdremoteng .. start"
+        $BDREMOTED $BDREMOTE_ARGS 2>&1 >> /tmp/bdremote-startup.2 &
+        /usr/bin/logger "Attempting to start bdremoteng .. end"
+        echo
+        ;;
+    stop)
+        echo -n "Stopping bdremote daemon: "
+        killall bdremoteng
+        echo
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/bdremote {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
+}}}
+
+=== bdremote_lirc ===
+{{{
+#!/bin/bash
+LIRCD=/usr/sbin/lircd
+LIRCD_PID=/var/run/lirc.pid
+test -f "$LIRCD" || exit 0
+
+LIRCD_ARGS="-H null --connect 127.0.0.1:8888"
+
+case "$1" in
+    start)
+        echo -n "Starting lirc daemon: "
+        mkdir -p /var/run/lirc 
+        start-stop-daemon --start --exec "$LIRCD" -- $LIRCD_ARGS &> /tmp/bdremote-lirc-startup
+        echo
+        ;;
+    stop)
+        echo -n "Stopping lirc daemon: "
+        start-stop-daemon --stop --quiet --exec "$LIRCD" --pidfile /var/run/lirc/lircd.pid
+        echo
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/bdremote {start|stop|restart}"
+        exit 1
+esac
+exit 0
 }}}
